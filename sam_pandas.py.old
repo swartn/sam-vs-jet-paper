@@ -1,0 +1,241 @@
+import numpy as np
+import scipy as sp
+from scipy import stats
+import trend_ts
+reload(trend_ts)
+#import smooth
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import pandas as pd
+from dateutil.parser import parse
+plt.close('all')
+plt.ion()
+
+# Create the Pandas dataframes
+
+# Reanalyses
+press = pd.read_csv('rean_press_40_65S.txt',names=['date','ind','rno','p40','p65']) # read in
+press.date = press.date.apply(lambda d: parse(d) )                           # parse dates
+
+maxspd = pd.read_csv('rean_wspd.txt',names=['date','ind','rno','wspd']) # read in
+maxspd.date = maxspd.date.apply(lambda d: parse(d) )  
+
+# Models
+modpress = pd.read_csv('/ra40/data/ncs/cmip5/sam/c5_slp/mod_press_40_65S.txt',\
+ names=['date','ind','rno','p40','p65']) # read in
+modpress.date = modpress.date.apply(lambda d: parse(d) )                           # parse dates
+modpress.rno = modpress.rno - 1 # make the model 'labels' start at 1.
+
+modmaxspd = pd.read_csv('/ra40/data/ncs/cmip5/sam/c5_sfcWind/mod_wspd.txt',\
+ names=['date','ind','rno','wspd']) # read in
+modmaxspd.date = modmaxspd.date.apply(lambda d: parse(d) )  
+modmaxspd.rno = modmaxspd.rno - 1 # make the model 'labels' start at 1.
+
+# Define some functions
+def get_seasons(df):
+    df.mam = df[ ( df.index.month >= 3 ) & ( df.index.month <= 5 )]
+    df.jja = df[ ( df.index.month >= 6 ) & ( df.index.month <= 8 )]
+    df.son = df[ ( df.index.month >= 9 ) & ( df.index.month <= 11 )]
+    dfsh = df.shift(12)
+    df.djf = pd.concat( [ dfsh[dfsh.index.month==12 ] ,\
+         df[ ( df.index.month >= 1 ) & ( df.index.month <= 2 )] ],axis=0)
+    df.djf = df.djf.sort()
+    df.ann = df.resample('A')
+    return df
+
+def year_lim( df , ys , ye ):
+    ''' limits the dataframe df to between years starting in ys and ending in ye inclusive'''
+    dfo = df[ ( df.index.year >= ys ) & ( df.index.year <= ye ) ]
+    return dfo
+
+def plot_sam_ts( dfp , ys , ye ):
+    ''' Plot time-series of the sam index for a dataframe, including a linear trend between years
+    ys and ye inclusive'''
+    # plot up the monthly data lightly in the background
+    dfp.sam.plot(color='b',linewidth=1,alpha=0.5)
+    dfp.resample('A').sam.plot(color='k',linewidth=2,alpha=1)
+    plt.ylabel('SAM Index (hPa)')
+    plt.xlabel('Date')
+    plt.xlim([dfp.index[0] , dfp.index[-1] ] )
+    # plot on the linear trend in red
+    dft = sam_trends( dfp , ys, ye)
+    dft.yhat.plot(color='r',linewidth=2)
+    plt.xlim([dfp.index[0] , dfp.index[-1] ] )
+
+def sam_trends( dfp, ys , ye ):
+    '''Calculate linear trend in the sam of datframe dfp between years ys and ye inclusive'''
+    dft =  year_lim( dfp.resample('A') , ys, ye )              # resample annually
+    dft.sam_slope , conf_int , p_value, yhat, intercept = trend_ts.trend_ts( dft.index.year , dft.sam )
+    dft['yhat'] = dft.sam_slope * dft.index.year + intercept           # calc yhat values to return
+    print dft.sam_slope*10
+    return dft
+
+def wspd_trends( dfp, ys , ye ):
+    '''Calculate linear trend in the sam of datframe dfp between years ys and ye inclusive'''
+    dft =  year_lim( dfp.resample('A') , ys, ye )              # resample annually
+    dft.wspd_slope , conf_int , p_value, yhat, intercept = trend_ts.trend_ts( dft.index.year , dft.wspd )
+    dft['yhat_wspd'] = dft.wspd_slope * dft.index.year + intercept           # calc yhat values to return
+    print dft.wspd_slope*10
+    return dft
+
+def plot_wspd_ts( dfp , ys , ye ):
+    ''' Plot time-series of the wspd for a dataframe, including a linear trend between years
+    ys and ye inclusive'''
+    # plot up the monthly data lightly in the background
+    dfp.wspd.plot(color='b',linewidth=1,alpha=0.5)
+    dfp.resample('A').wspd.plot(color='k',linewidth=2,alpha=1)
+    plt.ylabel('Wspd (m/s)')
+    plt.xlabel('Date')
+    plt.xlim([dfp.index[0] , dfp.index[-1] ] )
+
+    # plot on the linear trend in red
+    dft = wspd_trends( dfp , ys, ye)
+    dft.yhat_wspd.plot(color='r',linewidth=2)
+    plt.xlim( [ dfp.index[0] , dfp.index[-1] ] )
+
+rean = ['R1', 'R2', '20CR', 'ERA', 'CFSR', 'MERRA']
+plt.hold(True)
+
+#for (i, name ) in enumerate( rean ):
+
+df = press[ press.rno == 3 ]    # make a dataframe for this rean, based on labelling in rno
+
+# for (i, name) in enumerate( rean ):
+#print i, name
+#df = press[ press.rno == i + 1 ]
+
+df.index = df.date                                                        
+df = df.drop(["date"], axis=1)
+df['sam'] = ( df.p40 - df.p65 ) / 100
+df.seasons = get_seasons(df)
+
+xtics = [datetime(1870,1,1) + relativedelta(years=10*i) for i in range(16) ]
+
+plt.figure(1)
+plt.subplot(211)
+plot_sam_ts( df , 1951 , 2011 )
+plt.xlim([datetime(1871,1,1) , datetime(2012,12,31)] )
+plt.xticks(xtics)
+plt.gca().set_xticklabels([])
+plt.xlabel('')
+
+"""
+plt.subplot(212)
+plot_sam_ts( df.seasons.djf , 1951 , 2011 )
+plt.xlim([datetime(1871,1,1) , datetime(2012,12,31)] )
+plt.xticks(xtics)
+"""
+seas = ['mam', 'jja', 'son', 'djf', 'ann']
+
+plt.figure(2)
+plt.subplot(221)
+for (k,i) in enumerate(seas):
+    names = 'df.seasons.' + i
+    mt = sam_trends( eval( names ), 1951, 2011 )
+    plt.plot( k , mt.sam_slope * 10 ,'_k',ms=15,mew=2)
+
+plt.gca().set_xticks( np.arange(6) )
+#plt.gca().set_xticklabels( [ l.upper() for l in seas ] )
+plt.gca().set_xticklabels( [] )
+plt.ylabel('SAM trend (hPa/dec)')
+plt.axis([-0.5, 4.5, -0.55, 2])
+plt.plot([-1, 5],[0, 0], 'k--')
+
+mod_trends = np.empty( ( modpress.rno.max() , 5 ) )
+
+num_models =  modpress.rno.max()
+
+for i in np.arange( num_models ):
+    print i
+    df = modpress[ modpress.rno == i + 1 ]
+
+    df.index = df.date                                                        
+    df = df.drop(["date"], axis=1)
+    df['sam'] = ( df.p40 - df.p65 ) / 100
+    df.seasons = get_seasons(df)
+
+    
+    for (k,nm) in enumerate(seas):
+        names = 'df.seasons.' + nm
+        mt = sam_trends( eval( names ), 1951, 2011 )
+        mod_trends[ i , k ] = mt.sam_slope * 10
+        if i == ( modpress.rno.max() - 1 ):
+            mod_trend_mean = np.mean( mod_trends[ : , k ] )
+            mod_trend_std =  np.std( mod_trends[ : , k ] )
+            c = stats.t.isf(0.025, num_models - 1 )
+            mod_95_ci = ( c * mod_trend_std ) / np.sqrt( num_models )
+            mod_5thp = np.percentile( mod_trends[ : , k ] , 5 )
+            mod_95thp = np.percentile( mod_trends[ : , k ] , 95 )
+            plt.plot( [ k , k ] , [ mod_5thp  , mod_95thp ],'r', linewidth=4, alpha=0.25 )
+            plt.plot( [ k , k ] , [ mod_trend_mean - mod_95_ci , mod_trend_mean + mod_95_ci ]\
+              ,'r', linewidth=4 ) 
+            plt.plot( k , np.mean( mod_trends[ : , k ] ) ,'_r',ms=15,mew=2 )
+    
+# ---------------------------------------------------------------------------------------------------
+#                         SPEEDS
+# ---------------------------------------------------------------------------------------------------
+
+df = maxspd[ maxspd.rno == 3 ]    # make a dataframe for this rean, based on labelling in rno
+
+# for (i, name) in enumerate( rean ):
+#print i, name
+#df = press[ press.rno == i + 1 ]
+
+df.index = df.date                                                        
+df = df.drop(["date"], axis=1)
+df.seasons = get_seasons(df)
+
+xtics = [datetime(1870,1,1) + relativedelta(years=10*i) for i in range(16) ]
+
+plt.figure(1)
+plt.subplot(212)
+plot_wspd_ts( df , 1951 , 2011 )
+plt.gca().set_xticks(xtics)
+plt.xlim([datetime(1871,1,1) , datetime(2012,12,31)] )
+plt.gca().set_xticklabels( [ str(i.year) for i in xtics ],rotation=30)
+#plt.xticks(rotation=30)
+
+seas = ['mam', 'jja', 'son', 'djf', 'ann']
+
+plt.figure(2)
+plt.subplot( 223 )
+for (k,i) in enumerate(seas):
+    names = 'df.seasons.' + i
+    mt = wspd_trends( eval( names ), 1951 , 2011 )
+    plt.plot( k , mt.wspd_slope * 10 , '_k' , ms=15, mew=2 )
+
+plt.gca().set_xticks( np.arange(6) )
+plt.gca().set_xticklabels( [ l.upper() for l in seas ] )
+plt.ylabel('Wspd trend (m/s/dec)')
+plt.axis([-0.5, 4.5, -0.25, 0.75])
+plt.plot([-1, 6],[0, 0], 'k--')
+
+num_models =  modmaxspd.rno.max()
+mod_wspd_trends = np.empty( ( num_models , 5 ) )
+
+for i in np.arange( num_models ):
+    print i
+    df = modmaxspd[ modmaxspd.rno == i + 1 ]
+
+    df.index = df.date                                                        
+    df = df.drop(["date"], axis=1)
+    df.seasons = get_seasons(df)
+    
+    for (k,nm) in enumerate(seas):
+        names = 'df.seasons.' + nm
+        mt = wspd_trends( eval( names ), 1951, 2011 )
+        mod_wspd_trends[ i , k ] = mt.wspd_slope * 10
+        if i == ( num_models - 1 ):
+            mod_trend_mean = np.mean( mod_wspd_trends[ : , k ] )
+            mod_trend_std =  np.std( mod_wspd_trends[ : , k ] )
+            c = stats.t.isf(0.025, num_models - 1 )
+            mod_95_ci = ( c * mod_trend_std ) / np.sqrt( num_models )
+            mod_5thp = np.percentile( mod_wspd_trends[ : , k ] , 5 )
+            mod_95thp = np.percentile( mod_wspd_trends[ : , k ] , 95 )
+            plt.plot( [ k , k ] , [ mod_5thp  , mod_95thp ],'r', linewidth=4, alpha=0.25 )
+            plt.plot( [ k , k ] , [ mod_trend_mean - mod_95_ci , mod_trend_mean + mod_95_ci ]\
+              ,'r', linewidth=4 ) 
+            plt.plot( k , np.mean( mod_wspd_trends[ : , k ] ) ,'_r', ms=15 , mew=2 )
+    

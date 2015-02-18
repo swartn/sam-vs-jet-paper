@@ -1,0 +1,157 @@
+cancel data/all
+cancel view
+
+use "/HOME/ncs/data/reanalyses/R1_slp.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/R2_slp.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/20CR_slp.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/ERA_int_slp.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/CFSR_slp.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/MERRA_slp_mon.mean.nc"
+
+use "/home/ncs/ra40/cmip5/sam/c5_slp/ensmean_zonmean_psl_Amon_historical_1871_2005.nc"
+use "/home/ncs/ra40/cmip5/sam/c5_slp/ensstd_zonmean_psl_Amon_historical_1871_2005.nc"
+
+define viewport/xlim=0,0.65/ylim=0.58,1 vt
+define viewport/xlimits=0,0.65/ylimits=0.385,0.805 vmt
+define viewport/xlimits=0,0.65/ylimits=0.1925,0.6125 vmb
+define viewport/xlimits=0,0.65/ylimits=0.,0.42 vb
+
+
+let xmslp = slp[x=@ave]
+let nms=12
+let slpa40 = xmslp[y=-40,l=@sbx:`nms`] - xmslp[y=-40,l=@ave]
+let slpa65 = xmslp[y=-65,l=@sbx:`nms`] - xmslp[y=-65,l=@ave]
+let sam = slpa40 - slpa65
+set region/t=1-jan-1979:31-dec-2005
+
+set view vt
+plot/nolab/set/line=7 slpa40[d=1]
+ppl axlsze 0.15,0.15
+ppl labset 0.15,0.15,0.15,0.15
+ppl tics 0.125,0.25,0.125,0.25,1,1
+PPL YLAB SLPA 40 (Pa)
+PPL XLAB Latitude
+PPL AXLABP 0,-1
+PPL TXLABP 0,-1
+PPL PLOT
+
+plot/nolab/o/line=8 slpa40[d=2]
+plot/nolab/o/line=9 slpa40[d=3]
+plot/nolab/o/line=10 slpa40[d=4]
+plot/nolab/o/line=11 slpa40[d=5]
+plot/nolab/o/line=12 slpa40[d=6]
+
+let mslpa40=psl[y=-40,d=ensmean_zonmean_psl_Amon_historical_1871_2005.nc,l=@sbx:12] - psl[y=-40,t=@ave,d=ensmean_zonmean_psl_Amon_historical_1871_2005.nc]
+
+plot/nolab/o/line=13/dash mslpa40
+
+        ! Put on a key
+        let x0 = -44
+        let y0 = 1.004
+        let dely =0.005
+        let delx = 22
+        let lline = 5
+!        go legline `x0`,lline,`y0`,7,0.16,R1
+!        go legline `x0`,lline,`y0-dely`,8,0.16,R2
+!        go legline `x0`,lline,`y0-dely*2`,9,0.16,20CR
+!        go legline `x0`,lline,`y0-dely*3`,10,0.16,ERA-Int
+!        go legline `x0`,lline,`y0-dely*4`,11,0.16,CFSR
+!        go legline `x0`,lline,`y0-dely*5`,12,0.16,MERRA
+!        go dlegline `x0-delx`,lline*1.2,`y0-dely*5`,line=13/dash,0.16,CMIP5
+
+        !label -90,1.0275,-1,0,0.16,a) Climatologies
+
+
+        plot/o/nolab/line=1/dash/vs {0,1e10},{0,0}
+
+
+set view vmt
+plot/nolab/set/line=7 slpa65[d=1]
+ppl axlsze 0.15,0.15
+ppl labset 0.15,0.15,0.15,0.15
+ppl tics 0.125,0.25,0.125,0.25,1,1
+PPL YLAB SLPA 65 (Pa)
+PPL XLAB Latitude
+PPL AXLABP 0,-1
+PPL TXLABP 0,-1
+PPL PLOT
+
+plot/nolab/o/line=8 slpa65[d=2]
+plot/nolab/o/line=9 slpa65[d=3]
+plot/nolab/o/line=10 slpa65[d=4]
+plot/nolab/o/line=11 slpa65[d=5]
+plot/nolab/o/line=12 slpa65[d=6]
+
+let mslpa65 = psl[y=-65,d=ensmean_zonmean_psl_Amon_historical_1871_2005.nc,l=@sbx:`nms`] - psl[y=-65,t=@ave,d=ensmean_zonmean_psl_Amon_historical_1871_2005.nc]
+
+plot/nolab/o/line=13/dash mslpa65
+        
+plot/o/nolab/line=1/dash/vs {0,1e10},{0,0}
+
+
+set view vmb
+plot/nolab/set/line=7 sam[d=1]
+ppl axlsze 0.15,0.15
+ppl labset 0.15,0.15,0.15,0.15
+ppl tics 0.125,0.25,0.125,0.25,1,1
+PPL YLAB @SGD@SRSLPA (Pa)
+PPL XLAB Latitude
+PPL AXLABP 0,-1
+PPL TXLABP 0,-1
+PPL PLOT
+
+plot/nolab/o/line=8 sam[d=2]
+plot/nolab/o/line=9 sam[d=3]
+plot/nolab/o/line=10 sam[d=4]
+plot/nolab/o/line=11 sam[d=5]
+plot/nolab/o/line=12 sam[d=6]
+
+let msam = mslpa40 -mslpa65
+
+plot/nolab/o/line=13/dash msam
+        
+plot/o/nolab/line=1/dash/vs {0,1e10},{0,0}
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
+!              Now do the wind speeds
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
+
+cancel data/all
+use "/HOME/ncs/data/reanalyses/R1_wspd.10m.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/R2_wspd.10m.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/20CR_wspd.10m.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/ERA_Int_wspd.10m.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/CFSR_wspd.10m.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/MERRA_wspd.10m.mon.mean.nc"
+
+use "/home/ncs/ra40/cmip5/sam/c5_sfcWind/ensmean_zonmean_sfcWind_Amon_historical_1871_2005.nc"
+use "/home/ncs/ra40/cmip5/sam/c5_sfcWind/ensstd_zonmean_sfcWind_Amon_historical_1871_2005.nc"
+
+
+let xmspd = wspd[x=@ave]
+let max_wspd = xmspd[y=-70:-20@max,l=@sbx:`nms`] - xmspd[y=-70:-20@max,l=@ave]
+
+
+set view vb
+plot/nolab/set/line=7/vlimits=-1:1 max_wspd[d=1]
+ppl axlsze 0.15,0.15
+ppl labset 0.15,0.15,0.15,0.15
+ppl tics 0.125,0.25,0.125,0.25,1,1
+PPL YLAB Wspd anom. (m/s)
+PPL XLAB Latitude
+PPL AXLABP -1,-1
+PPL TXLABP -1,-1
+PPL PLOT
+
+plot/nolab/o/line=8 max_wspd[d=2]
+plot/nolab/o/line=9 max_wspd[d=3]
+plot/nolab/o/line=10 max_wspd[d=4]
+plot/nolab/o/line=11 max_wspd[d=5]
+plot/nolab/o/line=12 max_wspd[d=6]
+
+let model_max_wspd = sfcWind[y=-70:-20@max,l=@sbx:`nms`,d=ensmean_zonmean_sfcWind_Amon_historical_1871_2005.nc] - sfcWind[y=-70:-20@max,l=@ave,d=ensmean_zonmean_sfcWind_Amon_historical_1871_2005.nc]
+
+plot/nolab/o/line=13/dash model_max_wspd
+
+        
+plot/o/nolab/line=1/dash/vs {0,1e10},{0,0}

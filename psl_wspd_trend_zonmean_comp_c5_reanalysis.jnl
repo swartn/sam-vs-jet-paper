@@ -1,0 +1,172 @@
+cancel data/all
+cancel view
+
+SET MODE LINECOLORS:7
+PPL COLOR,7,100,75,0   ! yellow
+
+use "/HOME/ncs/data/reanalyses/R1_slp.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/R2_slp.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/20CR_slp.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/ERA_int_slp.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/CFSR_slp.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/MERRA_slp_mon.mean.nc"
+
+use "/home/ncs/ra40/cmip5/sam/c5_slp/ensmean_zonmean_psl_Amon_historical_1871_2013.nc"
+use "/home/ncs/ra40/cmip5/sam/c5_slp/ensstd_zonmean_psl_Amon_historical_1871_2013.nc"
+
+define viewport/xlim=0,0.45/ylim=0.55,1 vtl
+define viewport/xlimits=0,0.45/ylimits=0.285,0.735 vml
+define viewport/xlimits=0,0.45/ylimits=0.,0.45 vbl
+
+define viewport/xlimits=0.3,0.75/ylimits=0.55,1 vtr
+define viewport/xlimits=0.3,0.75/ylimits=0.285,0.735 vmr
+define viewport/xlimits=0.3,0.75/ylimits=0.,0.45 vbr
+
+let xmslp = slp[x=@ave]
+let aslp = xmslp[t=1-jan-1979:31-dec-2005@ave]/1e5
+
+set region/y=-90:-20/t=1-jan-1979:31-dec-2009
+
+set view vtl
+plot/nolab/set/line=8/vlimits=0.975:1.025 aslp[d=1]
+ppl axlsze 0.15,0.15
+ppl labset 0.15,0.15,0.15,0.15
+ppl tics 0.125,0.25,0.125,0.25,1,1
+PPL YLAB SLP (x10^5 Pa)
+PPL XLAB Latitude
+PPL AXLABP 0,-1
+PPL PLOT
+
+plot/nolab/o/line=14 aslp[d=2]
+plot/nolab/o/line=10 aslp[d=3]
+plot/nolab/o/line=11 aslp[d=4]
+plot/nolab/o/line=12 aslp[d=5]
+plot/nolab/o/line=13 aslp[d=6]
+
+plot/nolab/o/line=16/dash psl[x=@ave,t=@ave,d=ensmean_zonmean_psl_Amon_historical_1871_2013.nc]/1e5
+
+        ! Put on a key
+        let x0 = -44
+        let y0 = 1.004
+        let dely =0.005
+        let delx = 22
+        let lline = 5
+        go legline `x0`,lline,`y0`,8,0.16,R1
+        go legline `x0`,lline,`y0-dely`,14,0.16,R2
+        go legline `x0`,lline,`y0-dely*2`,10,0.16,20CR
+        go legline `x0`,lline,`y0-dely*3`,11,0.16,ERA-Int
+        go legline `x0`,lline,`y0-dely*4`,12,0.16,CFSR
+        go legline `x0`,lline,`y0-dely*5`,13,0.16,MERRA
+        go dlegline `x0-delx`,lline*1.2,`y0-dely*5`,line=16/dash,0.16,CMIP5
+
+        label -90,1.0275,-1,0,0.16,a) Climatologies
+
+
+set view vtr
+        set data 1
+        let p = t[gt=xmslp]
+        let q = xmslp
+        set grid q
+        go regresst
+
+        let mslope = slope * (24*3650) /100
+
+        plot/nolab/set/line=8/vlimits=-1.5:1.5 mslope[d=1]
+        PPL YLAB Trend (x10^2 Pa/dec)
+        PPL XLAB Latitude
+        PPL AXLSZE 0.16,0.16
+        PPL LABSET 0.16,0.16,0.16
+        PPL AXLABP 0,1
+        PPL PLOT
+        plot/nolab/o/line=14 mslope[d=2]
+        plot/nolab/o/line=10 mslope[d=3]
+        plot/nolab/o/line=11 mslope[d=4]
+        plot/nolab/o/line=12 mslope[d=5]
+        plot/nolab/o/line=13 mslope[d=6]/(24)
+
+        plot/o/nolab/line=1/dash/vs {-90,90},{0,0}
+
+        label -90,1.6,-1,0,0.16,b) Trends
+
+
+        set data 7
+        let p = t[gt=psl]
+        let q = psl[x=@ave]
+        set grid q
+        go regresst
+
+        let mslope = slope * (3650) /100
+        plot/nolab/o/line=16/dash mslope
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
+!              Now do the wind speeds
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
+
+cancel data/all
+use "/HOME/ncs/data/reanalyses/R1_uwnd.10m.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/R2_uwnd.10m.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/20CR_uwnd.10m.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/ERA-Int_uwnd.10m.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/CFSR_uwnd.10m.mon.mean.nc"
+use "/HOME/ncs/data/reanalyses/MERRA_uwnd.10m.mon.mean.nc"
+
+use "/home/ncs/ra40/cmip5/sam/c5_uas/ensmean_zonmean_uas_Amon_historical_1871_2013.nc"
+use "/home/ncs/ra40/cmip5/sam/c5_uas/ensstd_zonmean_uas_Amon_historical_1871_2013.nc"
+
+
+let xmspd = uwnd[x=@ave]
+let awspd = xmspd[t=1-jan-1979:31-dec-2009@ave]
+
+set view vml
+plot/nolab/set/line=8/vlimits=-5:10 awspd[d=1]
+ppl axlsze 0.15,0.15
+ppl labset 0.15,0.15,0.15,0.15
+ppl tics 0.125,0.25,0.125,0.25,1,1
+PPL YLAB U 10m (m/s)
+PPL XLAB Latitude
+PPL AXLABP -1,-1
+PPL PLOT
+
+plot/nolab/o/line=14 awspd[d=2]
+plot/nolab/o/line=10 awspd[d=3]
+plot/nolab/o/line=11 awspd[d=4]
+plot/nolab/o/line=12 awspd[d=5]
+plot/nolab/o/line=13 awspd[d=6]
+   
+plot/nolab/o/line=16/dash uas[x=@ave,t=@ave,d=ensmean_zonmean_uas_Amon_historical_1871_2013.nc]
+
+
+set view vmr
+        set data 1
+        let p = t[gt=xmspd]
+        let q = xmspd
+        set grid q
+        go regresst
+
+        let mslope = slope * (24*3650) 
+
+        plot/nolab/set/line=8/vlimits=-0.25:0.4 mslope[d=1]
+        PPL YLAB Trend (m/s/dec)
+        PPL XLAB Latitude
+        PPL AXLSZE 0.16,0.16
+        PPL LABSET 0.16,0.16,0.16
+        PPL AXLABP -1,1
+        PPL PLOT
+        plot/nolab/o/line=14 mslope[d=2]
+        plot/nolab/o/line=10 mslope[d=3]
+        plot/nolab/o/line=11 mslope[d=4]
+        plot/nolab/o/line=12 mslope[d=5]
+        plot/nolab/o/line=13 mslope[d=6]/(24)
+
+        plot/o/nolab/line=1/dash/vs {-90,90},{0,0}
+
+        set data 7
+        let p = t[gt=uas]
+        let q = uas[x=@ave]
+        set grid q
+        go regresst
+
+        let mslope = slope * (3650) 
+        plot/nolab/o/line=16/dash mslope
+
+frame/file=sam_jet_lat_clim_and_trends.pdf

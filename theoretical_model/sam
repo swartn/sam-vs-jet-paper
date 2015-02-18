@@ -1,0 +1,15 @@
+import numpy as np
+import scipy as sp
+import trend_ts
+reload(trend_ts)
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import pandas as pd
+from dateutil.parser import parse
+import sam_analysis_data as sad
+
+
+press, maxspd, locmax, width, modpress, modmaxspd, modlocmax, modwidth =
+      -sad.load_sam_df()
