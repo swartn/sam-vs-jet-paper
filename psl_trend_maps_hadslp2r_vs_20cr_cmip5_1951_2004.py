@@ -16,15 +16,16 @@ plt.close('all')
 pth = '/raid/ra40/data/ncs/cmip5/psl/'
 plt.rc('font', size=10)
 
+# Load in the CMIP5 data
 h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/cmip5_trends.h5','r')
-psl_slope_c5 = h5f['psl/1951_2011/c5_psl_trend_1951_2011'][:]*120
-names2 = h5f['psl/1951_2011/model_names'][:]
+psl_slope_c5 = h5f['psl/1951_2004/c5_psl_trend_1951_2004'][:]*120
+names2 = h5f['psl/1951_2004/model_names'][:]
 h5f.close()
 
 # Load the data for 20CR
 h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/reanalysis_trends.h5','r')
-slopes = h5f['psl/1951_2011/rean_psl_trend_1951_2011'][:]*120
-rean = h5f['psl/1951_2011/reanalysis_names'][:]
+slopes = h5f['psl/1951_2004/rean_psl_trend_1951_2004'][:]*120
+rean = h5f['psl/1951_2004/reanalysis_names'][:]
 h5f.close()
 
 psl_slope_20cr = slopes[:,:,0]
@@ -59,10 +60,10 @@ cot = m.pcolor(x, y, psl_slope_hadslp,vmin=vmin, vmax=vmax, cmap=cmap_anom,
 axa[0,0].text(xpt, ypt, 'HadSLP2r')
 
 m.pcolor(x, y, psl_slope_20cr,vmin=vmin, vmax=vmax, cmap=cmap_anom, 
-               ax=axa[1,0], rasterized=True)
+               ax=axa[1,0], rasterized=True )
 anom = psl_slope_20cr - psl_slope_hadslp
 m.pcolor(x, y, anom,vmin=vmin, vmax=vmax
-	 , cmap=cmap_anom, ax=axa[1,1], rasterized=True)
+	 , cmap=cmap_anom,ax=axa[1,1], rasterized=True)
 
 rmse = np.sqrt( np.mean(anom[0:89,:]**2) )
 axa[1,0].text(xpt, ypt, '20CR')
@@ -105,5 +106,5 @@ plt.colorbar(cot, cax=tl, label='Pa decade$^{-1}$',spacing='proportional',
              boundaries=bounds)
 
 fig.delaxes(axa[0,1])
-plt.savefig('psl_maps_HadSLP2r_vs_20CR_vs_C5_1951-2011.pdf',bbox_inches='tight',
+plt.savefig('psl_maps_HadSLP2r_vs_20CR_vs_C5_1951-2004.pdf',bbox_inches='tight',
             dpi=300)

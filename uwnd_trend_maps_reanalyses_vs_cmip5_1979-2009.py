@@ -51,12 +51,12 @@ xpt, ypt = m(20,-86)
 
 # put on cmip5    
 cot = m.pcolor(x, y, uas_slope_c5.mean(axis=0),vmin=vmin, vmax=vmax, 
-               cmap=cmap_anom, ax=axa[0] )
+               cmap=cmap_anom, ax=axa[0], rasterized=True)
 axa[0].text(xpt, ypt, 'CMIP5 mean')
 # put on reanalyses    
 for i, r in enumerate(rean):
     m.pcolor(x, y, slopes[:,:,i],vmin=vmin, vmax=vmax, cmap=cmap_anom, 
-             ax=axa[i+1] )
+             ax=axa[i+1], rasterized=True)
     axa[i+1].text(xpt, ypt, r.upper())
   
     
@@ -76,7 +76,7 @@ bounds = np.linspace(vmin, vmax, ncols)
 plt.colorbar(cot, cax=tl, label='m s$^{-1}$\ndecade$^{-1}$',
              spacing='proportional', boundaries=bounds)
 
-plt.savefig('u10m_trends_cmip5_vs_reanlayses_1979-2009_maps.eps'
+plt.savefig('u10m_trends_cmip5_vs_reanlayses_1979-2009_maps.pdf'
              ,bbox_inches='tight', dpi=300)
 
 plt.figure()

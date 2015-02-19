@@ -49,14 +49,14 @@ x, y = m(lons, lats)
 xpt, ypt = m(20,-86)
 
 cot = m.pcolor(x, y, uas_slope_20cr,vmin=vmin, vmax=vmax, cmap=cmap_anom, 
-               ax=axa[0,0] )
+               ax=axa[0,0], rasterized=True)
 axa[0,0].text(xpt, ypt, '20CR')
 com = m.pcolor(x, y, uas_slope_c5.mean(axis=0),vmin=vmin, vmax=vmax, 
-               cmap=cmap_anom, ax=axa[1,0] )
+               cmap=cmap_anom, ax=axa[1,0], rasterized=True)
 axa[1,0].text(xpt, ypt, 'CMIP5 mean')
 anom = uas_slope_c5.mean(axis=0)- uas_slope_20cr
 cob = m.pcolor(x, y, anom, vmin=vmin, 
-               vmax=vmax, cmap=cmap_anom, ax=axa[1,1])
+               vmax=vmax, cmap=cmap_anom, ax=axa[1,1], rasterized=True)
 rmse = np.sqrt( np.mean(anom[0:89,:]**2) )
 axa[1,1].text(xpt, ypt, str(np.round(rmse,2)))
 
@@ -89,7 +89,6 @@ bounds = np.linspace(vmin, vmax, ncols)
 plt.colorbar(cot, cax=tl, label='m s$^{-1}$\n decade$^{-1}$',
              spacing='proportional', boundaries=bounds)
 
-plt.savefig('uas_trend_maps_20CR_vs_C5_1951-2011.eps'
+plt.savefig('uas_trend_maps_20CR_vs_C5_1951-2011.pdf'
             ,bbox_inches='tight', dpi=300)
-os.system('eps2pdf uas_trend_maps_20CR_vs_C5_1951-2011.eps')
-os.system('rm -f uas_trend_maps_20CR_vs_C5_1951-2011.eps')             
+          

@@ -57,17 +57,17 @@ x, y = m(lons, lats)
 xpt, ypt = m(20,-88)
 
 cot = m.pcolor(x, y, psl_slope_hadslp,vmin=vmin, vmax=vmax, cmap=cmap_anom, 
-               ax=axa[0,0] )
+               ax=axa[0,0], rasterized=True)
 axa[0,0].text(xpt, ypt, 'HadSLP2r')
 
 # put on reanalyses    
 for i, r in enumerate(rean):
     m.pcolor(x, y, slopes[:,:,i],vmin=vmin, vmax=vmax, cmap=cmap_anom, 
-             ax=axa[i+1, 0] )
+             ax=axa[i+1, 0], rasterized=True)
     anom = slopes[:,:,i] - psl_slope_hadslp
     #anom = np.ma.masked_outside(anom,-1.0, 1.0)
     m.pcolor(x, y, anom,vmin=vmin, vmax=vmax, 
-             cmap=cmap_anom, ax=axa[i+1, 1] ) 
+             cmap=cmap_anom, ax=axa[i+1, 1], rasterized=True) 
     rmse = np.sqrt( np.mean(anom[0:89,:]**2) )
     axa[i+1,0].text(xpt, ypt, r.upper())
     axa[i+1,1].text(xpt, ypt, str(np.round(rmse,2)))
@@ -82,11 +82,11 @@ for i, ax in enumerate(axa.flatten()):
                         ax=ax)
 # put on cmip5    
 m.pcolor(x, y, psl_slope_c5.mean(axis=0),vmin=vmin, vmax=vmax, cmap=cmap_anom, 
-         ax=axa[7, 0] )
+         ax=axa[7, 0], rasterized=True)
 anom =  psl_slope_c5.mean(axis=0) - psl_slope_hadslp
 #anom = np.ma.masked_outside(anom,-1.0, 1.0)
 m.pcolor(x, y, anom,vmin=vmin, vmax=vmax, 
-         cmap=cmap_anom, ax=axa[7, 1] )
+         cmap=cmap_anom, ax=axa[7, 1], rasterized=True)
 rmse = np.sqrt( np.mean(anom[0:89,:]**2) )
 axa[7,0].text(xpt, ypt, 'CMIP5 mean')
 axa[7,1].text(xpt, ypt, str(np.round(rmse,2)))
@@ -103,7 +103,5 @@ plt.colorbar(cot, cax=tl, label='Pa\n decade$^{-1}$',
              spacing='proportional', boundaries=bounds)
 
 fig.delaxes(axa[0,1])
-plt.savefig('psl_trend_maps_hadlsp2r_vs_rean_c5_1979-2011.eps'
+plt.savefig('psl_trend_maps_hadlsp2r_vs_rean_c5_1979-2011.pdf'
             , bbox_inches='tight', dpi=300)
-os.system('eps2pdf psl_trend_maps_hadlsp2r_vs_rean_c5_1979-2011.eps')
-os.system('rm -f psl_trend_maps_hadlsp2r_vs_rean_c5_1979-2011.eps')

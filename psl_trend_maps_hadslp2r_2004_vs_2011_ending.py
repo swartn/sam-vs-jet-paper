@@ -16,21 +16,21 @@ plt.close('all')
 pth = '/raid/ra40/data/ncs/cmip5/psl/'
 plt.rc('font', size=10)
 
-h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/cmip5_trends.h5','r')
-psl_slope_c5 = h5f['psl/1951_2011/c5_psl_trend_1951_2011'][:]*120
-names2 = h5f['psl/1951_2011/model_names'][:]
-h5f.close()
-
-# Load the data for 20CR
+# to 2011
+# HadSLP data is now with reanlyses.
 h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/reanalysis_trends.h5','r')
 slopes = h5f['psl/1951_2011/rean_psl_trend_1951_2011'][:]*120
 rean = h5f['psl/1951_2011/reanalysis_names'][:]
 h5f.close()
+psl_slope_hadslp_2011 = slopes[:,:,1]
 
-psl_slope_20cr = slopes[:,:,0]
-
+# to 2004
 # HadSLP data is now with reanlyses.
-psl_slope_hadslp = slopes[:,:,1]
+h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/reanalysis_trends.h5','r')
+slopes = h5f['psl/1951_2004/rean_psl_trend_1951_2004'][:]*120
+rean = h5f['psl/1951_2004/reanalysis_names'][:]
+h5f.close()
+psl_slope_hadslp_2004 = slopes[:,:,1]
 
 dims = {'lat' : np.arange(-89.5,89.6,1),
 	'lon' : np.arange(0,360,1)
@@ -39,8 +39,8 @@ dims = {'lat' : np.arange(-89.5,89.6,1),
 fig, axa = plt.subplots(3,2, sharex=True, figsize=(7,7))
 fig.subplots_adjust(top=0.5, hspace=0.1, wspace=0.05)
 
-vmin = -90
-vmax = 90
+vmin = -80
+vmax = 80
 ncols = 11
 cmap_anom = brewer2mpl.get_map('RdBu', 'diverging', ncols,
                                reverse=True).mpl_colormap
@@ -54,41 +54,27 @@ lons, lats = np.meshgrid(dims['lon'], dims['lat'])
 x, y = m(lons, lats)
 xpt, ypt = m(20,-86)
 
-cot = m.pcolor(x, y, psl_slope_hadslp,vmin=vmin, vmax=vmax, cmap=cmap_anom, 
-               ax=axa[0,0], rasterized=True)
-axa[0,0].text(xpt, ypt, 'HadSLP2r')
+cot = m.pcolor(x, y, psl_slope_hadslp_2004,vmin=vmin, vmax=vmax, 
+               cmap=cmap_anom, ax=axa[0,0] )
+cot.set_rasterized('True')
+axa[0,0].text(xpt, ypt, 'HadSLP2r 2004')
 
-m.pcolor(x, y, psl_slope_20cr,vmin=vmin, vmax=vmax, cmap=cmap_anom, 
-               ax=axa[1,0], rasterized=True)
-anom = psl_slope_20cr - psl_slope_hadslp
-m.pcolor(x, y, anom,vmin=vmin, vmax=vmax
-	 , cmap=cmap_anom, ax=axa[1,1], rasterized=True)
+com = m.pcolor(x, y, psl_slope_hadslp_2011,vmin=vmin, vmax=vmax, 
+               cmap=cmap_anom, ax=axa[1,0] )
+com.set_rasterized('True')
+anom = psl_slope_hadslp_2011 - psl_slope_hadslp_2004
+com = m.pcolor(x, y, anom,vmin=vmin, vmax=vmax
+	 , cmap=cmap_anom,ax=axa[1,1] )
 
+com.set_rasterized('True')
 rmse = np.sqrt( np.mean(anom[0:89,:]**2) )
-axa[1,0].text(xpt, ypt, '20CR')
+axa[1,0].text(xpt, ypt, 'HaSLP2r 2011')
 axa[1,1].text(xpt, ypt, str(np.round(rmse,2)))
 
-m.pcolor(x, y, psl_slope_c5.mean(axis=0),vmin=vmin, vmax=vmax, cmap=cmap_anom
-	 , ax=axa[2,0], rasterized=True)
-anom = psl_slope_c5.mean(axis=0)- psl_slope_hadslp
-m.pcolor(x, y, anom, vmin=vmin,  vmax=vmax, cmap=cmap_anom, ax=axa[2,1]
-	 , rasterized=True)
-rmse = np.sqrt( np.mean(anom[0:89,:]**2) )
-axa[2,0].text(xpt, ypt, 'CMIP5 mean')
-axa[2,1].text(xpt, ypt, str(np.round(rmse,2)))
-
-c5_25_precentile = np.percentile(psl_slope_c5,2.5, axis=0)
-c5_975_precentile = np.percentile(psl_slope_c5,97.5, axis=0)
-mask = ( (psl_slope_hadslp>c5_975_precentile) | 
-                  (psl_slope_hadslp<c5_25_precentile)
-       )
-m.plot(x[mask][::8], y[mask][::8], '.k', alpha=0.6, 
-       markersize=0.25, ax=axa[2,1], zorder=1)
-
 m.drawmeridians(np.arange(0,360,90),labels=[0,0,0,1], linewidth=0,yoffset=-0e6
-                , ax=axa[2,1])
+                , ax=axa[1,1])
 m.drawmeridians(np.arange(0,360,90),labels=[0,0,0,1], linewidth=0,yoffset=-0e6
-                , ax=axa[2,0])
+                , ax=axa[1,0])
 
 for i, ax in enumerate(axa.flatten()):    
     ax.autoscale(enable=True, axis='both', tight=True)
@@ -105,5 +91,10 @@ plt.colorbar(cot, cax=tl, label='Pa decade$^{-1}$',spacing='proportional',
              boundaries=bounds)
 
 fig.delaxes(axa[0,1])
-plt.savefig('psl_maps_HadSLP2r_vs_20CR_vs_C5_1951-2011.pdf',bbox_inches='tight',
-            dpi=300)
+fig.delaxes(axa[2,0])
+fig.delaxes(axa[2,1])
+
+plt.savefig('psl_maps_HadSLP2r_1951_to_2004_vs_2011_ending.pdf'
+    ,bbox_inches='tight' , dpi=300)
+#os.system('eps2pdf psl_maps_HadSLP2r_1951_to_2004_vs_2011_ending.eps')
+#os.system('rm -f psl_maps_HadSLP2r_1951_to_2004_vs_2011_ending.eps')
