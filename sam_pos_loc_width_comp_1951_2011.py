@@ -61,7 +61,19 @@ xtics    = [datetime(1870,1,1) + relativedelta(years=20*jj) for jj in range(8) ]
 # one dataframe for the CMIP5 models. With each dataframe the indices (rows) are a datetime index representing the monthly data
 # while each column refers to an individual reanalysis or CMIP5 model. The column order of the reanalyses is given in the variable
 # rean above. We're not differentiating models by name here.
-press, maxspd, locmax, width, modpress, modmaxspd, modlocmax, modwidth = sad.load_sam_df()
+press, maxspd, locmax, width, modpress, modmaxspd, modlocmax, modwidth =\
+                      sad.load_sam_df()
+
+# load in the Marshall SAM data
+dfmarshall = pd.read_csv('/HOME/ncs/data/marshall_sam/marshall_sam.csv', 
+		  index_col=0, parse_dates=True)
+
+# load the reanalysis data
+# load in the reanlaysis data
+h5f = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/rean_sam.h5', 'a')
+dfr = h5f['sam/df']
+h5f.close()
+dfhadslp = dfr['HadSLP2r']/100.
 #============================================#
 # Define some functions
 def get_seasons(df):
@@ -104,7 +116,7 @@ def modtsplot(df, ax):
     ens_mean = ens_mean.resample('A')
     ts_95_ci = ts_95_ci.resample('A')
     ax.fill_between( ens_mean.index , ( ens_mean - ts_95_ci ) ,  ( ens_mean + ts_95_ci),
-    color='r', alpha=0.25)  
+    color='r', alpha=0.25, linewidth=0)  
     ax.plot(ens_mean.index, ens_mean, color='r',linewidth=3 ,label='CMIP5')    
      
 def calc_trends( dfp, var, ys , ye ):
@@ -144,9 +156,10 @@ def rean_proc(dfr, axts='', axtrend='', tys=0, tye=0):
 
         # If axts was passed, plot the time-series for each column of dfr    
         if ( axts ):  
-            axts.plot( dfr.resample('A').index, dfr[i+1].resample('A'), color=rlc[ i ], linewidth=2, alpha=1, label=name)
-            axts.xaxis.grid(color=[0.6,0.6,0.6])
-            axts.yaxis.grid(color=[0.6,0.6,0.6])
+            axts.plot( dfr.resample('A').index, dfr[i+1].resample('A'), 
+		      color=rlc[ i ], linewidth=2, alpha=1, label=name)
+            #axts.xaxis.grid(color=[0.6,0.6,0.6])
+            #axts.yaxis.grid(color=[0.6,0.6,0.6])
             axts.set_axisbelow(True)
             
         # If axtrend was passed, plot the linear trend between tys and tye for each season and each reanalysis.
@@ -229,8 +242,13 @@ sam_trends = rean_proc(press, axtrend=f3a, tys=tys2, tye=tye2)
 # plot the annual mean time-series
 modtsplot(modpress, f1a)
 f1a.set_ylim( [18 , 42] )
-f1a.legend( ncol=1, prop={'size':12}, bbox_to_anchor=(1.35, 1.05),
-            handlelength=1.25, handletextpad=0.075, frameon=False )
+dfmarshall['sam'].resample('A').plot(ax=f1a, color='0.5', style='-', 
+             linewidth=2, grid=False, label='Marshall', zorder=1)
+#dfhadslp['sam'].resample('A').plot(ax=f1a, color='g', style='--', 
+             #linewidth=3, grid=False, label='HadSLP2r')
+
+f1a.legend( ncol=1, prop={'size':12}, bbox_to_anchor=(1.45, 1.05),
+            handlelength=2, handletextpad=0.075, frameon=False )
 
 # now do the monthly trends
 trash = mod_proc(modpress, f2a, tys=tys, tye=tye)

@@ -14,6 +14,29 @@ plt.close('all')
 font = {'size'   : 12}
 plt.rc('font', **font)
 
+def modlatplot(npa, ax):
+    """ For the columns of df, compute the columnwise-ensemble mean and 95% 
+confidence interval, 
+    then plot the envelope and mean.
+    """
+    # compute the ensemble mean across all columns (models).
+    ens_mean = npa.mean(axis=0)
+    # compute the 95% CI with n -1 degrees of freedom.
+    num_models =  npa.shape[0]
+    #print num_models
+    ens_std = npa.std(axis=0) 
+    c = sp.stats.t.isf(0.025, num_models - 1 )
+    ts_95_ci = ( c * ens_std ) / np.sqrt( num_models )
+    p25 = np.percentile(npa,2.5, axis=0)
+    p975 = np.percentile(npa,97.5, axis=0)
+    # reample to annual and plot
+    ax.fill_between( dims['lat'], (ens_mean - ts_95_ci ),  
+		    ( ens_mean + ts_95_ci), color='r', alpha=0.25,
+		    linewidth=0)  
+    ax.fill_between( dims['lat'], p25, p975, color='r', alpha=0.15,
+		    linewidth=0)     
+    ax.plot(dims['lat'], ens_mean, color='r',linewidth=3 ,label='CMIP5')
+    
 # Load the CMIP5 data
 h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/cmip5_trends.h5','r')
 psl_slope_c5 = h5f['psl/1979_2004/c5_psl_trend_1979_2004'][:]*120
@@ -22,12 +45,12 @@ uflx_slope_c5_88 = h5f['tauu/1988_2011/c5_tauu_trend_1988_2011'][:]*120*100
 h5f.close()
 
 # load in the reanlaysis data
-rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA']
 rlc = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm' ] 
 h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/reanalysis_trends.h5','r')
 psl_slope_rean = h5f['psl/1979_2004/rean_psl_trend_1979_2004'][:]*120
 uas_slope_rean_88 = h5f['uas/1988_2011/rean_uas_trend_1988_2011'][:]*120
 uflx_slope_rean_88 = h5f['uflx/1988_2011/rean_uflx_trend_1988_2011'][:]*120*100
+rean = h5f['uflx/1988_2011/reanalysis_names'][:]
 h5f.close()
 
 # The HadSLPr2 data is in the rean hdf
@@ -55,19 +78,26 @@ dims = {'lat' : np.arange(-89.5,89.6,1),
 fig, (axt, axm, axb) = plt.subplots(3,1, sharex=True, figsize=(7,7))
 fig.subplots_adjust(right=0.5, hspace=0.05)
 
-axt.plot(dims['lat'], psl_slope_c5.mean(axis=(0,2)), 'r-', linewidth=3
-	 , label='CMIP5')
+modlatplot( psl_slope_c5.mean(axis=2), axt)
+
 axt.plot(dims['lat'], psl_slope_hadslp.mean(axis=(1)), 'k--', linewidth=3
 	 , label='HadSLP2r')
 
 axt.plot(dims['lat'], slope_ccmp.mean(axis=1)*np.nan, 'k-.'
 	 , linewidth=3, label='CCMP')
 
-axm.plot(dims['lat'], uas_slope_c5_88.mean(axis=(0,2)), 'r-', linewidth=3)
-axm.plot(dims['lat'], slope_ccmp.mean(axis=1), 'k-.', linewidth=3)
+# put on the trends in marshall
+axt.plot(-40, dft.slp40.slope*100.0, 'x', markersize=15, markeredgewidth=3
+	 , zorder=10, color='0.5')
+axt.plot(-65, dft.slp65.slope*100.0, 'x', markersize=15, markeredgewidth=3
+	 , label='Marshall', zorder=10, color='0.5')
 
-axb.plot(dims['lat'], uflx_slope_ccmp.mean(axis=1), 'k-.', linewidth=3)
-axb.plot(dims['lat'], uflx_slope_c5_88.mean(axis=(0,2)), 'r-', linewidth=3)
+modlatplot( uas_slope_c5_88.mean(axis=2), axm)
+axm.plot(dims['lat'], slope_ccmp.mean(axis=1), 'k-.', linewidth=3, zorder=9)
+
+modlatplot( uflx_slope_c5_88.mean(axis=2), axb)
+axb.plot(dims['lat'], uflx_slope_ccmp.mean(axis=1), 'k-.', linewidth=3, 
+	 zorder=9)
 
 for i,r in enumerate(rean):
     axt.plot(dims['lat'], psl_slope_rean[:,:,i].mean(axis=1), linestyle='-'
@@ -77,11 +107,6 @@ for i,r in enumerate(rean):
     axb.plot(dims['lat'], uflx_slope_rean_88[:,:,i].mean(axis=1), linestyle='-'
 	     , color=rlc[i], linewidth=2)   
  
-# put on the trends in marshall
-axt.plot(-40, dft.slp40.slope*100.0, 'kx', markersize=15, markeredgewidth=2)
-axt.plot(-65, dft.slp65.slope*100.0, 'kx', markersize=15, markeredgewidth=2
-	 , label='Marshall')
-
 axt.legend(bbox_to_anchor=(1.6,1), frameon=False, numpoints=1, fontsize=12)
 axb.set_xlabel('Latitude')
 ylabs = ['Pa decade$^{-1}$', 
@@ -93,9 +118,15 @@ for i, ax in enumerate((axt, axm, axb)):
     ax.plot([-90, 0], [0, 0], 'k-')
     ax.set_ylabel(ylabs[i])
 
-axt.set_ylim([-135, 85])
+axt.set_ylim([-135, 90])
 axm.set_ylim([-0.325, 0.325])
 axb.set_ylim([-1.5, 1.7])
+
+xp=-78.5
+axt.text(xp, 70, 'a)')
+axm.text(xp, 0.26, 'b)')
+axb.text(xp, 1.4, 'c)')
+
 	
 plt.savefig('psl_uas_zonmean_trend_comp_all_1979c1988-2011.pdf'
             , bbox_inches = 'tight', dpi=300)    

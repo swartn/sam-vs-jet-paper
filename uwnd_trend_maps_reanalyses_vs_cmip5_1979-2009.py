@@ -33,7 +33,7 @@ dims = cd.get_dimensions(ifile_ccmp, 'uwnd')
 
 fig, axa = plt.subplots(7,1, sharex=True, sharey=True, figsize=(7,7), 
                         squeeze=True)
-fig.subplots_adjust(right=0.4, hspace=0.1, wspace=0.1)
+fig.subplots_adjust(right=0.62, hspace=0.1, wspace=0.1)
 
 vmin = -1
 vmax = 1

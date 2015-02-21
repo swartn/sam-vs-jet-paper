@@ -39,7 +39,7 @@ plt.rc('font', **font)
 
 # Period 1
 tys = 1979 # start (inclusive)
-tye = 2009 # stop (inclusive)
+tye = 2011 # stop (inclusive)
 
 # Period 2
 tys2 = 1951 # start (inclusive)
@@ -145,8 +145,8 @@ def rean_proc(dfr, axts='', axtrend='', tys=0, tye=0):
         # If axts was passed, plot the time-series for each column of dfr    
         if ( axts ):  
             axts.plot( dfr.resample('A').index, dfr[i+1].resample('A'), color=rlc[ i ], linewidth=2, alpha=1, label=name)
-            axts.xaxis.grid(color=[0.6,0.6,0.6])
-            axts.yaxis.grid(color=[0.6,0.6,0.6])
+            #axts.xaxis.grid(color=[0.6,0.6,0.6])
+            #axts.yaxis.grid(color=[0.6,0.6,0.6])
             axts.set_axisbelow(True)
             
         # If axtrend was passed, plot the linear trend between tys and tye for each season and each reanalysis.

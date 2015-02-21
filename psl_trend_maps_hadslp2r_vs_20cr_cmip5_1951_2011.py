@@ -82,8 +82,8 @@ c5_975_precentile = np.percentile(psl_slope_c5,97.5, axis=0)
 mask = ( (psl_slope_hadslp>c5_975_precentile) | 
                   (psl_slope_hadslp<c5_25_precentile)
        )
-m.plot(x[mask][::8], y[mask][::8], '.k', alpha=0.6, 
-       markersize=0.25, ax=axa[2,1], zorder=1)
+m.plot(x[mask][::2], y[mask][::2], '.k', alpha=0.2, 
+       markersize=0.1, ax=axa[2,1], zorder=1)
 
 m.drawmeridians(np.arange(0,360,90),labels=[0,0,0,1], linewidth=0,yoffset=-0e6
                 , ax=axa[2,1])

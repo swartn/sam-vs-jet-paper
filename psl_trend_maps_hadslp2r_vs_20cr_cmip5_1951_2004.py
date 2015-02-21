@@ -40,8 +40,8 @@ dims = {'lat' : np.arange(-89.5,89.6,1),
 fig, axa = plt.subplots(3,2, sharex=True, figsize=(7,7))
 fig.subplots_adjust(top=0.5, hspace=0.1, wspace=0.05)
 
-vmin = -90
-vmax = 90
+vmin = -120
+vmax = 120
 ncols = 11
 cmap_anom = brewer2mpl.get_map('RdBu', 'diverging', ncols,
                                reverse=True).mpl_colormap
@@ -73,7 +73,7 @@ m.pcolor(x, y, psl_slope_c5.mean(axis=0),vmin=vmin, vmax=vmax, cmap=cmap_anom
 	 , ax=axa[2,0], rasterized=True)
 anom = psl_slope_c5.mean(axis=0)- psl_slope_hadslp
 m.pcolor(x, y, anom, vmin=vmin,  vmax=vmax, cmap=cmap_anom, ax=axa[2,1]
-	 , rasterized=True)
+	 , rasterized=True, zorder=1)
 rmse = np.sqrt( np.mean(anom[0:89,:]**2) )
 axa[2,0].text(xpt, ypt, 'CMIP5 mean')
 axa[2,1].text(xpt, ypt, str(np.round(rmse,2)))
@@ -83,8 +83,8 @@ c5_975_precentile = np.percentile(psl_slope_c5,97.5, axis=0)
 mask = ( (psl_slope_hadslp>c5_975_precentile) | 
                   (psl_slope_hadslp<c5_25_precentile)
        )
-m.plot(x[mask][::8], y[mask][::8], '.k', alpha=0.6, 
-       markersize=0.25, ax=axa[2,1], zorder=1)
+m.plot(x[mask][::2], y[mask][::2], '.k', alpha=0.2, 
+       markersize=0.1, ax=axa[2,1], zorder=2)
 
 m.drawmeridians(np.arange(0,360,90),labels=[0,0,0,1], linewidth=0,yoffset=-0e6
                 , ax=axa[2,1])
@@ -94,7 +94,7 @@ m.drawmeridians(np.arange(0,360,90),labels=[0,0,0,1], linewidth=0,yoffset=-0e6
 for i, ax in enumerate(axa.flatten()):    
     ax.autoscale(enable=True, axis='both', tight=True)
     m.drawcoastlines(linewidth=1.25, ax=ax)
-    m.fillcontinents(color='0.8',ax=ax, zorder=2)
+    m.fillcontinents(color='0.8',ax=ax, zorder=3)
     if i%2 ==0:
         m.drawparallels(np.arange(-80,81,20),labels=[1,0,0,0], linewidth=0, 
                         ax=ax)
@@ -106,5 +106,6 @@ plt.colorbar(cot, cax=tl, label='Pa decade$^{-1}$',spacing='proportional',
              boundaries=bounds)
 
 fig.delaxes(axa[0,1])
+axa[0,0].set_title('SLP trends 1951-2004')
 plt.savefig('psl_maps_HadSLP2r_vs_20CR_vs_C5_1951-2004.pdf',bbox_inches='tight',
             dpi=300)
