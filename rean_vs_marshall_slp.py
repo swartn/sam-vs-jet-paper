@@ -68,21 +68,21 @@ modtsplot(pd.rolling_mean(pt.time_lim(dfc5.ix['p40s'],d1,d2)/100.
 		, si), axt) 		
 pd.rolling_mean(dfr.ix['p40s']/100., si).plot(ax=axt, linewidth=2, 
 	        style=ls, legend=False, grid=False)		
-l = pd.rolling_mean(df.slp40, si).plot(ax=axt, linewidth=2, color='0.5'
-		,style='-', label='Marshall', grid=False)
+l = pd.rolling_mean(df.slp40, si).plot(ax=axt, linewidth=6, color='0.25'
+		,style='-', label='Marshall', grid=False, zorder=0)
 modtsplot(pd.rolling_mean(pt.time_lim(dfc5.ix['p65s'],d1,d2)/100.
 		, si), axm) 		
 pd.rolling_mean(dfr.ix['p65s']/100., si).plot(ax=axm, linewidth=2, style=ls
 		, legend=False, grid=False)
-pd.rolling_mean(df.slp65, si).plot(ax=axm, linewidth=2, color='0.5'
-		, style='-', label='Marshall', grid=False)
+pd.rolling_mean(df.slp65, si).plot(ax=axm, linewidth=6, color='0.25'
+		, style='-', label='Marshall', grid=False, zorder=0)
 
 modtsplot(pd.rolling_mean(pt.time_lim(dfc5.ix['sam'],d1,d2)/100.
 		, si), axb) 		
 pd.rolling_mean(dfr.ix['sam']/100., si).plot(ax=axb, linewidth=2, style=ls
 		, legend=False, grid=False)
-pd.rolling_mean(df.sam, si).plot(ax=axb, linewidth=2, color='0.5'
-		, style='-', label='Marshall', grid=False)
+pd.rolling_mean(df.sam, si).plot(ax=axb, linewidth=6, color='0.25'
+		, style='-', label='Marshall', grid=False, zorder=0)
 
 axb.set_xlabel('Date')
 axb.set_xlim([pd.datetime(1957,1,1), pd.datetime(2011,12,31)])
@@ -115,41 +115,41 @@ for i, ax in enumerate(fig.axes):
 plt.savefig('press_and_sam_comparison_all.pdf'
             , bbox_inches = 'tight', dpi=300) 
 
-# Look at some linear trends
+## Look at some linear trends
 
-# set the date range
-ds = pd.datetime(1958,01,01)
-de = pd.datetime(2000,12,31)
+## set the date range
+#ds = pd.datetime(1958,01,01)
+#de = pd.datetime(2000,12,31)
 
-# Go and compute some trends for comparison   
-df40s = pd.concat([dfr.ix['p40s']/100., df.slp40], axis=1)
-df40s = pt.time_lim(df40s, ds, de) 
-df40s.columns=[u'R1', u'R2', u'TCR', u'ERA', u'CFSR', 
-	       u'MERRA', u'HadSLP2r', u'Marshall']
-rtrend40s = pt.ols(df40s, units='decades')
-print rtrend40s.ix['slope']*100.
+## Go and compute some trends for comparison   
+#df40s = pd.concat([dfr.ix['p40s']/100., df.slp40], axis=1)
+#df40s = pt.time_lim(df40s, ds, de) 
+#df40s.columns=[u'R1', u'R2', u'TCR', u'ERA', u'CFSR', 
+	       #u'MERRA', u'HadSLP2r', u'Marshall']
+#rtrend40s = pt.ols(df40s, units='decades')
+#print rtrend40s.ix['slope']*100.
 
-df65s = pd.concat([dfr.ix['p65s']/100., df.slp65], axis=1)
-df65s = pt.time_lim(df65s, ds, de) 
-df65s.columns=[u'R1', u'R2', u'TCR', u'ERA', u'CFSR', 
-	       u'MERRA', u'HadSLP2r', u'Marshall']
-rtrend65s = pt.ols(df65s, units='decades')
-print rtrend65s.ix['slope']*100.
+#df65s = pd.concat([dfr.ix['p65s']/100., df.slp65], axis=1)
+#df65s = pt.time_lim(df65s, ds, de) 
+#df65s.columns=[u'R1', u'R2', u'TCR', u'ERA', u'CFSR', 
+	       #u'MERRA', u'HadSLP2r', u'Marshall']
+#rtrend65s = pt.ols(df65s, units='decades')
+#print rtrend65s.ix['slope']*100.
 
-dfsam = pd.concat([dfr.ix['sam']/100., df.sam], axis=1)
-dfsam = pt.time_lim(dfsam, ds, de ) 
-dfsam.columns=[u'R1', u'R2', u'TCR', u'ERA', u'CFSR', 
-	       u'MERRA', u'HadSLP2r', u'Marshall']
-rtrendsam = pt.ols(dfsam, units='decades')
-print rtrendsam.ix['slope']*100.
+#dfsam = pd.concat([dfr.ix['sam']/100., df.sam], axis=1)
+#dfsam = pt.time_lim(dfsam, ds, de ) 
+#dfsam.columns=[u'R1', u'R2', u'TCR', u'ERA', u'CFSR', 
+	       #u'MERRA', u'HadSLP2r', u'Marshall']
+#rtrendsam = pt.ols(dfsam, units='decades')
+#print rtrendsam.ix['slope']*100.
 
-dfsam_c5 = pt.time_lim(dfc5.ix['sam']/100., ds, de) 
-cn = [n.replace('-','') for n in dfsam_c5.columns]
-dfsam_c5.columns = cn
-c5trendsam = pt.ols(dfsam_c5, units='decades')
-print 'CMIP5 ', c5trendsam.ix['slope'].mean()*100\
-              , np.percentile(c5trendsam.ix['slope']*100,2.5)\
-              , np.percentile(c5trendsam.ix['slope']*100,97.5)
+#dfsam_c5 = pt.time_lim(dfc5.ix['sam']/100., ds, de) 
+#cn = [n.replace('-','') for n in dfsam_c5.columns]
+#dfsam_c5.columns = cn
+#c5trendsam = pt.ols(dfsam_c5, units='decades')
+#print 'CMIP5 ', c5trendsam.ix['slope'].mean()*100\
+              #, np.percentile(c5trendsam.ix['slope']*100,2.5)\
+              #, np.percentile(c5trendsam.ix['slope']*100,97.5)
           
  # Define some functions
 def get_seasons(df):

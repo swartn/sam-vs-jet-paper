@@ -39,7 +39,7 @@ plt.rc('font', **font)
 
 # Period 1
 tys = 1979 # start (inclusive)
-tye = 2011 # stop (inclusive)
+tye = 2009 # stop (inclusive)
 
 # Period 2
 tys2 = 1951 # start (inclusive)
@@ -345,10 +345,11 @@ plt.figure(1).subplots_adjust(hspace=0.05)
 f2ax = [ f2a, f2b, f2c, f2d]
 f3ax = [ f3a, f3b, f3c, f3d]
 
-yaxlab = ['SAM trend \n(hPa/dec)', 
-          'Umax trend \n(ms$^{-1}$/dec)', 
-          'Position trend \n($^{\circ}$ lat./dec)', 
-          'Width trend \n($^{\circ}$ lat./dec)' ]
+yaxlab = ['SAM trend \n(hPa dec$^{-1}$)', 
+          'Umax trend \n(ms$^{-1}$ dec$^{-1}$)', 
+          'Position trend \n($^{\circ}$ lat. dec$^{-1}$)', 
+          'Width trend \n($^{\circ}$ lat. dec$^{-1}$s)' 
+         ]
           
 # Loop of figure 2 and label plus adjust subplots.
 for i, ax in enumerate( f2ax ):
@@ -365,12 +366,12 @@ for i, ax in enumerate( f2ax ):
     ax.set_ylabel( yaxlab[i] )
   
     
-plt.figure(2).subplots_adjust(hspace=0.06, wspace=0.05, right=0.7)
+plt.figure(2).subplots_adjust(hspace=0.06, wspace=0.05, right=0.8, left=0.2)
 f2a.legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.5, 1.05),
            handlelength=0.01, handletextpad=1, borderpad=1, frameon=False )
 
 # Title trend panels with the start and end year of the trends
-f2a.set_title(  str(tys) + '-' + str(tye)  )
+#f2a.set_title(  str(tys) + '-' + str(tye)  )
 
 # Loop of figure 2 and label plus adjust subplots.
 for i, ax in enumerate( f3ax ):
@@ -387,7 +388,7 @@ for i, ax in enumerate( f3ax ):
     ax.set_ylabel( yaxlab[i] )
   
     
-plt.figure(3).subplots_adjust(hspace=0.06, wspace=0.05, right=0.7)
+plt.figure(3).subplots_adjust(hspace=0.06, wspace=0.05, right=0.8, left=0.2)
 f3a.legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.5, 1.05),
            handlelength=0.01, handletextpad=1, borderpad=1, frameon=False )
 

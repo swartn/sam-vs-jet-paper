@@ -27,13 +27,13 @@ confidence interval,
     ens_std = npa.std(axis=0) 
     c = sp.stats.t.isf(0.025, num_models - 1 )
     ts_95_ci = ( c * ens_std ) / np.sqrt( num_models )
-    p25 = np.percentile(npa,2.5, axis=0)
-    p975 = np.percentile(npa,97.5, axis=0)
+    p25 = np.percentile(npa,5, axis=0)
+    p975 = np.percentile(npa,95, axis=0)
     # reample to annual and plot
     ax.fill_between( dims['lat'], (ens_mean - ts_95_ci ),  
-		    ( ens_mean + ts_95_ci), color='r', alpha=0.25,
+		    ( ens_mean + ts_95_ci), color='r', alpha=0.275,
 		    linewidth=0)  
-    ax.fill_between( dims['lat'], p25, p975, color='r', alpha=0.15,
+    ax.fill_between( dims['lat'], p25, p975, color='r', alpha=0.125,
 		    linewidth=0)     
     ax.plot(dims['lat'], ens_mean, color='r',linewidth=3 ,label='CMIP5')
     
@@ -87,10 +87,10 @@ axt.plot(dims['lat'], slope_ccmp.mean(axis=1)*np.nan, 'k-.'
 	 , linewidth=3, label='CCMP')
 
 # put on the trends in marshall
-axt.plot(-40, dft.slp40.slope*100.0, 'x', markersize=15, markeredgewidth=3
-	 , zorder=10, color='0.5')
-axt.plot(-65, dft.slp65.slope*100.0, 'x', markersize=15, markeredgewidth=3
-	 , label='Marshall', zorder=10, color='0.5')
+axt.plot(-40, dft.slp40.slope*100.0, 'kx', markersize=15, markeredgewidth=3
+	 , zorder=10)
+axt.plot(-65, dft.slp65.slope*100.0, 'kx', markersize=15, markeredgewidth=3
+	 , label='Marshall', zorder=10)
 
 modlatplot( uas_slope_c5_88.mean(axis=2), axm)
 axm.plot(dims['lat'], slope_ccmp.mean(axis=1), 'k-.', linewidth=3, zorder=9)
@@ -126,7 +126,10 @@ xp=-78.5
 axt.text(xp, 70, 'a)')
 axm.text(xp, 0.26, 'b)')
 axb.text(xp, 1.4, 'c)')
-
+xp=-43
+axt.text(xp, 65, '1979-2004')
+axm.text(xp, 0.25, '1988-2011')
+axb.text(xp, 1.325, '1988-2011')
 	
 plt.savefig('psl_uas_zonmean_trend_comp_all_1979c1988-2011.pdf'
             , bbox_inches = 'tight', dpi=300)    

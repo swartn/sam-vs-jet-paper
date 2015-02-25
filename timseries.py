@@ -158,9 +158,9 @@ f1d.set_yticks([30, 31, 32, 33])
       
 plt.figure(1).subplots_adjust(hspace=0.05)
 
-f1a.legend( ncol=3, prop={'size':12}, bbox_to_anchor=(1.05, 1.3),
-            handlelength=2.2, handletextpad=0.075, columnspacing=1.2,
-            frameon=False )
+f1a.legend(ncol=3, prop={'size':12}, bbox_to_anchor=(1.05, 1.3),
+           handlelength=2.2, handletextpad=0.075, columnspacing=1.2,
+           frameon=False)
 
 # save some pdfs
 plt.figure(1).savefig('sam_pos_str_width_ts_v5.pdf',format='pdf',dpi=300,

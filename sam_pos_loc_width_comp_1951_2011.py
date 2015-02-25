@@ -10,24 +10,22 @@ import pandas as pd
 from dateutil.parser import parse
 import sam_analysis_data as sad
 
-""" Analyze changes in the Southern Annular Mode and SH westerly jet strength, position and width
-in the CMIP5 models and in six reanalyses.
+""" Analyze changes in the Southern Annular Mode and SH westerly jet strength, 
+position and width in the CMIP5 models and in six reanalyses.
 
 This script produces 4 plots:
 
-1. Time-series of SAM and jet strength, position, and width in the models and reananlyses.
-2. Trends in the above variables over two-different periods (1951-2011 and 1979-2009).
+2. Trends in the above variables over two-different periods (1951-2011 and 
+1979-2009).
 3. The relationship between SAM and strength trends.
-4. The relationship between SAM and trends in the other variables, as well as trends in
-SAM and the climatology of the variables. (e.g. SAM trend vs climatological jet position).
+4. The relationship between SAM and trends in the other variables, as well as 
+trends in SAM and the climatology of the variables. (e.g. SAM trend vs 
+climatological jet position).
 
-# v5 separates the plot of trends over the two different periods.
 
-Neil Swart, v4, 15/16/2014
-Neil.Swart@ec.gc.ca
+Neil Swart, Neil.Swart@ec.gc.ca
 
 """
-
 # set font size
 plt.close('all')
 plt.ion()
@@ -36,12 +34,6 @@ plt.rc('font', **font)
 
 #============================================#
 # Define the years for the trend analysis
-
-# Period 1
-tys = 1979 # start (inclusive)
-tye = 2009 # stop (inclusive)
-
-# Period 2
 tys2 = 1951 # start (inclusive)
 tye2 = 2011 # stop (inclusive)
 #============================================#
@@ -50,9 +42,10 @@ tye2 = 2011 # stop (inclusive)
 #
 # the names of the reanalyses we are using (in column-order of the dataframes)
 rean     = ['R1', 'R2', '20CR', 'ERA', 'CFSR', 'MERRA']
-num_rean = len( rean )
-rlc      = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm' ] # corresponding colors to use for plotting each reanalysis
-seas     = ['mam', 'jja', 'son', 'djf', 'ann']  # names of the seasons
+# corresponding colors to use for plotting each reanalysis
+rlc      = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm' ] 
+# names of the seasons
+seas     = ['mam', 'jja', 'son', 'djf', 'ann']  
 lensea   = len( seas )
 xtics    = [datetime(1870,1,1) + relativedelta(years=20*jj) for jj in range(8) ] # xticks for time-series plot.
 #============================================#
@@ -64,9 +57,19 @@ xtics    = [datetime(1870,1,1) + relativedelta(years=20*jj) for jj in range(8) ]
 press, maxspd, locmax, width, modpress, modmaxspd, modlocmax, modwidth =\
                       sad.load_sam_df()
 
-# load in the Marshall SAM data
-dfmarshall = pd.read_csv('/HOME/ncs/data/marshall_sam/marshall_sam.csv', 
-		  index_col=0, parse_dates=True)
+press.columns = rean
+maxspd.columns = rean
+locmax.columns = rean
+width.columns = rean
+
+rtodrop = ['R1', 'R2', 'ERA', 'CFSR', 'MERRA']
+press = press.drop(rtodrop,1)
+maxspd = maxspd.drop(rtodrop,1)
+locmax = locmax.drop(rtodrop,1)
+width = width.drop(rtodrop,1)
+rean     = ['20CR']
+rlc      = ['g']  
+ls      = ['_g']  
 
 # load the reanalysis data
 # load in the reanlaysis data
@@ -94,47 +97,29 @@ def get_seasons(df):
     return df
 
 def year_lim( df , ys , ye ):
-    """ Limits the dataframe df to between years starting in ys and ending in ye inclusive"""
+    """ Limits the dataframe df to between years starting in ys and ending in 
+    ye inclusive"""
     dfo = df[ ( df.index.year >= ys ) & ( df.index.year <= ye ) ]
     if ( df.index.year.min() > ys ):
          print 'WARNING: data record begins after requested trend start.' 
     elif ( df.index.year.max() < ye ):
-         print 'WARNING: data record ends before requested trend end.', df.index.year.max() 
+         print 'WARNING: data record ends before requested trend end.', 
+         df.index.year.max() 
     return dfo
-
-def modtsplot(df, ax):
-    """ For the columns of df, compute the columnwise-ensemble mean and 95% confidence interval, 
-    then plot the envelope and mean.
-    """
-    # compute the ensemble mean across all columns (models).
-    ens_mean = df.mean( axis=1 )
-    # compute the 95% CI with n -1 degrees of freedom.
-    num_models =  len( df.columns )
-    ens_std = df.std(axis=1) 
-    c = sp.stats.t.isf(0.025, num_models - 1 )
-    ts_95_ci = ( c * ens_std ) / np.sqrt( num_models )
-
-    # reample to annual and plot
-    ens_mean = ens_mean.resample('A')
-    ts_95_ci = ts_95_ci.resample('A')
-    ax.fill_between( ens_mean.index , ( ens_mean - ts_95_ci ) ,  ( ens_mean + ts_95_ci),
-    color='r', alpha=0.25, linewidth=0)  
-    ax.plot(ens_mean.index, ens_mean, color='r',linewidth=3 ,label='CMIP5')    
-     
+    
 def calc_trends( dfp, var, ys , ye ):
-    """Calculate linear trend in the dataframe dfp between years (datetime indices) ys and ye inclusive.
-    Saves the trend as dfp.slope and calculates and saves the linear prediction (dfp.yhat) for all 
-    input years.
+    """Calculate linear trend in the dataframe dfp between years (datetime 
+    indices) ys and ye inclusive. Saves the trend as dfp.slope and calculates 
+    and saves the linear prediction (dfp.yhat) for all input years.
     """
-    dfp =  year_lim( dfp.resample('A') , ys, ye )              # resample annually
-    dfp.slope , conf_int , p_value, yhat, intercept = trend_ts.trend_ts( dfp.index.year , dfp[var] )
-    dfp['yhat'] = dfp.slope * dfp.index.year + intercept           # calc yhat values to return
-    #print dft.sam_slope*10
+    dfp =  year_lim( dfp.resample('A') , ys, ye )              
+    dfp.slope , conf_int , p_value, yhat, intercept =\
+                 trend_ts.trend_ts(dfp.index.year, dfp[var])
+    dfp['yhat'] = dfp.slope * dfp.index.year + intercept         
     return dfp
                   
-def rean_proc(dfr, axts='', axtrend='', tys=0, tye=0):
+def rean_proc(dfr, axtrend=None, tys=None, tye=None, mew=2, ms=15):
     """ Loop over the columns of dfr (corresponding to different reanalyses) and:
-    1. plot the time-series in axis axts, if axts is given. 
     2. if axtrend is given then compute the linear trend between years tys and 
     tye (inclusive) and plot the trends on axis axtrends. 
     3. Return the trends.
@@ -144,44 +129,35 @@ def rean_proc(dfr, axts='', axtrend='', tys=0, tye=0):
     in the global variable rean.
     """
 
-    rean_trends = np.zeros( ( num_rean  , lensea ) )
-    dfr.seasons = get_seasons( dfr ) ; # do the seasonal decomposition
+    rean_trends = np.zeros((len(dfr.columns), lensea))
+    dfr.seasons = get_seasons( dfr ) ; 
     
     # Loop over reanalyses and do some basic dataframe checks and adjustments.
     # We're assuming len(dfr.columns) == len(rean).
     for (i, cn) in enumerate( dfr.columns ):      
         # check that we are not trying to use data that doesn't exist
         if ( dfr[cn].dropna().index.year.min() > tys ):
-            print rean[i], 'WARNING: start >', str(tys)
+            print cn, 'WARNING: start >', str(tys)
         elif ( dfr[cn].dropna().index.year.max() < tye ):
-            print rean[i], 'WARNING: end <', str(tye)
-
-        # If axts was passed, plot the time-series for each column of dfr    
-        if ( axts ):  
-            axts.plot( dfr.resample('A').index, dfr[cn].resample('A'), 
-		      color=rlc[ i ], linewidth=2, alpha=1, label=rean[i])
-            #axts.xaxis.grid(color=[0.6,0.6,0.6])
-            #axts.yaxis.grid(color=[0.6,0.6,0.6])
-            axts.set_axisbelow(True)
-            
-        # If axtrend was passed, plot the linear trend between tys and tye for each season and each reanalysis.
-        # Season names are listed in the global variable seas.
-        if ( axtrend ):
+            print cn, 'WARNING: end <', str(tye)
+           
+        # If axtrend was passed, plot the linear trend between tys and tye for 
+        # each season and each reanalysis. Season names are listed in the 
+        # global  variable seas.
+        if (axtrend):
 	    for ( k , nm ) in enumerate( seas ):
                 names = 'dfr.seasons.' + nm
                 mt = calc_trends( eval( names ), cn, tys , tye )
-                rean_trends[i, k]  =  mt.slope * 10
-                #############################33
-                # Set R1 trends to NAN so we dont see it
-                rean_trends[0, :] = np.nan
-                #################################                
+                rean_trends[i, k]  =  mt.slope * 10          
                 if (nm == 'ann') & ( not np.isnan(rean_trends[i, k])):
-                    axtrend.plot( k , rean_trends[ i , k ] ,'_', color = rlc[ i ] , ms = 15 , mew = 2, label=rean[i])
+                    axtrend.plot(k, rean_trends[i, k], ls[i],
+                                 ms=ms, mew=mew, label=cn)
                 else:
-                    axtrend.plot( k , rean_trends[ i , k ] ,'_', color = rlc[ i ] , ms = 15 , mew = 2, label='')
+                    axtrend.plot(k, rean_trends[i, k], ls[i],
+                                 ms=ms, mew=mew, label='')
 
-            axtrend.set_xticks( np.arange( lensea + 1 ) )
-            axtrend.plot([-1, 5],[0, 0], 'k--')  
+            axtrend.set_xticks(np.arange(lensea + 1))
+            axtrend.plot([-1, 5], [0, 0], 'k--')  
     return rean_trends            
 	  
 def mod_proc(df, axtrend, tys, tye ):
@@ -213,201 +189,53 @@ def mod_proc(df, axtrend, tys, tye ):
     return mod_trends                    
                           
 #========= SAM - press ===============#
-# Set up the figures
-f1 = plt.figure(1)
-plt.figure(1).set_size_inches((8,8), forward=True )
-f1a = plt.subplot( 421 )
-
-# ---- First reanalyses ----
-# plot the time-series
-rean_proc(press, axts=f1a, tys=tys, tye=tye)
-
-# Set up figure 2
-f2 = plt.figure(2)
-plt.figure(2).set_size_inches((8,8), forward=True )
-
-# Do the monthly trends
-f2a = plt.subplot(421)
-trash = rean_proc(press, axtrend=f2a, tys=tys, tye=tye)   
-
-# Set up figure 3*
 f3 = plt.figure(3)
 plt.figure(3).set_size_inches((8,8), forward=True )
-
-# Do the monthly trends for period 2
-plt.figure(3)
 f3a = plt.subplot(421)
 sam_trends = rean_proc(press, axtrend=f3a, tys=tys2, tye=tye2)   
-rean=['HadSLP2r']
-rlc = ['k']
-num_rean = 1 
-hadslp_sam_trends = rean_proc(dfhadslp, axtrend=f3a, tys=tys2, tye=tye2)   
-rean     = ['R1', 'R2', '20CR', 'ERA', 'CFSR', 'MERRA']
-num_rean = len( rean )
-rlc      = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm' ]    
- 
-# ---- Now do the models ----    
-# plot the annual mean time-series
-modtsplot(modpress, f1a)
-f1a.set_ylim( [18 , 42] )
-dfmarshall['sam'].resample('A').plot(ax=f1a, color='0.5', style='-', 
-             linewidth=2, grid=False, label='Marshall', zorder=1)
-#dfhadslp['sam'].resample('A').plot(ax=f1a, color='g', style='--', 
-             #linewidth=3, grid=False, label='HadSLP2r')
-
-f1a.legend( ncol=1, prop={'size':12}, bbox_to_anchor=(1.45, 1.05),
-            handlelength=2, handletextpad=0.075, frameon=False )
-
-# now do the monthly trends
-trash = mod_proc(modpress, f2a, tys=tys, tye=tye)
+ls = ['.k']  
+hadslp_sam_trends = rean_proc(dfhadslp, axtrend=f3a, tys=tys2, tye=tye2,
+                              mew=2, ms=10)   
+ls = ['_g'] 
 mod_sam_trends = mod_proc(modpress, f3a, tys=tys2, tye=tye2)
 
 #========= Jet max speed - uspd ===============#
-
-# ---- First reanalyses ----
-# plot the time-series
-plt.figure(1)
-f1b = plt.subplot( 423 )
-trash = rean_proc(maxspd, axts=f1b, tys=tys, tye=tye)
-
-# now do the monthly trends
-plt.figure(2)
-f2b = plt.subplot(423)
-trash = rean_proc(maxspd, axtrend=f2b, tys=tys, tye=tye)   
-
-plt.figure(3)
 f3b = plt.subplot(423)
 uspd_trends = rean_proc(maxspd, axtrend=f3b, tys=tys2, tye=tye2)       
-# ---- Now do the models ----    
-# plot the annual mean time-series
-modtsplot(modmaxspd, f1b)
-f1b.set_ylim( [5 , 10] )
-
-# now do the monthly trends
-trash = mod_proc(modmaxspd, f2b, tys=tys, tye=tye)
 mod_uspd_trends = mod_proc(modmaxspd, f3b, tys=tys2, tye=tye2)
 
 #========= Location - locmax ===============#
-
-# ---- First reanalyses-------
-
-# plot the time-series
-plt.figure(1)
-f1c = plt.subplot( 425 )
-trash = rean_proc(locmax, axts=f1c, tys=tys, tye=tye)
-
-# now do the monthly trends
-plt.figure(2)
-f2c = plt.subplot(425)
-trash = rean_proc(locmax, axtrend=f2c, tys=tys, tye=tye)   
-
-plt.figure(3)
 f3c = plt.subplot(425)
 pos_trends = rean_proc(locmax, axtrend=f3c, tys=tys2, tye=tye2)   
-     
-# ---- Now do the models ----    
-# plot the annual mean time-series
-modtsplot(modlocmax, f1c)
-
-# now do the monthly trends
-trash = mod_proc(modlocmax, f2c, tys=tys, tye=tye)
 mod_pos_trends = mod_proc(modlocmax, f3c, tys=tys2, tye=tye2)
 
-
 #========= Width ===============#
-
-# ---- First reanalyses-------
-
-# plot the time-series
-plt.figure(1)
-f1d = plt.subplot( 427 )
-trash = rean_proc(width, axts=f1d, tys=tys, tye=tye)
-
-# now do the monthly trends
-plt.figure(2)
-f2d = plt.subplot(427)
-trash = rean_proc(width, axtrend=f2d, tys=tys, tye=tye)   
-
-plt.figure(3)
 f3d = plt.subplot(427)
 width_trends = rean_proc(width, axtrend=f3d, tys=tys2, tye=tye2)      
-
-# ---- Now do the models ----    
-# plot the annual mean time-series
-modtsplot(modwidth, f1d)
-# now do the monthly trends
-trash = mod_proc(modwidth, f2d, tys=tys, tye=tye)
 mod_width_trends = mod_proc(modwidth, f3d, tys=tys2, tye=tye2)
 
-f2d.set_xticklabels(  [ s.upper() for s in seas]  )
-f3d.set_xticklabels(  [ s.upper() for s in seas]  )
-
 # ========= Do some figure beautifying and labelled etc ========= #
-
-# FIGURE 1: Time-series
-# defines some lists of labels.
-f1ax = [ f1a, f1b, f1c, f1d ]
 panlab = ['a)', 'b)', 'c)', 'd)', 'e)', 'f)' ,'g)', 'h)']
-yaxlab1 = ['SAM Index (hPa)' , 'Umax (m/s)','Position ($^{\circ}$S)', 'Width ($^{\circ}$ lat.)']
 
-# Loop of figure 1 and label plus adjust subplots.
-for i, ax in enumerate( f1ax ):
-    ax.set_xticks( xtics )
-    ax.set_xlim( [datetime(1880,1,1) , datetime(2013,12,31)] )
-    ax.autoscale(enable=True, axis='y', tight=True )
-    ylim = ax.get_ylim()
-    yrange =  max(ylim) - min(ylim)
-    ax.text( datetime(1885,1,1), max( ylim ) -0.15*yrange, panlab[i])
-    ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(6) )
-    ax.set_ylabel( yaxlab1[i] )
-
-    if (ax != f1d): # only keep xlabels for the bottom panels
-        ax.set_xticklabels([])
-        ax.set_xlabel('')
-    else: 
-        plt.setp( ax.xaxis.get_majorticklabels(), rotation=35, ha='right' )
-        ax.set_xlabel('Year')
-        
-plt.figure(1).subplots_adjust(hspace=0.05)
-
-# FIGURE 2: Trends
-# defines some lists of labels.
-f2ax = [ f2a, f2b, f2c, f2d]
 f3ax = [ f3a, f3b, f3c, f3d]
 
-yaxlab = ['SAM trend \n(hPa/dec)', 
-          'Umax trend \n(ms$^{-1}$/dec)', 
-          'Position trend \n($^{\circ}$ lat./dec)', 
-          'Width trend \n($^{\circ}$ lat./dec)' ]
-          
-# Loop of figure 2 and label plus adjust subplots.
-for i, ax in enumerate( f2ax ):
-    ylim = ax.get_ylim()
-    yrange =  max(ylim) - min(ylim)
-    ax.text( -0.35, max( ylim ) -0.15*yrange, panlab[i])
-    ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(5) )
-    ax.set_xlim([-0.5, lensea -0.5])
+yaxlab = ['SAM trend \n(hPa dec$^{-1}$)', 
+          'Umax trend \n(ms$^{-1}$ dec$^{-1}$)', 
+          'Position trend \n($^{\circ}$ lat. dec$^{-1}$)', 
+          'Width trend \n($^{\circ}$ lat. dec$^{-1}$s)' 
+          ]
 
-    if (ax != f2d): # only keep xlabels for the bottom panels
-        ax.set_xticklabels([])
-        ax.set_xlabel('')
-        
-    ax.set_ylabel( yaxlab[i] )
-  
-    
-plt.figure(2).subplots_adjust(hspace=0.06, wspace=0.05, right=0.7)
-f2a.legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.5, 1.05),
-           handlelength=0.01, handletextpad=1, borderpad=1, frameon=False )
+yaxlab1 = ['SAM Index (hPa)' , 
+           'Umax (m/s)',
+           'Position ($^{\circ}$S)', 
+           'Width ($^{\circ}$ lat.)'
+           ]
 
-# Title trend panels with the start and end year of the trends
-f2a.set_title(  str(tys) + '-' + str(tye)  )
-
-# Loop of figure 2 and label plus adjust subplots.
 for i, ax in enumerate( f3ax ):
     ylim = ax.get_ylim()
-    yrange =  max(ylim) - min(ylim)
+    yrange = max(ylim) - min(ylim)
     ax.text( -0.35, max( ylim ) -0.15*yrange, panlab[i])
-    ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(5) )
+    ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(5, prune='upper'))
     ax.set_xlim([-0.5, lensea -0.5])
 
     if (ax != f3d): # only keep xlabels for the bottom panels
@@ -416,20 +244,14 @@ for i, ax in enumerate( f3ax ):
         
     ax.set_ylabel( yaxlab[i] )
   
-    
-plt.figure(3).subplots_adjust(hspace=0.06, wspace=0.05, right=0.7)
-f3a.legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.5, 1.05),
-           handlelength=0.01, handletextpad=1, borderpad=1, frameon=False )
-
-f3a.set_title(str(tys2) + '-' + str(tye2) )
+f3d.set_xticklabels(  [ s.upper() for s in seas]  )   
+plt.figure(3).subplots_adjust(hspace=0.06, wspace=0.05, right=0.8, left=0.2)
+f3a.legend(ncol=3, prop={'size':12},numpoints=1, bbox_to_anchor=(1.075, 1.265),
+           handlelength=0.01, handletextpad=0.8, frameon=False )
 
 # save some pdfs
-plt.figure(1).savefig('sam_pos_str_width_ts_v5.pdf',format='pdf',dpi=300,
-                      bbox_inches='tight')
-plt.figure(2).savefig('sam_pos_str_width_trends_v5.pdf',format='pdf',dpi=300,
-                       bbox_inches='tight')
-plt.figure(3).savefig('sam_pos_str_width_trends_v5-2.pdf',format='pdf',dpi=300,
-                       bbox_inches='tight')
+plt.figure(3).savefig('sam_pos_str_width_trends_1951-2011.pdf',format='pdf'
+                      , dpi=300, bbox_inches='tight')
                        
 # ---------------------------------------------------------------------------------------------------
 #                        Do SAM vs SPEED trend plots
@@ -577,8 +399,4 @@ gs2[0,1].legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.55,
 plt.savefig('sam_trends_v_jet_scatter_1951-2011.pdf',format='pdf',dpi=300,
             bbox_inches='tight')
 
-print "correlation between ",tys2, " jet position and sam trend in CMIP5"
-print sp.stats.pearsonr(modpos, mod_sam_trends[:,3])
-print "correlation between ", tys2 ," jet strength and sam trend in CMIP5"
-print sp.stats.pearsonr(moduspd, mod_sam_trends[:,3])    
 
