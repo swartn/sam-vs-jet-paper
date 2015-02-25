@@ -62,7 +62,7 @@ dfmarshall = pd.read_csv('/HOME/ncs/data/marshall_sam/marshall_sam.csv',
 
 # load the reanalysis data
 h5f = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/rean_sam.h5', 'a')
-dfr = h5f['sam/df']
+dfr = h5f['zonmean_sam/df']
 h5f.close()
 dfhadslp = dfr['HadSLP2r']/100.
 #============================================#

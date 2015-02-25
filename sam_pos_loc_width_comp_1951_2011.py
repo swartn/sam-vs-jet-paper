@@ -71,9 +71,11 @@ dfmarshall = pd.read_csv('/HOME/ncs/data/marshall_sam/marshall_sam.csv',
 # load the reanalysis data
 # load in the reanlaysis data
 h5f = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/rean_sam.h5', 'a')
-dfr = h5f['sam/df']
+dfr = h5f['zonmean_sam/df']
 h5f.close()
 dfhadslp = dfr['HadSLP2r']/100.
+dfhadslp = pd.DataFrame(dfhadslp.ix['sam'].dropna(), columns=['HadSLP2r'])
+
 #============================================#
 # Define some functions
 def get_seasons(df):
@@ -147,17 +149,17 @@ def rean_proc(dfr, axts='', axtrend='', tys=0, tye=0):
     
     # Loop over reanalyses and do some basic dataframe checks and adjustments.
     # We're assuming len(dfr.columns) == len(rean).
-    for (i, name) in enumerate( rean ):      
+    for (i, cn) in enumerate( dfr.columns ):      
         # check that we are not trying to use data that doesn't exist
-        if ( dfr[i+1].dropna().index.year.min() > tys ):
-            print name, 'WARNING: start >', str(tys)
-        elif ( dfr[i+1].dropna().index.year.max() < tye ):
-            print name, 'WARNING: end <', str(tye)
+        if ( dfr[cn].dropna().index.year.min() > tys ):
+            print rean[i], 'WARNING: start >', str(tys)
+        elif ( dfr[cn].dropna().index.year.max() < tye ):
+            print rean[i], 'WARNING: end <', str(tye)
 
         # If axts was passed, plot the time-series for each column of dfr    
         if ( axts ):  
-            axts.plot( dfr.resample('A').index, dfr[i+1].resample('A'), 
-		      color=rlc[ i ], linewidth=2, alpha=1, label=name)
+            axts.plot( dfr.resample('A').index, dfr[cn].resample('A'), 
+		      color=rlc[ i ], linewidth=2, alpha=1, label=rean[i])
             #axts.xaxis.grid(color=[0.6,0.6,0.6])
             #axts.yaxis.grid(color=[0.6,0.6,0.6])
             axts.set_axisbelow(True)
@@ -167,13 +169,13 @@ def rean_proc(dfr, axts='', axtrend='', tys=0, tye=0):
         if ( axtrend ):
 	    for ( k , nm ) in enumerate( seas ):
                 names = 'dfr.seasons.' + nm
-                mt = calc_trends( eval( names ), i+1, tys , tye )
-                rean_trends[ i , k ]  =  mt.slope * 10
+                mt = calc_trends( eval( names ), cn, tys , tye )
+                rean_trends[i, k]  =  mt.slope * 10
                 #############################33
                 # Set R1 trends to NAN so we dont see it
-                rean_trends[0,:] = np.nan
+                rean_trends[0, :] = np.nan
                 #################################                
-                if (nm == 'ann') & ( not np.isnan(rean_trends[ i , k ]) ):
+                if (nm == 'ann') & ( not np.isnan(rean_trends[i, k])):
                     axtrend.plot( k , rean_trends[ i , k ] ,'_', color = rlc[ i ] , ms = 15 , mew = 2, label=rean[i])
                 else:
                     axtrend.plot( k , rean_trends[ i , k ] ,'_', color = rlc[ i ] , ms = 15 , mew = 2, label='')
@@ -211,7 +213,6 @@ def mod_proc(df, axtrend, tys, tye ):
     return mod_trends                    
                           
 #========= SAM - press ===============#
-
 # Set up the figures
 f1 = plt.figure(1)
 plt.figure(1).set_size_inches((8,8), forward=True )
@@ -237,7 +238,14 @@ plt.figure(3).set_size_inches((8,8), forward=True )
 plt.figure(3)
 f3a = plt.subplot(421)
 sam_trends = rean_proc(press, axtrend=f3a, tys=tys2, tye=tye2)   
-     
+rean=['HadSLP2r']
+rlc = ['k']
+num_rean = 1 
+hadslp_sam_trends = rean_proc(dfhadslp, axtrend=f3a, tys=tys2, tye=tye2)   
+rean     = ['R1', 'R2', '20CR', 'ERA', 'CFSR', 'MERRA']
+num_rean = len( rean )
+rlc      = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm' ]    
+ 
 # ---- Now do the models ----    
 # plot the annual mean time-series
 modtsplot(modpress, f1a)
