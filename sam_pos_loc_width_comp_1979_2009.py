@@ -15,8 +15,7 @@ position and width in the CMIP5 models and in six reanalyses.
 
 This script produces 4 plots:
 
-1. Trends in the above variables over two-different periods (1951-2011 and 
-1979-2009).
+1. Trends in the above variables over 1979-2009.
 2. The relationship between SAM and strength trends.
 3. The relationship between SAM and trends in the other variables, as well as 
 trends in SAM and the climatology of the variables. (e.g. SAM trend vs 

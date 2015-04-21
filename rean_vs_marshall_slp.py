@@ -66,28 +66,30 @@ fig.subplots_adjust(right=0.5, hspace=0.05)
 
 modtsplot(pd.rolling_mean(pt.time_lim(dfc5.ix['p40s'],d1,d2)/100.
 		, si), axt) 		
-pd.rolling_mean(dfr.ix['p40s']/100., si).plot(ax=axt, linewidth=2, 
+pd.rolling_mean(dfr.ix['p40s']/100., si).plot(ax=axt, linewidth=1, 
 	        style=ls, legend=False, grid=False)		
-l = pd.rolling_mean(df.slp40, si).plot(ax=axt, linewidth=6, color='0.25'
+l = pd.rolling_mean(df.slp40, si).plot(ax=axt, linewidth=2, color='0.25'
 		,style='-', label='Marshall', grid=False, zorder=0)
 modtsplot(pd.rolling_mean(pt.time_lim(dfc5.ix['p65s'],d1,d2)/100.
 		, si), axm) 		
-pd.rolling_mean(dfr.ix['p65s']/100., si).plot(ax=axm, linewidth=2, style=ls
+pd.rolling_mean(dfr.ix['p65s']/100., si).plot(ax=axm, linewidth=1, style=ls
 		, legend=False, grid=False)
-pd.rolling_mean(df.slp65, si).plot(ax=axm, linewidth=6, color='0.25'
+pd.rolling_mean(df.slp65, si).plot(ax=axm, linewidth=2, color='0.25'
 		, style='-', label='Marshall', grid=False, zorder=0)
 
 modtsplot(pd.rolling_mean(pt.time_lim(dfc5.ix['sam'],d1,d2)/100.
 		, si), axb) 		
-pd.rolling_mean(dfr.ix['sam']/100., si).plot(ax=axb, linewidth=2, style=ls
+pd.rolling_mean(dfr.ix['sam']/100., si).plot(ax=axb, linewidth=1, style=ls
 		, legend=False, grid=False)
-pd.rolling_mean(df.sam, si).plot(ax=axb, linewidth=6, color='0.25'
+pd.rolling_mean(df.sam, si).plot(ax=axb, linewidth=2, color='0.25'
 		, style='-', label='Marshall', grid=False, zorder=0)
 
 axb.set_xlabel('Date')
 axb.set_xlim([pd.datetime(1957,1,1), pd.datetime(2011,12,31)])
 
 axt.set_ylabel('P at 40$^{\circ}$S (hPa)')
+y_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
+axt.yaxis.set_major_formatter(y_formatter)
 axm.set_ylabel('P at 65$^{\circ}$S (hPa)')
 axb.set_ylabel('SAM (hPa)')
 
@@ -105,9 +107,7 @@ axb.text(xp, 32.5, 'c)')
 axt.legend(bbox_to_anchor=(1.5,1), ncol=1, frameon=False, handletextpad=0.5,
 	   numpoints=1, handlelength=1.5, fontsize=12)
 
-
 xtics = [datetime(1970,1,1) + relativedelta(years=10*jj) for jj in range(5)] 
-
 for i, ax in enumerate(fig.axes):
    ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(5, prune='upper') )
    ax.set_xticks( xtics )
@@ -313,8 +313,8 @@ for c in [0,1]:
         print obs_sam_trends[1,:]
 
    
-yaxlab = ['P40$^{\circ}$S \n(hPa dec$^{-1}$)', '',
-          'P65 $^{\circ}$s \n(hPa dec$^{-1}$)','',
+yaxlab = ['P at 40$^{\circ}$S \n(hPa dec$^{-1}$)', '',
+          'P at 65$^{\circ}$S \n(hPa dec$^{-1}$)','',
           'SAM \n(hPa dec$^{-1}$)', ''
          ]
 

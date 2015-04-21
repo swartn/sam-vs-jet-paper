@@ -62,7 +62,7 @@ slope_ccmp = cd.loadvar(ifile_ccmp, 'uwnd')*120.
 slope_ccmp = np.ma.masked_outside(slope_ccmp, -1,1)
 uflx_slope_ccmp = cd.loadvar(ifile_ccmp, 'upstr')*120.
 uflx_slope_ccmp = np.ma.masked_outside(uflx_slope_ccmp, -15,15)
-uflx_slope_ccmp = uflx_slope_ccmp*1.2*1.4e-3*100
+uflx_slope_ccmp = uflx_slope_ccmp*1.2*1.4e-3*120
 
 # load in the Marshall SAM data
 df = pd.read_csv('/HOME/ncs/data/marshall_sam/marshall_sam.csv', 

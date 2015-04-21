@@ -48,27 +48,49 @@ xtics    = [datetime(1870,1,1) + relativedelta(years=20*jj) for jj in range(8) ]
 # while each column refers to an individual reanalysis or CMIP5 model. The 
 #column order of the reanalyses is given in the variable
 # rean above. We're not differentiating models by name here.
-press, maxspd, locmax, width, modpress, modmaxspd, modlocmax, modwidth =\
-                      sad.load_sam_df()
 
-press.columns = rean
-maxspd.columns = rean
-locmax.columns = rean
-width.columns = rean
+# This was the old definitions computed in ferret and no longer used.
+#press, maxspd, locmax, width, modpress, modmaxspd, modlocmax, modwidth =\
+#                      sad.load_sam_df()
+#press.columns = rean
+#maxspd.columns = rean
+#locmax.columns = rean
+#width.columns = rean
 
 # load in the Marshall SAM data
 dfmarshall = pd.read_csv('/HOME/ncs/data/marshall_sam/marshall_sam.csv', 
 		  index_col=0, parse_dates=True)
 
 # load the reanalysis data
-h5f = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/rean_sam.h5', 'a')
+h5f = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/rean_sam.h5', 'r')
 dfr = h5f['zonmean_sam/df']
 h5f.close()
 dfhadslp = dfr['HadSLP2r']/100.
+
+# load in the 20CR ensemble data
+h5f_20CR = pd.HDFStore(
+    '/raid/ra40/data/ncs/reanalyses/20CR/20cr_ensemble_sam_analysis.h5',
+    'r')
+df_20cr_ens_sam = h5f_20CR['sam']/100.
+df_20cr_ens_locmax = h5f_20CR['locmax']
+df_20cr_ens_maxspd = h5f_20CR['maxspd'] 
+df_20cr_ens_width = h5f_20CR['width'] 
+h5f_20CR.close()
+
+# load in the next set of model data
+h5f_c5 = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/c5_zonmean_sam-jet_analysis.h5',
+                     'r')
+df_c5_ens_sam = h5f_c5['sam']/100.
+df_c5_ens_locmax = h5f_c5['locmax']
+df_c5_ens_maxspd = h5f_c5['maxspd'] 
+df_c5_ens_width = h5f_c5['width'] 
+h5f_c5.close()
+
+
 #============================================#
 
 
-def modtsplot(df, ax):
+def modtsplot(df, ax, color='r', label='CMIP5'):
     """ For the columns of df, compute the columnwise-ensemble mean and 95% 
         confidence interval, then plot the envelope and mean.
     """
@@ -79,13 +101,14 @@ def modtsplot(df, ax):
     ens_std = df.std(axis=1) 
     c = sp.stats.t.isf(0.025, num_models - 1 )
     ts_95_ci = ( c * ens_std ) / np.sqrt( num_models )
-
+    #ts_95_ci = 2 * ens_std
+    
     # reample to annual and plot
     ens_mean = ens_mean.resample('A')
     ts_95_ci = ts_95_ci.resample('A')
     ax.fill_between(ens_mean.index , ( ens_mean - ts_95_ci ) ,  ( ens_mean + 
-                    ts_95_ci), color='r', alpha=0.25, linewidth=0)  
-    ax.plot(ens_mean.index, ens_mean, color='r',linewidth=3 ,label='CMIP5')   
+                    ts_95_ci), color=color, alpha=0.25, linewidth=0)  
+    ax.plot(ens_mean.index, ens_mean, color=color,linewidth=3 ,label=label)   
                   
 def rean_proc(dfr, axts):
     """ Loop over the columns of dfr (corresponding to different reanalyses) 
@@ -108,22 +131,30 @@ f1b = plt.subplot( 423 )
 f1c = plt.subplot( 425 )
 f1d = plt.subplot( 427 )
 
-rean_proc(press, axts=f1a)    
-modtsplot(modpress, f1a)
+#rean_proc(press, axts=f1a)    
+#modtsplot(modpress, f1a)
+modtsplot(df_c5_ens_sam, f1a, color='r', label='')
+modtsplot(df_20cr_ens_sam, f1a, color='g', label='')
 
 #dfmarshall['sam'].resample('A').plot(ax=f1a, color='0.5', style='-', 
              #linewidth=2, grid=False, label='Marshall', zorder=3)
 dfhadslp['sam'].resample('A').plot(ax=f1a, color='k', style='--', 
              linewidth=3, grid=False, label='HadSLP2r')
 
-rean_proc(maxspd, axts=f1b)
-modtsplot(modmaxspd, f1b)
+#rean_proc(maxspd, axts=f1b)
+#modtsplot(modmaxspd, f1b)
+modtsplot(df_c5_ens_maxspd, f1b, color='r', label='')
+modtsplot(df_20cr_ens_maxspd, f1b, color='g', label='')
 
-rean_proc(locmax, axts=f1c)
-modtsplot(modlocmax, f1c)
+#rean_proc(locmax, axts=f1c)
+#modtsplot(modlocmax, f1c)
+modtsplot(df_c5_ens_locmax, f1c, color='r', label='')
+modtsplot(df_20cr_ens_locmax, f1c, color='g', label='')
 
-rean_proc(width, axts=f1d)
-modtsplot(modwidth, f1d)
+#rean_proc(width, axts=f1d)
+#modtsplot(modwidth, f1d)
+modtsplot(df_c5_ens_width, f1d, color='r', label='')
+modtsplot(df_20cr_ens_width, f1d, color='g', label='')
 
 # FIGURE 1: Time-series
 # defines some lists of labels.

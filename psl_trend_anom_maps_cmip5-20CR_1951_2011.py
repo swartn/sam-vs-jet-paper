@@ -15,10 +15,9 @@ plt.ion()
 plt.close('all')
 pth = '/raid/ra40/data/ncs/cmip5/psl/'
 
-# load the data for cmip5 mean slope
-ifile_c5_slope = 'ensmean_remap_psl_slope_195101-201112.nc'
-#psl_slope_c5 = cd.loadvar(pth + ifile_c5_slope, 'psl') *120 # convert to yrs
-dims = cd.get_dimensions(pth + ifile_c5_slope, 'psl')
+dims = {'lat' : np.arange(-89.5,89.6,1),
+        'lon' : np.arange(0,360,1)
+        }
 
 #h5f = h5py.File('/raid/ra40/data/ncs/cmip5_trends.h5','r')
 h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/cmip5_trends.h5','r')
@@ -56,11 +55,11 @@ x, y = m(lons, lats)
 xpt, ypt = m(20,-86)
 
 cot = m.pcolor(x, y, psl_slope_20cr,vmin=vmin, vmax=vmax, cmap=cmap_anom, 
-               ax=axt )
+               ax=axt, rasterized=True)
 com = m.pcolor(x, y, psl_slope_c5.mean(axis=0),vmin=vmin, vmax=vmax, 
-               cmap=cmap_anom, ax=axm )
+               cmap=cmap_anom, ax=axm, rasterized=True)
 cob = m.pcolor(x, y, psl_slope_c5.mean(axis=0)- psl_slope_20cr, vmin=vmin, 
-               vmax=vmax, cmap=cmap_anom, ax=axb)
+               vmax=vmax, cmap=cmap_anom, ax=axb, rasterized=True)
 c5_25_precentile = np.percentile(psl_slope_c5,2.5, axis=0)
 c5_975_precentile = np.percentile(psl_slope_c5,97.5, axis=0)
 mask = ( (psl_slope_20cr>c5_975_precentile) | 
@@ -86,7 +85,7 @@ bounds = np.linspace(vmin, vmax, ncols)
 plt.colorbar(cot, cax=tl, label='Pa decade$^{-1}$',spacing='proportional',
              boundaries=bounds)
 
-plt.savefig('psl_maps_20CR_vs_C5_1951-2011.pdf',bbox_inches='tight', dpi=300)
+#plt.savefig('psl_maps_20CR_vs_C5_1951-2011.pdf',bbox_inches='tight', dpi=300)
              
 ###############################################################################
 # oLook at the uncertainty in the trends
@@ -116,9 +115,9 @@ lons, lats = np.meshgrid(dims20cr['lon'], dims20cr['lat'])
 x, y = m(lons, lats)
 
 cot = m.pcolor(x, y, psl_slopes_all_20cr.mean(axis=0),vmin=vmin, vmax=vmax, 
-               cmap=cmap_anom, ax=axt )
+               cmap=cmap_anom, ax=axt, rasterized=True)
 com = m.pcolor(x, y, psl_slopes_all_20cr.std(axis=0)*2,vmin=vmin2, vmax=vmax2, 
-               cmap=cmap, ax=axm )
+               cmap=cmap, ax=axm, rasterized=True)
 #cob = m.pcolor(x, y, psl_slope_c5 - psl_slope_20cr, vmin=vmin, vmax=vmax, 
 #               cmap=cmap_anom, ax=axb)
 
