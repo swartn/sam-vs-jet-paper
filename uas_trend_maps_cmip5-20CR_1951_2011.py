@@ -57,16 +57,21 @@ axa[1,0].text(xpt, ypt, 'CMIP5 mean')
 anom = uas_slope_c5.mean(axis=0)- uas_slope_20cr
 cob = m.pcolor(x, y, anom, vmin=vmin, 
                vmax=vmax, cmap=cmap_anom, ax=axa[1,1], rasterized=True)
-rmse = np.sqrt( np.mean(anom[0:89,:]**2) )
+rmse = np.array(np.sqrt( np.mean(anom[0:89,:]**2) ))
 axa[1,1].text(xpt, ypt, str(np.round(rmse,2)))
 
+# Do stippling
 c5_25_precentile = np.percentile(uas_slope_c5,2.5, axis=0)
 c5_975_precentile = np.percentile(uas_slope_c5,97.5, axis=0)
-mask = ( (uas_slope_20cr>c5_975_precentile) | 
-                  (uas_slope_20cr<c5_25_precentile)
+ds = 4 # downsample for stippling
+mask = ( (uas_slope_20cr[::ds,::ds]>c5_975_precentile[::ds,::ds]) | 
+                  (uas_slope_20cr[::ds,::ds]<c5_25_precentile[::ds,::ds])
        )
-m.plot(x[mask][::2], y[mask][::2], '.k', alpha=0.2, markersize=0.1
-       , ax=axa[1,1], zorder=1)
+x2 = x[::ds,::ds]
+y2 = y[::ds,::ds]
+m.plot(x2[mask], y2[mask], '.k', alpha=0.75, 
+       markersize=0.2, ax=axa[1,1], zorder=2)
+
 m.drawmeridians(np.arange(0,360,90),labels=[0,0,0,1], linewidth=0,yoffset=0e6
                 , ax=axa[1,0])
 m.drawmeridians(np.arange(0,360,90),labels=[0,0,0,1], linewidth=0,yoffset=0e6
@@ -75,7 +80,9 @@ m.drawmeridians(np.arange(0,360,90),labels=[0,0,0,1], linewidth=0,yoffset=0e6
 for i, ax in enumerate(axa.flatten()):      
     ax.autoscale(enable=True, axis='both', tight=True)
     m.drawcoastlines(linewidth=1.25, ax=ax)
-    m.fillcontinents(color='0.8',ax=ax, zorder=2)
+    m.fillcontinents(color='0.8',ax=ax, zorder=3)
+    for k, spine in ax.spines.items():
+        spine.set_zorder(4)    
     if i%2 ==0:
         m.drawparallels(np.arange(-80,81,20),labels=[1,0,0,0], linewidth=0
 			, ax=ax)

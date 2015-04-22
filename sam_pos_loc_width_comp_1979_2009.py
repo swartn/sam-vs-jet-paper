@@ -67,7 +67,28 @@ press, maxspd, locmax, width, modpress, modmaxspd,\
 press.columns = rean
 maxspd.columns = rean
 locmax.columns = rean
-width.columns = rean                          
+width.columns = rean    
+
+
+# load in the python calculated reanalysis data
+h5f_rean = pd.HDFStore(
+    '/raid/ra40/data/ncs/cmip5/sam/reanalysis_zonmean_sam-jet_analysis.h5',
+    'r')
+df_rean_sam = h5f_rean['sam']/100.
+df_rean_locmax = h5f_rean['locmax']
+df_rean_maxspd = h5f_rean['maxspd'] 
+df_rean_width = h5f_rean['width'] 
+h5f_rean.close()
+
+# load in the python calculated model data
+h5f_c5 = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/c5_zonmean_sam-jet_analysis.h5',
+                     'r')
+df_c5_ens_sam = h5f_c5['sam']/100.
+df_c5_ens_locmax = h5f_c5['locmax']
+df_c5_ens_maxspd = h5f_c5['maxspd'] 
+df_c5_ens_width = h5f_c5['width'] 
+h5f_c5.close()
+
 #============================================#
 # Define some functions
 def get_seasons(df):
@@ -188,22 +209,22 @@ def mod_proc(df, axtrend, tys, tye ):
 f2 = plt.figure(2)
 plt.figure(2).set_size_inches((8,8), forward=True )
 f2a = plt.subplot(421)
-sam_trends = rean_proc(press, axtrend=f2a, tys=tys, tye=tye)   
+sam_trends = rean_proc(df_rean_sam, axtrend=f2a, tys=tys, tye=tye)   
 mod_sam_trends = mod_proc(modpress, f2a, tys=tys, tye=tye)
 
 #========= Jet max speed - uspd ===============#
 f2b = plt.subplot(423)
-uspd_trends = rean_proc(maxspd, axtrend=f2b, tys=tys, tye=tye)       
+uspd_trends = rean_proc(df_rean_maxspd, axtrend=f2b, tys=tys, tye=tye)       
 mod_uspd_trends = mod_proc(modmaxspd, f2b, tys=tys, tye=tye)
 
 #========= Location - locmax ===============#
 f2c = plt.subplot(425)
-pos_trends = rean_proc(locmax, axtrend=f2c, tys=tys, tye=tye)   
+pos_trends = rean_proc(df_rean_locmax, axtrend=f2c, tys=tys, tye=tye)   
 mod_pos_trends = mod_proc(modlocmax, f2c, tys=tys, tye=tye)
 
 #========= Width ===============#
 f2d = plt.subplot(427)
-width_trends = rean_proc(width, axtrend=f2d, tys=tys, tye=tye)      
+width_trends = rean_proc(df_rean_width, axtrend=f2d, tys=tys, tye=tye)      
 mod_width_trends = mod_proc(modwidth, f2d, tys=tys, tye=tye)
 
 # ========= Do some figure beautifying and labelled etc ========= #
@@ -213,20 +234,22 @@ yaxlab1 = ['SAM Index (hPa)' ,
            'Position ($^{\circ}$S)', 
            'Width ($^{\circ}$ lat.)'
            ]
-f2ax = [ f2a, f2b, f2c, f2d]
+f2ax = [f2a, f2b, f2c, f2d]
 
 yaxlab = ['SAM trend \n(hPa dec$^{-1}$)', 
           'Umax trend \n(ms$^{-1}$ dec$^{-1}$)', 
           'Position trend \n($^{\circ}$ lat. dec$^{-1}$)', 
-          'Width trend \n($^{\circ}$ lat. dec$^{-1}$s)' 
+          'Width trend \n($^{\circ}$ lat. dec$^{-1}$)' 
          ]
-        
+majorFormatter = mpl.ticker.FormatStrFormatter('%1.2f')
+
 # Loop of figure 2 and label plus adjust subplots.
 for i, ax in enumerate( f2ax ):
     ylim = ax.get_ylim()
     yrange =  max(ylim) - min(ylim)
     ax.text( -0.35, max( ylim ) -0.15*yrange, panlab[i])
     ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(5) )
+    ax.yaxis.set_major_formatter(majorFormatter)
     ax.set_xlim([-0.5, lensea -0.5])
 
     if (ax != f2d): # only keep xlabels for the bottom panels
@@ -234,7 +257,11 @@ for i, ax in enumerate( f2ax ):
         ax.set_xlabel('')
         
     ax.set_ylabel( yaxlab[i] )
-  
+
+f2a.yaxis.set_major_locator(mpl.ticker.MultipleLocator(1))
+f2a.yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%1.1f'))
+f2c.yaxis.set_ticks([-1.5, -0.75, 0, 0.75])
+
 f2d.set_xticklabels([s.upper() for s in seas])  
 plt.figure(2).subplots_adjust(hspace=0.06, wspace=0.05, right=0.8, left=0.2)
 f2a.legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.5, 1.05),
@@ -243,134 +270,134 @@ f2a.legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.5, 1.05),
 plt.figure(2).savefig('sam_pos_str_width_trends_1979-2009.pdf',format='pdf',
                       dpi=300, bbox_inches='tight')
 
-#-------------------------------------------------------------------------------
-#                        Do SAM vs SPEED trend plots
-#-------------------------------------------------------------------------------
+##-------------------------------------------------------------------------------
+##                        Do SAM vs SPEED trend plots
+##-------------------------------------------------------------------------------
 
-def relp( xs , ys, corr=False ):
-    """ plot a scatter of ys vs xs, and then compute the OLS regression line 
-    and plot on yhat. If corr=True then compute the pearson r and p-value and 
-    print in near the bottom right corner
-    """
-    svj_slope , conf_int , p_value, svj_yhat, svj_intercept =\
-        trend_ts.trend_ts( xs  , ys )
-    xvals = np.arange( np.min( xs ) - abs(np.max( xs )*15)  ,\
-           abs( np.max( xs )*15) )
-    ypred = xvals * svj_slope + svj_intercept
-    plt.plot( xs , ys , 'ro', label='CMIP5')
-    plt.plot( xvals , ypred , 'r--' )
+#def relp( xs , ys, corr=False ):
+    #""" plot a scatter of ys vs xs, and then compute the OLS regression line 
+    #and plot on yhat. If corr=True then compute the pearson r and p-value and 
+    #print in near the bottom right corner
+    #"""
+    #svj_slope , conf_int , p_value, svj_yhat, svj_intercept =\
+        #trend_ts.trend_ts( xs  , ys )
+    #xvals = np.arange( np.min( xs ) - abs(np.max( xs )*15)  ,\
+           #abs( np.max( xs )*15) )
+    #ypred = xvals * svj_slope + svj_intercept
+    #plt.plot( xs , ys , 'ro', label='CMIP5')
+    #plt.plot( xvals , ypred , 'r--' )
     
-    if corr==True:
-        r, p = sp.stats.pearsonr(xs, ys)
-        yrange = max(ys) - min(ys)
-        xran = max(xs) - min(xs)
-        plt.text(max(xs) -0.3*xran, -1., "$r$: " + str(np.round(r,2)) ,
-                 color='r')
-        plt.text(max(xs) -0.3*xran, -1.5, "$p$: " + str(np.round(p,2)),
-                 color='r' )
-        plt.xlim( [ min(xs) - 0.15*xran, max(xs) +  0.15*xran] )
+    #if corr==True:
+        #r, p = sp.stats.pearsonr(xs, ys)
+        #yrange = max(ys) - min(ys)
+        #xran = max(xs) - min(xs)
+        #plt.text(max(xs) -0.3*xran, -1., "$r$: " + str(np.round(r,2)) ,
+                 #color='r')
+        #plt.text(max(xs) -0.3*xran, -1.5, "$p$: " + str(np.round(p,2)),
+                 #color='r' )
+        #plt.xlim( [ min(xs) - 0.15*xran, max(xs) +  0.15*xran] )
     
-def reanp( xs , ys, trend=True):
-    """ Plot a scatter (using x's) of ys vs xs using colors in the global 
-    variable rlc.We're assuming len(xs) == len(ys) == len(rean) == len(rlc), 
-    where reana and rlc are global variables. If corr=True compute the OLS 
-    regression line and plot on yhat in black. 
-    """
-    for  i in range(xs.shape[0]):
-       plt.plot( xs[i] , ys[i] , 'x', color=rlc[int(i)],
-       markersize=10,markeredgewidth=3, label=rean[i]) 
+#def reanp( xs , ys, trend=True):
+    #""" Plot a scatter (using x's) of ys vs xs using colors in the global 
+    #variable rlc.We're assuming len(xs) == len(ys) == len(rean) == len(rlc), 
+    #where reana and rlc are global variables. If corr=True compute the OLS 
+    #regression line and plot on yhat in black. 
+    #"""
+    #for  i in range(xs.shape[0]):
+       #plt.plot( xs[i] , ys[i] , 'x', color=rlc[int(i)],
+       #markersize=10,markeredgewidth=3, label=rean[i]) 
 
-    if trend == True:
-        svj_slope , conf_int , p_value, svj_yhat, svj_intercept =\
-            trend_ts.trend_ts( xs  , ys )
-        xvals = np.arange( np.min( xs ) - np.max( xs )*15  ,\
-            np.max( xs )*15  )
-        ypred = xvals * svj_slope + svj_intercept
-        plt.plot( xvals , ypred , 'k--' )
+    #if trend == True:
+        #svj_slope , conf_int , p_value, svj_yhat, svj_intercept =\
+            #trend_ts.trend_ts( xs  , ys )
+        #xvals = np.arange( np.min( xs ) - np.max( xs )*15  ,\
+            #np.max( xs )*15  )
+        #ypred = xvals * svj_slope + svj_intercept
+        #plt.plot( xvals , ypred , 'k--' )
         
-# -----------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 
-# Setup up some someplots
-f, gs2 = plt.subplots(3,2, sharex=True, sharey=True)
-f.delaxes(gs2[0,1])
-maxis = [-0.25, 0.5, -2, 4]
-plt.axis(maxis)
-rat = ( maxis[1] - maxis[0] ) / ( maxis[3] - maxis[2] )
-plt.setp(gs2.flat, aspect = rat, adjustable='box-forced')
-f.subplots_adjust( hspace=0.15, wspace = -0.65)
-gs2[2,1].xaxis.set_major_locator( mpl.ticker.MaxNLocator(4, prune='both'))
-gs2[2,1].yaxis.set_major_locator( mpl.ticker.MaxNLocator(6,prune='upper'))    
+## Setup up some someplots
+#f, gs2 = plt.subplots(3,2, sharex=True, sharey=True)
+#f.delaxes(gs2[0,1])
+#maxis = [-0.25, 0.5, -2, 4]
+#plt.axis(maxis)
+#rat = ( maxis[1] - maxis[0] ) / ( maxis[3] - maxis[2] )
+#plt.setp(gs2.flat, aspect = rat, adjustable='box-forced')
+#f.subplots_adjust( hspace=0.15, wspace = -0.65)
+#gs2[2,1].xaxis.set_major_locator( mpl.ticker.MaxNLocator(4, prune='both'))
+#gs2[2,1].yaxis.set_major_locator( mpl.ticker.MaxNLocator(6,prune='upper'))    
 
-order = [4, 0, 1, 2, 3]   # order of the seasons in seas we want to use.
-axorder = [0, 2, 3, 4, 5] # order of the axis positions we want to use.
+#order = [4, 0, 1, 2, 3]   # order of the seasons in seas we want to use.
+#axorder = [0, 2, 3, 4, 5] # order of the axis positions we want to use.
 
-# list over all seasons in seas and plot a scatter of uspd vs sam trends for 
-#models and reanalysis.
-for i,ord in enumerate(order):
-    plt.sca( gs2.flatten()[ axorder[i] ] )
-    relp( mod_uspd_trends[ : , ord ],mod_sam_trends[ : , ord ] )
-    reanp( uspd_trends[ : , ord ], sam_trends[ : , ord ] )
+## list over all seasons in seas and plot a scatter of uspd vs sam trends for 
+##models and reanalysis.
+#for i,ord in enumerate(order):
+    #plt.sca( gs2.flatten()[ axorder[i] ] )
+    #relp( mod_uspd_trends[ : , ord ],mod_sam_trends[ : , ord ] )
+    #reanp( uspd_trends[ : , ord ], sam_trends[ : , ord ] )
 
-seas_label = [ ['a) ANN', '' ] , ['b) MAM','c) JJA'] , ['d) SON', 'e) DJF'] ]
-plt.text( maxis[0] -maxis[1],maxis[2]*1.7  , 'Umax trend (ms$^{-1}$/dec)')
-gs2[1,0].set_ylabel('SAM trend (hPa/dec)')
+#seas_label = [ ['a) ANN', '' ] , ['b) MAM','c) JJA'] , ['d) SON', 'e) DJF'] ]
+#plt.text( maxis[0] -maxis[1],maxis[2]*1.7  , 'Umax trend (ms$^{-1}$/dec)')
+#gs2[1,0].set_ylabel('SAM trend (hPa/dec)')
 
-[ gs2[m,n].text(-0.2, 3, seas_label[m][n] ) for m in range(3) for n in range(2)  ]
+#[ gs2[m,n].text(-0.2, 3, seas_label[m][n] ) for m in range(3) for n in range(2)  ]
 
-plt.savefig('sam_v_jet_1979_2009.pdf',format='pdf',dpi=300,
-            bbox_inches='tight' )
+#plt.savefig('sam_v_jet_1979_2009.pdf',format='pdf',dpi=300,
+            #bbox_inches='tight' )
 
-###############################################################################
+################################################################################
 
-# Look at some more relationships between SAM trends and (left) trends in uspd,
-#pos and width and (right) between SAM trends and climatological uspd, pos and 
-#width.
+## Look at some more relationships between SAM trends and (left) trends in uspd,
+##pos and width and (right) between SAM trends and climatological uspd, pos and 
+##width.
 
-# set up subplots.
-f, gs2 = plt.subplots(3,2, sharey=True)
-f.set_size_inches((8,8), forward=True )
+## set up subplots.
+#f, gs2 = plt.subplots(3,2, sharey=True)
+#f.set_size_inches((8,8), forward=True )
 
-# compute climatological uspd, pos and width in the reanalyses.
-rsam = year_lim( press , tys , tys ).mean()
-rpos = year_lim( locmax , tys , tys ).mean()
-ruspd = year_lim( maxspd , tys , tys ).mean()
-rwidth = year_lim( width , tys , tys ).mean()
+## compute climatological uspd, pos and width in the reanalyses.
+#rsam = year_lim( press , tys , tys ).mean()
+#rpos = year_lim( locmax , tys , tys ).mean()
+#ruspd = year_lim( maxspd , tys , tys ).mean()
+#rwidth = year_lim( width , tys , tys ).mean()
 
-# compute climatological uspd, pos and width in the CMIP5 models.
-modsam = year_lim( modpress , tys , tys ).mean()
-modpos = year_lim( modlocmax , tys , tys ).mean()
-moduspd = year_lim( modmaxspd , tys , tys ).mean()
-modwidth = year_lim( modwidth , tys , tys ).mean()
+## compute climatological uspd, pos and width in the CMIP5 models.
+#modsam = year_lim( modpress , tys , tys ).mean()
+#modpos = year_lim( modlocmax , tys , tys ).mean()
+#moduspd = year_lim( modmaxspd , tys , tys ).mean()
+#modwidth = year_lim( modwidth , tys , tys ).mean()
 
-lvars =['uspd','pos', 'width' ]
-s=3 # choose a season to look at. 3 = djf.
-lab1 = ['a)', 'c)', 'e)']
-lab2 = ['b)', 'd)', 'f)']
+#lvars =['uspd','pos', 'width' ]
+#s=3 # choose a season to look at. 3 = djf.
+#lab1 = ['a)', 'c)', 'e)']
+#lab2 = ['b)', 'd)', 'f)']
 
-for i,var in enumerate(lvars):
-    plt.sca( gs2[i,0] )
-    relp(eval('mod_' + var + '_trends' + '[:,s]' ) , mod_sam_trends[:,s] 
-         , corr=True)
-    reanp( eval(var + '_trends[:,s]'), sam_trends[:,s] ,trend=False)
-    gs2[i,0].set_xlabel(yaxlab[i+1].replace('\n',''))
-    gs2[i,0].xaxis.set_major_locator( mpl.ticker.MaxNLocator(4, prune='both'))
-    plt.sca( gs2[i,1] )
-    relp( eval('mod' + var ) , mod_sam_trends[:,s], corr=True )
-    gs2[i,1].set_xlabel(yaxlab1[i+1].replace('\n',''))
-    reanp( np.array(eval('r' + var)), sam_trends[:,s].T ,trend=False)
-    gs2[i,0].xaxis.set_major_locator( mpl.ticker.MaxNLocator(4, prune='both'))
-    xr = abs(gs2[i,0].axis()[1] - gs2[i,0].axis()[0])*0.05 + gs2[i,0].axis()[0]
-    gs2[i,0].text(xr, 3.2, lab1[i])
-    xr = abs(gs2[i,1].axis()[1] - gs2[i,1].axis()[0])*0.05 + gs2[i,1].axis()[0]
-    gs2[i,1].text(xr, 3.2, lab2[i])    
+#for i,var in enumerate(lvars):
+    #plt.sca( gs2[i,0] )
+    #relp(eval('mod_' + var + '_trends' + '[:,s]' ) , mod_sam_trends[:,s] 
+         #, corr=True)
+    #reanp( eval(var + '_trends[:,s]'), sam_trends[:,s] ,trend=False)
+    #gs2[i,0].set_xlabel(yaxlab[i+1].replace('\n',''))
+    #gs2[i,0].xaxis.set_major_locator( mpl.ticker.MaxNLocator(4, prune='both'))
+    #plt.sca( gs2[i,1] )
+    #relp( eval('mod' + var ) , mod_sam_trends[:,s], corr=True )
+    #gs2[i,1].set_xlabel(yaxlab1[i+1].replace('\n',''))
+    #reanp( np.array(eval('r' + var)), sam_trends[:,s].T ,trend=False)
+    #gs2[i,0].xaxis.set_major_locator( mpl.ticker.MaxNLocator(4, prune='both'))
+    #xr = abs(gs2[i,0].axis()[1] - gs2[i,0].axis()[0])*0.05 + gs2[i,0].axis()[0]
+    #gs2[i,0].text(xr, 3.2, lab1[i])
+    #xr = abs(gs2[i,1].axis()[1] - gs2[i,1].axis()[0])*0.05 + gs2[i,1].axis()[0]
+    #gs2[i,1].text(xr, 3.2, lab2[i])    
     
-plt.ylim([-2,4])
-plt.subplots_adjust( hspace=0.3, right=0.7, wspace=0.1)
-gs2[1,0].set_ylabel('SAM trend (hPa/dec)')
-gs2[0,0].set_title('Trends')
-gs2[0,1].set_title('Climatology')
-gs2[0,1].legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.55,
-1.05),handlelength=0.01, handletextpad=1, borderpad=1, frameon=False )
+#plt.ylim([-2,4])
+#plt.subplots_adjust( hspace=0.3, right=0.7, wspace=0.1)
+#gs2[1,0].set_ylabel('SAM trend (hPa/dec)')
+#gs2[0,0].set_title('Trends')
+#gs2[0,1].set_title('Climatology')
+#gs2[0,1].legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.55,
+#1.05),handlelength=0.01, handletextpad=1, borderpad=1, frameon=False )
 
-plt.savefig('sam_trends_v_jet_scatter_1979-2009.pdf',format='pdf',dpi=300,
-            bbox_inches='tight')
+#plt.savefig('sam_trends_v_jet_scatter_1979-2009.pdf',format='pdf',dpi=300,
+            #bbox_inches='tight')

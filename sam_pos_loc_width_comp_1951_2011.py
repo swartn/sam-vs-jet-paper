@@ -443,26 +443,28 @@ for i,var in enumerate(lvars):
     gs2[i,0].xaxis.set_major_locator( mpl.ticker.MaxNLocator(4, prune='both'))
     gs2[i,1].xaxis.set_major_locator( mpl.ticker.MaxNLocator(6)) 
     
-    xr = abs(gs2[i,0].axis()[1] - gs2[i,0].axis()[0])*0.05 + gs2[i,0].axis()[0]
-    gs2[i,0].text(xr, 1.75, lab1[i])
-    xr = abs(gs2[i,1].axis()[1] - gs2[i,1].axis()[0])*0.05 + gs2[i,1].axis()[0]
-    gs2[i,1].text(xr, 1.75, lab2[i])    
-    
+   
 gs2[1,1].xaxis.set_major_locator( mpl.ticker.MaxNLocator(5)) 
 plt.subplots_adjust(hspace=0.5, right=0.7, wspace=0.1)
-gs2[0,0].set_ylabel('SAM trend (hPa/dec)')
-gs2[1,0].set_ylabel('SAM trend (hPa/dec)')
-gs2[2,0].set_ylabel('SAM trend (hPa/dec)')
+gs2[0,0].set_ylabel('SAM trend (hPa dec$^{-1}$)')
+gs2[1,0].set_ylabel('SAM trend (hPa dec$^{-1}$)')
+gs2[2,0].set_ylabel('SAM trend (hPa dec$^{-1}$)')
 
 gs2[0,0].set_title('Trends')
 gs2[0,1].set_title('Climatology')
-gs2[0,1].legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.55,
+gs2[0,1].legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.475,
 1.05),handlelength=0.01, handletextpad=1, borderpad=1, frameon=False )
 
 xl = [(-0.025, 0.2), (5,9.5), (-0.6, 0.05), (-54, -41.5), (-0.2, 0.375), (29, 38)]
 for i, ax in enumerate(gs2.flatten()):
     ax.set_ylim([-0.5, 2])
     ax.set_xlim(xl[i])
+    
+for i,var in enumerate(lvars):
+    xr = abs(gs2[i,0].axis()[1] - gs2[i,0].axis()[0])*0.05 + gs2[i,0].axis()[0]
+    gs2[i,0].text(xr, 1.75, lab1[i])
+    xr = abs(gs2[i,1].axis()[1] - gs2[i,1].axis()[0])*0.05 + gs2[i,1].axis()[0]
+    gs2[i,1].text(xr, 1.75, lab2[i])    
     
 plt.savefig('sam_trends_v_jet_scatter_1951-2011.pdf',format='pdf',dpi=300,
             bbox_inches='tight')

@@ -108,7 +108,7 @@ def modtsplot(df, ax, color='r', label='CMIP5'):
     ts_95_ci = ts_95_ci.resample('A')
     ax.fill_between(ens_mean.index , ( ens_mean - ts_95_ci ) ,  ( ens_mean + 
                     ts_95_ci), color=color, alpha=0.25, linewidth=0)  
-    ax.plot(ens_mean.index, ens_mean, color=color,linewidth=3 ,label=label)   
+    ax.plot(ens_mean.index, ens_mean, color=color,linewidth=1 ,label=label)   
                   
 def rean_proc(dfr, axts):
     """ Loop over the columns of dfr (corresponding to different reanalyses) 
@@ -133,28 +133,28 @@ f1d = plt.subplot( 427 )
 
 #rean_proc(press, axts=f1a)    
 #modtsplot(modpress, f1a)
-modtsplot(df_c5_ens_sam, f1a, color='r', label='')
-modtsplot(df_20cr_ens_sam, f1a, color='g', label='')
+modtsplot(df_c5_ens_sam, f1a, color='r', label='CMIP5')
+modtsplot(df_20cr_ens_sam, f1a, color='g', label='20CR')
 
 #dfmarshall['sam'].resample('A').plot(ax=f1a, color='0.5', style='-', 
              #linewidth=2, grid=False, label='Marshall', zorder=3)
 dfhadslp['sam'].resample('A').plot(ax=f1a, color='k', style='--', 
-             linewidth=3, grid=False, label='HadSLP2r')
+             linewidth=2, grid=False, label='HadSLP2r')
 
 #rean_proc(maxspd, axts=f1b)
 #modtsplot(modmaxspd, f1b)
-modtsplot(df_c5_ens_maxspd, f1b, color='r', label='')
-modtsplot(df_20cr_ens_maxspd, f1b, color='g', label='')
+modtsplot(df_c5_ens_maxspd, f1b, color='r', label='CMIP5')
+modtsplot(df_20cr_ens_maxspd, f1b, color='g', label='20CR')
 
 #rean_proc(locmax, axts=f1c)
 #modtsplot(modlocmax, f1c)
-modtsplot(df_c5_ens_locmax, f1c, color='r', label='')
-modtsplot(df_20cr_ens_locmax, f1c, color='g', label='')
+modtsplot(df_c5_ens_locmax, f1c, color='r', label='CMIP5')
+modtsplot(df_20cr_ens_locmax, f1c, color='g', label='20CR')
 
 #rean_proc(width, axts=f1d)
 #modtsplot(modwidth, f1d)
-modtsplot(df_c5_ens_width, f1d, color='r', label='')
-modtsplot(df_20cr_ens_width, f1d, color='g', label='')
+modtsplot(df_c5_ens_width, f1d, color='r', label='CMIP5')
+modtsplot(df_20cr_ens_width, f1d, color='g', label='20CR')
 
 # FIGURE 1: Time-series
 # defines some lists of labels.
@@ -163,15 +163,16 @@ panlab = ['a)', 'b)', 'c)', 'd)', 'e)', 'f)' ,'g)', 'h)']
 yaxlab1 = ['SAM Index (hPa)' , 'Umax (m s$^{-1}$)','Position ($^{\circ}$S)', 
 	   'Width ($^{\circ}$ lat.)']
 
+
 # Loop of figure 1 and label plus adjust subplots.
 for i, ax in enumerate( f1ax ):
     ax.set_xticks( xtics )
-    ax.set_xlim( [datetime(1880,1,1) , datetime(2013,12,31)] )
+    ax.set_xlim( [datetime(1881,1,1) , datetime(2013,12,31)] )
     ax.autoscale(enable=True, axis='y', tight=True )
     ylim = ax.get_ylim()
     yrange =  max(ylim) - min(ylim)
     ax.text( datetime(1885,1,1), max( ylim ) -0.15*yrange, panlab[i])
-    ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(6) )
+    #ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(6) )
     ax.set_ylabel( yaxlab1[i] )
 
     if (ax != f1d): # only keep xlabels for the bottom panels
@@ -181,11 +182,15 @@ for i, ax in enumerate( f1ax ):
         plt.setp( ax.xaxis.get_majorticklabels(), rotation=35, ha='right' )
         ax.set_xlabel('Year')
 
-yt = [-54, -52, -50, -48]
-f1c.set_yticks(yt)
-f1c.set_yticklabels([str(t*-1) for t in yt])
-f1d.set_yticks([30, 31, 32, 33])
-#f1b.set_yticks([6, 6.5, 7, 7.5, 8])
+majorFormatter = mpl.ticker.FormatStrFormatter('%d')
+f1a.yaxis.set_major_locator(mpl.ticker.MultipleLocator(4))
+f1a.yaxis.set_major_formatter(majorFormatter)
+f1b.yaxis.set_major_locator(mpl.ticker.MultipleLocator(1))
+f1b.yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%1.1f'))
+f1c.yaxis.set_major_locator(mpl.ticker.MultipleLocator(2))
+f1c.yaxis.set_major_formatter(majorFormatter)
+f1d.yaxis.set_major_locator(mpl.ticker.MultipleLocator(1))
+f1d.yaxis.set_major_formatter(majorFormatter)
       
 plt.figure(1).subplots_adjust(hspace=0.05)
 

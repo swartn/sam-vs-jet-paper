@@ -80,11 +80,15 @@ axa[2,1].text(xpt, ypt, str(np.round(rmse,2)))
 
 c5_25_precentile = np.percentile(psl_slope_c5,2.5, axis=0)
 c5_975_precentile = np.percentile(psl_slope_c5,97.5, axis=0)
-mask = ( (psl_slope_hadslp>c5_975_precentile) | 
-                  (psl_slope_hadslp<c5_25_precentile)
+
+ds = 4 # downsample for stippling
+mask = ( (psl_slope_hadslp[::ds,::ds]>c5_975_precentile[::ds,::ds]) | 
+                  (psl_slope_hadslp[::ds,::ds]<c5_25_precentile[::ds,::ds])
        )
-m.plot(x[mask][::2], y[mask][::2], '.k', alpha=0.2, 
-       markersize=0.1, ax=axa[2,1], zorder=2)
+x2 = x[::ds,::ds]
+y2 = y[::ds,::ds]
+m.plot(x2[mask], y2[mask], '.k', alpha=0.75, 
+       markersize=0.2, ax=axa[2,1], zorder=2)
 
 m.drawmeridians(np.arange(0,360,90),labels=[0,0,0,1], linewidth=0,yoffset=-0e6
                 , ax=axa[2,1])
@@ -95,6 +99,8 @@ for i, ax in enumerate(axa.flatten()):
     ax.autoscale(enable=True, axis='both', tight=True)
     m.drawcoastlines(linewidth=1.25, ax=ax)
     m.fillcontinents(color='0.8',ax=ax, zorder=3)
+    for k, spine in ax.spines.items():
+        spine.set_zorder(4)
     if i%2 ==0:
         m.drawparallels(np.arange(-80,81,20),labels=[1,0,0,0], linewidth=0, 
                         ax=ax)
