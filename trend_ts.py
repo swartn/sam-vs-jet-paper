@@ -1,1 +1,0 @@
-theoretical_model/trend_ts.py
