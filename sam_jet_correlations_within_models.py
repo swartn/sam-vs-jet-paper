@@ -55,20 +55,35 @@ df_c5_ens_width = h5f_c5['width']
 h5f_c5.close()
 
 
-ds = pd.datetime(1881,01,01)
-de = pd.datetime(2010,12,31)
+ds = pd.datetime(1900,01,01)
+de = pd.datetime(1949,12,31)
 
-sam = pt.time_lim(df_20cr_ens_sam, ds, de).values[:,0]
-uspd = pt.time_lim(df_20cr_ens_maxspd, ds, de).values[:,0]
-loc = pt.time_lim(df_20cr_ens_locmax, ds, de).values[:,0]
+mod_sam_uspd_r = np.empty(30)
+mod_sam_loc_r = np.empty(30)
+mod_sam_width_r = np.empty(30)
 
-print 'maxspd'
-slope , conf_int , p_value, yhat, intercept = trend_ts.trend_ts( sam , uspd )
-r, p = sp.stats.pearsonr(sam , uspd )
-print r, slope, p_value
+for i in range(30):
+    sam = pt.time_lim(df_c5_ens_sam, ds, de).values[:,i]
+    uspd = pt.time_lim(df_c5_ens_maxspd, ds, de).values[:,i]
+    loc = pt.time_lim(df_c5_ens_locmax, ds, de).values[:,i]
+    width = pt.time_lim(df_c5_ens_width, ds, de).values[:,i]
 
-print 'locmax'
-slope , conf_int , p_value, yhat, intercept = trend_ts.trend_ts( sam , loc )
-r, p = sp.stats.pearsonr(sam , loc )
+    #print 'maxspd'
+    #slope , conf_int , p_value, yhat, intercept = trend_ts.trend_ts( sam , uspd )
+    mod_sam_uspd_r[i], p = sp.stats.pearsonr(sam , uspd )
+    mod_sam_loc_r[i], p = sp.stats.pearsonr(sam , loc )
+    mod_sam_width_r[i], p = sp.stats.pearsonr(sam , width)
 
-print r, slope, p_value
+    #print r #, slope, p_value
+
+#print 'locmax'
+#slope , conf_int , p_value, yhat, intercept = trend_ts.trend_ts( sam , loc )
+#r, p = sp.stats.pearsonr(sam , loc )
+
+#print r, slope, p_value
+
+
+print 'model mean SAM-jet correlations'
+print 'sam-umax r: ', mod_sam_uspd_r.mean()
+print 'sam-loc r: ', mod_sam_loc_r.mean()
+print 'sam-loc r: ', mod_sam_width_r.mean()

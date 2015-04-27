@@ -1,3 +1,11 @@
+"""
+Computes kinematic properties of the jet for the 20CR ensemble and saves them to 
+DataFrames in HDF5.
+
+In this case base on 10 m winds.
+
+.. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
+"""
 import os
 import numpy as np
 from netCDF4 import Dataset,num2date,date2num

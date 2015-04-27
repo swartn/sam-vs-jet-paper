@@ -203,8 +203,8 @@ def mod_proc(df, axtrend, tys, tye, color='r', label='CMIP5'):
                 mod_trend_std =  np.std( mod_trends[ : , k ] )
                 c = sp.stats.t.isf(0.025, num_models - 1 )
                 mod_95_ci = ( c * mod_trend_std ) / np.sqrt( num_models )
-                mod_5thp = np.percentile( mod_trends[ : , k ] , 5 )
-                mod_95thp = np.percentile( mod_trends[ : , k ] , 95 )
+                mod_5thp = np.percentile( mod_trends[ : , k ] , 2.5 )
+                mod_95thp = np.percentile( mod_trends[ : , k ] , 97.5 )
                 axtrend.plot( [ k , k ] , [ mod_5thp  , mod_95thp ],color, 
                              linewidth=4, alpha=0.25)
                 axtrend.plot([k, k], [mod_trend_mean - mod_95_ci, 
@@ -295,13 +295,19 @@ f3a.legend(ncol=3, prop={'size':12},numpoints=1, bbox_to_anchor=(1.075, 1.265),
 
 # save some pdfs
 plt.figure(3).savefig('sam_pos_str_width_trends_1951-2011.pdf',format='pdf'
-                      , dpi=300, bbox_inches='tight')
-                       
+                      , dpi=300, bbox_inches='tight') 
+  
+#for i in range(5):
+    #print seas[i]
+    #print sp.stats.ttest_ind(mod_sam_trends[:,i], 
+                             #tcr_sam_trends[:,i], equal_var=False)
+  
 # ------------------------------------------------------------------------------
 #                        Do SAM vs SPEED trend plots
 # ------------------------------------------------------------------------------
 
-def relp( xs , ys, corr=False, label='CMIP5', color='r', alpha=1, line=True):
+def relp(xs, ys, corr=False, reg=None, label='CMIP5', color='r', alpha=1, 
+         line=True):
     """ plot a scatter of ys vs xs, and then compute the OLS regression line 
     and plot on yhat. If corr=True then compute the pearson r and p-value and 
     print in near the bottom right corner
@@ -327,6 +333,10 @@ def relp( xs , ys, corr=False, label='CMIP5', color='r', alpha=1, line=True):
         #plt.ylim( [ min(ys) - 0.15*yrange, max(ys) +  0.15*yrange] )
         #plt.autoscale(enable=True, axis='both', tight=True)
     
+    if reg:
+        plt.text(0.15, -0.4+ reg,
+                 "$b$: " + str(np.round(svj_slope,1)), color=color)  
+    
 def reanp( xs , ys, trend=True):
     """ Plot a scatter (using x's) of ys vs xs using colors in the global 
     variable rlc. We're assuming len(xs) == len(ys) == len(rean) == len(rlc), 
@@ -346,37 +356,46 @@ def reanp( xs , ys, trend=True):
         ypred = xvals * svj_slope + svj_intercept
         plt.plot( xvals , ypred , 'k--' )
         
-## ------------------------------------------------------------------------------
-## Setup up some someplots
-#f, gs2 = plt.subplots(3,2, sharex=True, sharey=True)
-#f.delaxes(gs2[0,1])
-#maxis = [-0.25, 0.5, -2, 4]
-#plt.axis(maxis)
-#rat = ( maxis[1] - maxis[0] ) / ( maxis[3] - maxis[2] )
-#plt.setp(gs2.flat, aspect = rat, adjustable='box-forced')
-#f.subplots_adjust( hspace=0.15, wspace = -0.65)
-#gs2[2,1].xaxis.set_major_locator( mpl.ticker.MaxNLocator(4, prune='both'))
-#gs2[2,1].yaxis.set_major_locator( mpl.ticker.MaxNLocator(6,prune='upper'))    
+# ------------------------------------------------------------------------------
+# Setup up some someplots
+f, gs2 = plt.subplots(3,2, sharex=True, sharey=True)
+f.delaxes(gs2[0,1])
+maxis = [-0.1, 0.35, -0.8, 1.6]
+plt.axis(maxis)
+rat = ( maxis[1] - maxis[0] ) / ( maxis[3] - maxis[2] )
+plt.setp(gs2.flat, aspect = rat, adjustable='box-forced')
+f.subplots_adjust( hspace=0.15, wspace = -0.65)
+gs2[2,1].xaxis.set_major_locator( mpl.ticker.MaxNLocator(4, prune='both'))
+gs2[2,1].yaxis.set_major_locator( mpl.ticker.MaxNLocator(6,prune='upper'))    
 
-#order = [4, 0, 1, 2, 3]   # order of the seasons in seas we want to use.
-#axorder = [0, 2, 3, 4, 5] # order of the axis positions we want to use.
+order = [4, 0, 1, 2, 3]   # order of the seasons in seas we want to use.
+axorder = [0, 2, 3, 4, 5] # order of the axis positions we want to use.
 
-## list over all seasons in seas and plot a scatter of uspd vs sam trends for 
-##models and reanalysis.
-#for i,ord in enumerate(order):
-    #plt.sca( gs2.flatten()[ axorder[i] ] )
-    #relp( mod_uspd_trends[ : , ord ],mod_sam_trends[ : , ord ] )
+# list over all seasons in seas and plot a scatter of uspd vs sam trends for 
+#models and reanalysis.
+for i,ord in enumerate(order):
+    plt.sca( gs2.flatten()[ axorder[i] ] )
+    relp( mod_uspd_trends[ : , ord ],mod_sam_trends[ : , ord ], reg=0.01,
+         label='CMIP5' )
     #reanp( uspd_trends[ : , ord ], sam_trends[ : , ord ] )
-    #relp( tcr_uspd_trends[ : , ord ],tcr_sam_trends[ : , ord ], color='b' )
+    relp( tcr_uspd_trends[ : , ord ],tcr_sam_trends[ : , ord ], reg=-0.225,
+         color='g', label='20CR')
 
-#seas_label = [ ['a) ANN', '' ] , ['b) MAM','c) JJA'] , ['d) SON', 'e) DJF'] ]
-#plt.text( maxis[0] -maxis[1],maxis[2]*1.7  , 'Umax trend (ms$^{-1}$/dec)')
-#gs2[1,0].set_ylabel('SAM trend (hPa/dec)')
+seas_label = [ ['a) ANN', '' ] , ['b) MAM','c) JJA'] , ['d) SON', 'e) DJF'] ]
+plt.text( maxis[0] -maxis[1],maxis[2]*1.7  , 'Umax trend (ms$^{-1}$dec$^{-1}$)')
+#gs2[0,0].set_ylabel('SAM (hPa dec$^{-1}$)')
+gs2[1,0].set_ylabel('SAM trend (hPa dec$^{-1}$)')
+#gs2[2,0].set_ylabel('SAM (hPa dec$^{-1}$)')
 
-#[gs2[m,n].text(-0.2, 3, seas_label[m][n] ) for m in range(3) for n in range(2)]
+#gs2[0,0].set_ylim([-1, 1.5])
+#gs2[0,0].set_xlim([-0.1, 0.3])
 
-#plt.savefig('sam_v_jet_1951_2011.pdf',format='pdf',dpi=300,
-            #bbox_inches='tight' )
+[gs2[m,n].text(-0.075, 1.25, seas_label[m][n] ) for m in range(3) for n in range(2)]
+gs2[0,0].legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.8,
+1.05),handlelength=0.01, handletextpad=1, borderpad=1, frameon=False )
+
+plt.savefig('sam_v_uspd_seas_1951_2011.pdf',format='pdf',dpi=300,
+            bbox_inches='tight' )
 
 #print
 #print 'Rean. vs Mod mean trend:'

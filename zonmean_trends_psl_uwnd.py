@@ -27,8 +27,8 @@ confidence interval,
     ens_std = npa.std(axis=0) 
     c = sp.stats.t.isf(0.025, num_models - 1 )
     ts_95_ci = ( c * ens_std ) / np.sqrt( num_models )
-    p25 = np.percentile(npa,5, axis=0)
-    p975 = np.percentile(npa,95, axis=0)
+    p25 = np.percentile(npa,2.5, axis=0)
+    p975 = np.percentile(npa,97.5, axis=0)
     # reample to annual and plot
     ax.fill_between( dims['lat'], (ens_mean - ts_95_ci ),  
 		    ( ens_mean + ts_95_ci), color='r', alpha=0.275,

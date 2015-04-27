@@ -79,11 +79,14 @@ m.pcolor(x, y, anom,vmin=vmin, vmax=vmax,
          cmap=cmap_anom, ax=axa[7, 1], rasterized=True)
 c5_25_precentile = np.percentile(psl_slope_c5,2.5, axis=0)
 c5_975_precentile = np.percentile(psl_slope_c5,97.5, axis=0)
-mask = ( (psl_slope_hadslp>c5_975_precentile) | 
-                  (psl_slope_hadslp<c5_25_precentile)
+ds = 4 # downsample for stippling
+mask = ( (psl_slope_hadslp[::ds,::ds]>c5_975_precentile[::ds,::ds]) | 
+                  (psl_slope_hadslp[::ds,::ds]<c5_25_precentile[::ds,::ds])
        )
-m.plot(x[mask][::2], y[mask][::2], '.k', alpha=0.3, 
-       markersize=0.1, ax=axa[7,1], zorder=1)
+x2 = x[::ds,::ds]
+y2 = y[::ds,::ds]
+m.plot(x2[mask], y2[mask], '.k', alpha=0.75, 
+       markersize=0.2, ax=axa[7,1], zorder=1)
 
 rmse = np.sqrt( np.mean(anom[0:89,:]**2) )
 axa[7,0].text(xpt, ypt, 'CMIP5 mean')

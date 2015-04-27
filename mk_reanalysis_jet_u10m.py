@@ -1,3 +1,12 @@
+"""
+Computes kinematic properties of the jet for the various reanalyses and saves them 
+to DataFrames in HDF5.
+
+In this case base on 10 m winds.
+
+.. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
+"""
+
 # Calculate the kinematic properties of the SH westerly jet and save them in an HDF 
 # store containing PD DataFrames.
 import os

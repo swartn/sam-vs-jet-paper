@@ -1,10 +1,16 @@
+"""
+Computes kinematic properties of the jet for the 20CR ensemble and saves them to 
+DataFrames in HDF5.
+
+In this case the computation is based of sigma-9950 level winds.
+
+.. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
+"""
 import os
 import numpy as np
 from netCDF4 import Dataset,num2date,date2num
-os.system( 'rm -rf /tmp/cdo*') # clean out tmp to make space for CDO processing.
 import pandas as pd
 import cmipdata as cd
-import cdo as cdo; cdo = cdo.Cdo() # recommended import
 import matplotlib.pyplot as plt
 plt.ion()
 
@@ -27,31 +33,56 @@ u_20cr = nc.variables['u9950'][:].squeeze()
 lat = dims['lat']
 
 def jetprop(uas, lat):
+    """ Computes and returns the kinematic properties of the jet.   
+    
+    Parameters:
+    -----------
+        uas : array
+            A 2-d array, which gives the timeseries of zonal mean zonal wind.
+        lat : array
+            The latitudes associated with the 0th dimension on uas.
+            
+    Returns:
+    --------
+    jetmax : array
+        The timeseries of the jet strength (largest values btwn 20 and 70S).
+    latofmax : array 
+        Timeseries of the position, in degrees, of the jet maximum
+    latn : array
+        Timeseries of the northern edge of the jet.
+    lats : array
+        Timeseries of the southern edge of the jet.
+    jetwidth :  array  
+        Timeseries of the jet width, which is latn - lats.
+        
+    """
+    # select the sub-region between 20 and 70S.
     region = (lat>-70) & (lat<-20)
     rlat = lat[region]
     ruas = uas[: ,region]
-    jetmax = ruas.max(axis=1)
+    
+    jetmax = ruas.max(axis=1) # get the maximum
 
+    # initialize arrays
     jetmax2 = np.zeros( len(jetmax) )
     latofmax = np.zeros( len(jetmax) )
     jetwidth = np.zeros( len(jetmax) )
     latn = np.zeros( len(jetmax) ) ; lats = np.zeros( len(jetmax) )
-    yy = np.linspace(-70,-20,201)
+    yy = np.linspace(-70,-20,201) # a higher resolution grid, ~0.25 degrees.
 
     for t in range(len(jetmax)):
+        # First interpolate UAS onto a high resolution grid
         u2 = np.interp(yy, rlat,ruas[t, :]) 
         jetmax2[t] = u2.max()
         indofmax = u2 == jetmax2[t]
         lom = yy[ indofmax ]
         latofmax[t] = lom[0] if lom.shape !=() else lom
 
-        lat_of_gt_halfmax = yy[u2 >= 0.]
-        latn[t] = lat_of_gt_halfmax.max()
-        lats[t] = lat_of_gt_halfmax.min()
+        lat_of_gt_halfmax = yy[u2 >= 0.]  # everywhere eastward speeds are +ve.
+        latn[t] = lat_of_gt_halfmax.max() # northern edge of positive speeds.
+        lats[t] = lat_of_gt_halfmax.min() # southern edge
         jetwidth = latn - lats
         plt.plot(rlat, ruas[t, :])
-        #plt.plot(yy, u2, 'r--')
-        #raw_input('go?')
     return  jetmax2, latofmax, latn, lats, jetwidth    
 
 ri = 10
@@ -60,11 +91,13 @@ umax = np.zeros((len(dims['time']), 56))
 uloc = np.zeros((len(dims['time']), 56))
  
 for i in np.arange(56):
+    # step through the 56 ensemble members and compute statistic for each one.
     uas = np.squeeze(u_20cr[:,i,:])
     jetmax, latofmax, latn, lats, jetwidth = jetprop(uas, lat)
     umax[:,i] = jetmax
     uloc[:,i] = latofmax
     width[:,i] = jetwidth
+    ## Plot the jet at a selected time-index, and put on the properties computed.
     #plt.close()
     #plt.plot( lat, uas[ri,:], 'k-o', linewidth=2)
     #plt.plot( lat, lat*0, 'k--')
@@ -77,11 +110,12 @@ for i in np.arange(56):
     #plt.plot( [lats[ri], lats[ri]], [-10, 10], 'r--')
     #raw_input('go?')
 
+# Put the data into Pandas DataFrames.
 df_umax = pd.DataFrame(umax, index=dims['time'], columns=np.arange(1,57))
 df_uloc = pd.DataFrame(uloc, index=dims['time'], columns=np.arange(1,57))
 df_width = pd.DataFrame(width, index=dims['time'], columns=np.arange(1,57))
     
-## Create a place to put the data
+## Create a place to put the data in HDF5.
 store = pd.HDFStore(
            '/raid/ra40/data/ncs/reanalyses/20CR/20cr_ensemble_sam_analysis.h5', 
            'a')

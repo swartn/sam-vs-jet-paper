@@ -79,12 +79,18 @@ anom = np.ma.masked_outside(anom,-1.0, 1.0)
 m.pcolor(x, y, anom,vmin=vmin, vmax=vmax, 
          cmap=cmap_anom, ax=axa[7, 1], rasterized=True)
 rmse = np.sqrt( np.mean(anom[0:89,:]**2) )
+
 c5_25_precentile = np.percentile(uas_slope_c5,2.5, axis=0)
 c5_975_precentile = np.percentile(uas_slope_c5,97.5, axis=0)
-mask = ( (slope_ccmp>c5_975_precentile) | 
-                  (slope_ccmp<c5_25_precentile))
-m.plot(x[mask][::2], y[mask][::2], '.k', alpha=0.3, 
-       markersize=0.1, ax=axa[7,1], zorder=1)
+ds = 4 # downsample for stippling
+mask = ( (slope_ccmp[::ds,::ds]>c5_975_precentile[::ds,::ds]) | 
+                  (slope_ccmp[::ds,::ds]<c5_25_precentile[::ds,::ds]))
+
+x2 = x[::ds,::ds]
+y2 = y[::ds,::ds]
+m.plot(x2[mask], y2[mask], '.k', alpha=0.75, 
+       markersize=0.2, ax=axa[7,1], zorder=1)
+
 axa[7,0].text(xpt, ypt, 'CMIP5 mean')
 axa[7,1].text(xpt, ypt, str(np.round(rmse,2)))
 

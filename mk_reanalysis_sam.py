@@ -1,3 +1,9 @@
+"""
+Computes the sam index for various reanalyses and saves them to DataFrames in HDF5.
+
+.. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
+"""
+
 import cdo as cdo; cdo = cdo.Cdo() # recommended import
 import os
 import numpy as np

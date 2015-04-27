@@ -191,8 +191,8 @@ def mod_proc(df, axtrend, tys, tye ):
                 mod_trend_std =  np.std( mod_trends[ : , k ] )
                 c = sp.stats.t.isf(0.025, num_models - 1 )
                 mod_95_ci = ( c * mod_trend_std ) / np.sqrt( num_models )
-                mod_5thp = np.percentile( mod_trends[ : , k ] , 5 )
-                mod_95thp = np.percentile( mod_trends[ : , k ] , 95 )
+                mod_5thp = np.percentile( mod_trends[ : , k ] , 2.5 )
+                mod_95thp = np.percentile( mod_trends[ : , k ] , 97.5 )
                 axtrend.plot( [ k , k ] , [ mod_5thp  , mod_95thp ],'r', 
                              linewidth=4, alpha=0.25)
                 axtrend.plot([k, k], [mod_trend_mean - mod_95_ci, 

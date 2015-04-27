@@ -1,4 +1,13 @@
-# This is for the ensemble mean 20CR computed from the individual members.
+"""
+Computes kinematic properties of the jet for the 20CR ensemble mean and saves them 
+to DataFrames in HDF5.
+
+This is for the ensemble mean 20CR computed from the individual members and using 
+10 m winds.
+
+.. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
+"""
+
 import os
 import numpy as np
 from netCDF4 import Dataset,num2date,date2num

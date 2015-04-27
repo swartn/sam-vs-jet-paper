@@ -1,5 +1,10 @@
-# Calculate the kinematic properties of the SH westerly jet and save them in an HDF 
-# store containing PD DataFrames.
+"""
+Calculate the kinematic properties of the SH westerly jet for the CMIP5 ensemble 
+and saves them in an HDF store containing PD DataFrames.
+
+.. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
+"""
+
 import os
 import numpy as np
 from netCDF4 import Dataset,num2date,date2num
