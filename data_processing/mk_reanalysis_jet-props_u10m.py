@@ -18,6 +18,7 @@ import cmipdata as cd
 import cdo as cdo; cdo = cdo.Cdo() # recommended import
 import matplotlib.pyplot as plt
 plt.ion()
+from calc_shw_jet_properties import jetprop
 
 # The data location
 pp = '/raid/ra40/data/ncs/reanalyses/uwnd/'
@@ -32,40 +33,6 @@ names = [ r + tail for r in rean ]
 # First make a zonal mean
 #for name in names:
 #    cdo.zonmean(input='-selvar,uwnd ' + pp + name, output= pp + 'zonmean_' + name)
-
-
-def jetprop(uwnd, lat):
-    region = (lat>-70) & (lat<-20)
-    rlat = lat[region]
-    ruwnd = uwnd[: ,region]
-
-    if rlat[10] < rlat[1]:
-        rlat = rlat[::-1]
-        ruwnd = ruwnd[:, ::-1] 
-    jetmax = ruwnd.max(axis=1)
-
-    jetmax2 = np.zeros( len(jetmax) )
-    latofmax = np.zeros( len(jetmax) )
-    jetwidth = np.zeros( len(jetmax) )
-    latn = np.zeros( len(jetmax) ) ; lats = np.zeros( len(jetmax) )
-    yy = np.linspace(-70,-20,201)
-
-    for t in range(len(jetmax)):
-        #print yy, rlat
-        u2 = np.interp(yy, rlat,ruwnd[t, :]) 
-        jetmax2[t] = u2.max()
-        indofmax = u2 == jetmax2[t]
-        lom = yy[ indofmax ]
-        latofmax[t] = lom[0] if lom.shape !=() else lom
-
-        lat_of_gt_halfmax = yy[u2 >= 0.]
-        latn[t] = lat_of_gt_halfmax.max()
-        lats[t] = lat_of_gt_halfmax.min()
-        jetwidth = latn - lats
-        #plt.plot(rlat, ruwnd[t, :])
-        #plt.plot(yy, u2, 'r--')
-        #raw_input('go?')
-    return  jetmax2, latofmax, latn, lats, jetwidth    
 
 df_umax = pd.DataFrame()
 df_uloc = pd.DataFrame()
