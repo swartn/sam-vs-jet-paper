@@ -101,6 +101,6 @@ plt.colorbar(cot, cax=tl, label='m s$^{-1}$\n decade$^{-1}$',
              spacing='proportional', boundaries=bounds)
 
 axa[0,0].set_title('u10m trends 1951-2011')
-plt.savefig('uas_trend_maps_20CR_vs_C5_1951-2011.pdf'
+plt.savefig('../plots/uas_trend_maps_20CR_vs_C5_1951-2011.pdf'
             ,bbox_inches='tight', dpi=300)
           

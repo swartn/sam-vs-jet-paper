@@ -14,7 +14,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pandas as pd
 from dateutil.parser import parse
-import sam_analysis_data as sad
+#import sam_analysis_data as sad
 
 """ Analyze time series in 20CR, CMIP5 and HadSLP2r
 
@@ -204,5 +204,5 @@ f1a.legend(ncol=3, prop={'size':12}, bbox_to_anchor=(1.05, 1.3),
            frameon=False)
 
 # save some pdfs
-plt.figure(1).savefig('sam_pos_str_width_ts_v5.pdf',format='pdf',dpi=300,
+plt.figure(1).savefig('../plots/sam_pos_str_width_ts_v5.pdf',format='pdf',dpi=300,
                       bbox_inches='tight')

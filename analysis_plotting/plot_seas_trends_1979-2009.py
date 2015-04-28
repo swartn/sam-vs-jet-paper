@@ -4,10 +4,13 @@ reanalyses and CMIP5.
 
 Outputs:
 --------
+This script produces 4 plots:
 
-- Trends by season
-- Jet strength vs SAM trends by season scatter plot
-- Jet properties vs SAM trends scatter plot.
+1. Trends in the above variables over 1951-2011.
+2. The relationship between SAM and strength trends.
+3. The relationship between SAM and trends in the other variables, as well as 
+trends in SAM and the climatology of the variables. (e.g. SAM trend vs 
+climatological jet position).
 
 .. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
 """
@@ -264,8 +267,8 @@ plt.figure(2).subplots_adjust(hspace=0.06, wspace=0.05, right=0.8, left=0.2)
 f2a.legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.5, 1.05),
            handlelength=0.01, handletextpad=1, borderpad=1, frameon=False )
 
-plt.figure(2).savefig('sam_pos_str_width_trends_1979-2009.pdf',format='pdf',
-                      dpi=300, bbox_inches='tight')
+plt.figure(2).savefig('../plots/sam_pos_str_width_trends_1979-2009.pdf',
+                      format='pdf', dpi=300, bbox_inches='tight')
 
 ##-------------------------------------------------------------------------------
 ##                        Do SAM vs SPEED trend plots
@@ -341,7 +344,7 @@ plt.figure(2).savefig('sam_pos_str_width_trends_1979-2009.pdf',format='pdf',
 
 #[ gs2[m,n].text(-0.2, 3, seas_label[m][n] ) for m in range(3) for n in range(2)  ]
 
-#plt.savefig('sam_v_jet_1979_2009.pdf',format='pdf',dpi=300,
+#plt.savefig('../plots/sam_v_jet_1979_2009.pdf',format='pdf',dpi=300,
             #bbox_inches='tight' )
 
 ################################################################################
@@ -396,5 +399,5 @@ plt.figure(2).savefig('sam_pos_str_width_trends_1979-2009.pdf',format='pdf',
 #gs2[0,1].legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.55,
 #1.05),handlelength=0.01, handletextpad=1, borderpad=1, frameon=False )
 
-#plt.savefig('sam_trends_v_jet_scatter_1979-2009.pdf',format='pdf',dpi=300,
+#plt.savefig('../plots/sam_trends_v_jet_scatter_1979-2009.pdf',format='pdf',dpi=300,
             #bbox_inches='tight')

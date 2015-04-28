@@ -131,5 +131,5 @@ for i, ax in enumerate(fig.axes):
    #for the minor ticks, use no labels; default NullFormatter
    ax.xaxis.set_minor_locator(minorLocator)
 
-plt.savefig('press_and_sam_comparison_all.pdf'
+plt.savefig('../plots/press_and_sam_comparison_all.pdf'
             , bbox_inches = 'tight', dpi=300) 

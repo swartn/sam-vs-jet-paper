@@ -111,8 +111,8 @@ plt.colorbar(com, cax=tl, label=r'$\times 10^{-2}$ m s$^{-1}$ decade$^{-1}$',
             spacing='proportional', boundaries=bounds) 
 #fig.delaxes(axm)
 fig.delaxes(axb)
-plt.savefig('psl_maps_20CR_trends-uncertainty_1951-2011.pdf',bbox_inches=
-'tight', dpi=300)
+plt.savefig('../plots/psl_maps_20CR_trends-uncertainty_1951-2011.pdf',
+            bbox_inches='tight', dpi=300)
 
 
 
