@@ -1,7 +1,9 @@
 *.pyc
 *.nc
+*.h5
 *.txt
 *.pdf
 *.png
 *.eps
 *.kate-swp
+*~

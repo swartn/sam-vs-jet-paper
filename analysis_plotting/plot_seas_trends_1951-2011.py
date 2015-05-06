@@ -4,32 +4,6 @@ reanalyses and CMIP5.
 
 Outputs:
 --------
-
-- Trends by season
-- Jet strength vs SAM trends by season scatter plot
-- Jet properties vs SAM trends scatter plot.
-
-.. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
-"""
-import numpy as np
-import scipy as sp
-import trend_ts
-reload(trend_ts)
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-import pandas as pd
-from dateutil.parser import parse
-import sam_analysis_data as sad
-plt.close('all')
-plt.ion()
-font = {'size'   : 12}
-plt.rc('font', **font)
-
-""" Analyze changes in the Southern Annular Mode and SH westerly jet strength, 
-position and width in the CMIP5 models and in six reanalyses.
-
 This script produces 4 plots:
 
 1. Trends in the above variables over 1951-2011.
@@ -38,9 +12,22 @@ This script produces 4 plots:
 trends in SAM and the climatology of the variables. (e.g. SAM trend vs 
 climatological jet position).
 
-Neil Swart, 
-Neil.Swart@ec.gc.ca
+.. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
 """
+import numpy as np
+import scipy as sp
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import pandas as pd
+import trend_ts
+
+# set plotting params.
+plt.close('all')
+plt.ion()
+font = {'size'   : 12}
+plt.rc('font', **font)
 
 #============================================#
 # Define the years for the trend analysis
@@ -53,11 +40,18 @@ tye = 2011 # stop (inclusive)
 # the names of the reanalyses we are using (in column-order of the dataframes)
 rean     = ['R1', 'R2', '20CR', 'ERA', 'CFSR', 'MERRA']
 # corresponding colors to use for plotting each reanalysis
-rlc      = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm' ] 
+rlc      = ['k', 'y','g', 'b', 'c', 'm'] 
+
+rean     = ['20CR']
+rlc      = ['g']  
+ls      = ['_g']  
+
+
 # names of the seasons
 seas     = ['mam', 'jja', 'son', 'djf', 'ann']  
 lensea   = len( seas )
 xtics    = [datetime(1870,1,1) + relativedelta(years=20*jj) for jj in range(8) ]
+
 #============================================#
 # Load the data which is saved in HDF. The data are in pandas dataframes. There 
 # is one dataframe for each variable of interest (SAM, jet speed = maxpsd, jet 
@@ -67,23 +61,8 @@ xtics    = [datetime(1870,1,1) + relativedelta(years=20*jj) for jj in range(8) ]
 #column refers to an individual reanalysis or CMIP5 model. The column order of 
 #the reanalyses is given in the variable rean above. We're not differentiating 
 #models by name here.
-press, maxspd, locmax, width, modpress, modmaxspd,\
-                              modlocmax, modwidth = sad.load_sam_df()
-press.columns = rean
-maxspd.columns = rean
-locmax.columns = rean
-width.columns = rean 
 
-rtodrop = ['R1', 'R2', 'ERA', 'CFSR', 'MERRA']
-press = press.drop(rtodrop,1)
-maxspd = maxspd.drop(rtodrop,1)
-locmax = locmax.drop(rtodrop,1)
-width = width.drop(rtodrop,1)
-rean     = ['20CR']
-rlc      = ['g']  
-ls      = ['_g']  
 
-# load the reanalysis data
 # load in the reanlaysis data
 h5f = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/rean_sam.h5', 'a')
 dfr = h5f['zonmean_sam/df']
@@ -101,11 +80,6 @@ df_20cr_ens_sam.columns = np.arange(1,57)
 df_20cr_ens_locmax = h5f_20CR['locmax']
 df_20cr_ens_maxspd = h5f_20CR['maxspd']
 df_20cr_ens_width = h5f_20CR['width']
-
-# Now get the same data calculated for the ensemble mean
-#df_20cr_ensmean_locmax = h5f_20CR['ensmean/locmax']
-#df_20cr_ensmean_maxspd = h5f_20CR['ensmean/maxspd']
-#df_20cr_ensmean_width = h5f_20CR['ensmean/width']
 h5f_20CR.close()
 
 # load in the python calculated model data
@@ -134,7 +108,7 @@ def get_seasons(df):
     df.mon = df
     return df
 
-def year_lim( df , ys , ye ):
+def year_lim(df, ys, ye):
     """ Limits the dataframe df to between years starting in ys and ending in 
     ye inclusive"""
     dfo = df[ ( df.index.year >= ys ) & ( df.index.year <= ye ) ]
@@ -145,7 +119,7 @@ def year_lim( df , ys , ye ):
          df.index.year.max() 
     return dfo
     
-def calc_trends( dfp, var, ys , ye ):
+def calc_trends(dfp, var, ys , ye ):
     """Calculate linear trend in the dataframe dfp between years (datetime 
     indices) ys and ye inclusive. Saves the trend as dfp.slope and calculates 
     and saves the linear prediction (dfp.yhat) for all input years.
@@ -241,35 +215,27 @@ ls = ['.k']
 hadslp_sam_trends = rean_proc(dfhadslp, axtrend=f3a, tys=tys, tye=tye,
                               mew=2, ms=10)   
 ls = ['_g'] 
-#mod_sam_trends = mod_proc(modpress, f3a, tys=tys, tye=tye)
 mod_sam_trends = mod_proc(df_c5_ens_sam, f3a, tys=tys, tye=tye, color='r')
 tcr_sam_trends = mod_proc(df_20cr_ens_sam, f3a, tys=tys, tye=tye, color='g',
                           label='20CR')
-#sam_trends = rean_proc(press, axtrend=f3a, tys=tys, tye=tye)   
 
 #========= Jet max speed - uspd ===============#
 f3b = plt.subplot(423)
-#mod_uspd_trends = mod_proc(modmaxspd, f3b, tys=tys, tye=tye)
 mod_uspd_trends = mod_proc(df_c5_ens_maxspd, f3b, tys=tys, tye=tye, color='r')
 tcr_uspd_trends = mod_proc(df_20cr_ens_maxspd, f3b, tys=tys, tye=tye, color='g',
                           label='20CR')
-#uspd_trends = rean_proc(maxspd, axtrend=f3b, tys=tys, tye=tye)       
 
 #========= Location - locmax ===============#
 f3c = plt.subplot(425)
-#mod_pos_trends = mod_proc(modlocmax, f3c, tys=tys, tye=tye)
 mod_pos_trends = mod_proc(df_c5_ens_locmax, f3c, tys=tys, tye=tye, color='r')
 tcr_pos_trends = mod_proc(df_20cr_ens_locmax, f3c, tys=tys, tye=tye, color='g',
                           label='20CR')
-#pos_trends = rean_proc(locmax, axtrend=f3c, tys=tys, tye=tye)   
 
 #========= Width ===============#
 f3d = plt.subplot(427)
-#mod_width_trends = mod_proc(modwidth, f3d, tys=tys, tye=tye)
 mod_width_trends = mod_proc(df_c5_ens_width, f3d, tys=tys, tye=tye, color='r')
 tcr_width_trends = mod_proc(df_20cr_ens_width, f3d, tys=tys, tye=tye, color='g',
                           label='20CR')
-#width_trends = rean_proc(width, axtrend=f3d, tys=tys, tye=tye) 
 
 # ========= Do some figure beautifying and labelled etc ========= #
 panlab = ['a)', 'b)', 'c)', 'd)', 'e)', 'f)' ,'g)', 'h)']
@@ -390,7 +356,6 @@ for i,ord in enumerate(order):
     plt.sca( gs2.flatten()[ axorder[i] ] )
     relp( mod_uspd_trends[ : , ord ],mod_sam_trends[ : , ord ], reg=0.01,
          label='CMIP5' )
-    #reanp( uspd_trends[ : , ord ], sam_trends[ : , ord ] )
     relp( tcr_uspd_trends[ : , ord ],tcr_sam_trends[ : , ord ], reg=-0.225,
          color='g', label='20CR')
 
@@ -410,16 +375,6 @@ gs2[0,0].legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.8,
 plt.savefig('../plots/sam_v_uspd_seas_1951_2011.pdf',format='pdf',dpi=300,
             bbox_inches='tight' )
 
-#print
-#print 'Rean. vs Mod mean trend:'
-#print
-#print 'SAM'
-#print  np.mean( sam_trends[ 0:3 , 4 ] ) / np.mean( mod_sam_trends[ : , 4 ] )
-#print
-#print 'Speed'
-#print   np.mean( uspd_trends[ 0:3 , 4 ] ) / np.mean( mod_uspd_trends[ : , 4 ] )
-
-
 ################################################################################
 ########################
 
@@ -431,12 +386,6 @@ plt.savefig('../plots/sam_v_uspd_seas_1951_2011.pdf',format='pdf',dpi=300,
 f, gs2 = plt.subplots(3,2, sharey=True)
 f.set_size_inches((8,8), forward=True )
 gs2[0,0].set_ylim([-0.5,2])
-
-# compute climatological uspd, pos and width in the reanalyses.
-rsam = year_lim( press , tys , tys ).mean()
-rpos = year_lim( locmax , tys , tys ).mean()
-ruspd = year_lim( maxspd , tys , tys ).mean()
-rwidth = year_lim( width , tys , tys ).mean()
 
 # compute climatological uspd, pos and width in the CMIP5 models.
 modsam = year_lim( df_c5_ens_sam , tys , tys ).mean()
@@ -463,7 +412,6 @@ for i,var in enumerate(lvars):
          , corr=True)
     relp(eval('tcr_' + var + '_trends' + '[:,s]' ) , tcr_sam_trends[:,s] 
          , corr=False, color='g', label='20CR', alpha=1, line=False)    
-    #reanp( eval(var + '_trends[:,s]'), sam_trends[:,s] ,trend=False)
     gs2[i,0].set_xlabel(yaxlab[i+1].replace('\n',''))
     gs2[i,0].xaxis.set_major_locator( mpl.ticker.MaxNLocator(4, prune='both'))
     plt.sca( gs2[i,1] )
@@ -471,7 +419,6 @@ for i,var in enumerate(lvars):
     relp( eval('tcr' + var ) , tcr_sam_trends[:,s], corr=False, 
          color='g',label='20CR', alpha=1, line=False )
     gs2[i,1].set_xlabel(yaxlab1[i+1].replace('\n',''))
-    #reanp( np.array(eval('r' + var)), sam_trends[:,s].T ,trend=False)
     gs2[i,0].xaxis.set_major_locator( mpl.ticker.MaxNLocator(4, prune='both'))
     gs2[i,1].xaxis.set_major_locator( mpl.ticker.MaxNLocator(6)) 
     

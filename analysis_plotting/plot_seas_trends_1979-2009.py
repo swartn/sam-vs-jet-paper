@@ -17,16 +17,13 @@ climatological jet position).
 import numpy as np
 import scipy as sp
 import trend_ts
-reload(trend_ts)
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pandas as pd
-from dateutil.parser import parse
-import sam_analysis_data as sad
 
-# set font size
+# set font size and plotting options
 plt.close('all')
 plt.ion()
 font = {'size'   : 12}
@@ -34,11 +31,8 @@ plt.rc('font', **font)
 
 #============================================#
 # Define the years for the trend analysis
-
-# Period 1
 tys = 1979 # start (inclusive)
 tye = 2009 # stop (inclusive)
-
 #============================================#
 #
 # Define some global variables that we use repeatedly
@@ -62,13 +56,6 @@ xtics    = [datetime(1870,1,1) + relativedelta(years=20*jj)
 #column refers to an individual reanalysis or CMIP5 model. The column order of 
 #the reanalyses is given in the variable rean above. We're not differentiating 
 #models by name here.
-press, maxspd, locmax, width, modpress, modmaxspd,\
-                              modlocmax, modwidth = sad.load_sam_df()
-press.columns = rean
-maxspd.columns = rean
-locmax.columns = rean
-width.columns = rean    
-
 
 # load in the python calculated reanalysis data
 h5f_rean = pd.HDFStore(
@@ -171,9 +158,9 @@ def rean_proc(dfr, axtrend=None, tys=None, tye=None, mew=2, ms=15):
 
             axtrend.set_xticks(np.arange(lensea + 1))
             axtrend.plot([-1, 5], [0, 0], 'k--')  
-    return rean_trends                   
-	  
-def mod_proc(df, axtrend, tys, tye ):
+    return rean_trends      
+
+def mod_proc(df, axtrend, tys, tye, color='r', label='CMIP5'):
     """ Loop over the columns of df calculate trends for each one, plus 
     plot the ensemble trend stats"""
     num_models =  len( df.columns )
@@ -193,39 +180,42 @@ def mod_proc(df, axtrend, tys, tye ):
                 mod_95_ci = ( c * mod_trend_std ) / np.sqrt( num_models )
                 mod_5thp = np.percentile( mod_trends[ : , k ] , 2.5 )
                 mod_95thp = np.percentile( mod_trends[ : , k ] , 97.5 )
-                axtrend.plot( [ k , k ] , [ mod_5thp  , mod_95thp ],'r', 
+                axtrend.plot( [ k , k ] , [ mod_5thp  , mod_95thp ],color, 
                              linewidth=4, alpha=0.25)
                 axtrend.plot([k, k], [mod_trend_mean - mod_95_ci, 
-                             mod_trend_mean + mod_95_ci ], 'r', linewidth=4) 
+                             mod_trend_mean + mod_95_ci ], color, linewidth=4) 
                 if nm == 'ann':
-                    axtrend.plot(k, np.mean(mod_trends[:, k]), '_r', ms=15, 
-                                 mew=2, label='CMIP5')
+                    axtrend.plot(k, np.mean(mod_trends[:, k]), '_' + color, 
+                                 ms=15,                         
+                                 mew=2, label=label)
                 else:
-                    axtrend.plot(k, np.mean(mod_trends[:, k]), '_r', ms=15, 
+                    axtrend.plot(k, np.mean(mod_trends[:, k]), '_' + color, ms=15, 
                                  mew=2, label='')    
-    return mod_trends                    
+    axtrend.set_xticks(np.arange(lensea + 1))
+    axtrend.plot([-1, 5], [0, 0], 'k--')                 
+    return mod_trends   	  
                           
 #========= SAM - press ===============#
 f2 = plt.figure(2)
 plt.figure(2).set_size_inches((8,8), forward=True )
 f2a = plt.subplot(421)
 sam_trends = rean_proc(df_rean_sam, axtrend=f2a, tys=tys, tye=tye)   
-mod_sam_trends = mod_proc(modpress, f2a, tys=tys, tye=tye)
+mod_sam_trends = mod_proc(df_c5_ens_sam, f2a, tys=tys, tye=tye, color='r')
 
 #========= Jet max speed - uspd ===============#
 f2b = plt.subplot(423)
 uspd_trends = rean_proc(df_rean_maxspd, axtrend=f2b, tys=tys, tye=tye)       
-mod_uspd_trends = mod_proc(modmaxspd, f2b, tys=tys, tye=tye)
+mod_uspd_trends = mod_proc(df_c5_ens_maxspd, f2b, tys=tys, tye=tye, color='r')
 
 #========= Location - locmax ===============#
 f2c = plt.subplot(425)
 pos_trends = rean_proc(df_rean_locmax, axtrend=f2c, tys=tys, tye=tye)   
-mod_pos_trends = mod_proc(modlocmax, f2c, tys=tys, tye=tye)
+mod_pos_trends = mod_proc(df_c5_ens_locmax, f2c, tys=tys, tye=tye, color='r')
 
 #========= Width ===============#
 f2d = plt.subplot(427)
 width_trends = rean_proc(df_rean_width, axtrend=f2d, tys=tys, tye=tye)      
-mod_width_trends = mod_proc(modwidth, f2d, tys=tys, tye=tye)
+mod_width_trends = mod_proc(df_c5_ens_width, f2d, tys=tys, tye=tye, color='r')
 
 # ========= Do some figure beautifying and labelled etc ========= #
 panlab = ['a)', 'b)', 'c)', 'd)', 'e)', 'f)' ,'g)', 'h)']
