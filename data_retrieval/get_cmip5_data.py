@@ -26,7 +26,8 @@ def fetch_cmip5(experiment, variable, time_frequency, models, ensembles):
     conn = SearchConnection('http://pcmdi9.llnl.gov/esg-search', distrib=True)
     ctx = conn.new_context(project='CMIP5', experiment=experiment, 
                            time_frequency=time_frequency, variable=variable, 
-                           model=models, ensemble=ensembles)
+                           model=models, ensemble=ensembles, latest=True,
+                           replica=True, download_emptypath='unknown')
 
     a = ctx.get_download_script()
     
