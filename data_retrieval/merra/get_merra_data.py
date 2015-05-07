@@ -8,19 +8,31 @@
 .. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
 """
 import subprocess
+import glob
+import os
+import mv_to_dest
 
-def fetch_join_merra(url_file, varname):
-    subprocess.Popen(['wget', '--content-disposition', '-i', url_file]).wait()
-    
-    subprocess.Popen(['cdo', 'mergetime', 'MERRA*', 
-                      'MERRA_' + varname + 'mon.mean.nc']).wait()
-    subprocess.Popen(['rm', '-f', '*SUB.nc']).wait() # clean up
-
+def get_merra_data(destination='.'):
+    varnames = ['slp', 'u10m', 'uflx']
+    for var in varnames:   
+        subprocess.Popen(['wget', '--content-disposition', '-i', url_file + 
+                          var]).wait()
+        
+        # time-merge the data
+        subprocess.Popen(['cdo', 'mergetime', 'MERRA*', 
+                         'MERRA_' + var + 'mon.mean.nc']).wait()
+        
+        # Remove input files
+        files = glob.glob('*SUB.nc')
+        for f in files:
+            os.remove(f)
+        
+    # move to destination
+    files = glob.glob('MERRA*.mon.mean.nc')
+    mv_to_dest.mv_to_dest(destination, *files)   
                   
 if __name__=='__main__':
-    varnames = ['slp', 'u10m', 'uflx']
-    for v in varnames:
-        fetch_join_merra('wget_merra_' + v, v)
+    get_merra_data(destination='../data/')
 
         
   

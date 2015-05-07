@@ -7,3 +7,4 @@
 *.eps
 *.kate-swp
 *~
+data_retrieval/data/*

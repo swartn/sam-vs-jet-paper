@@ -6,13 +6,9 @@ the  NOAA ESRL website.
 """
 import urllib
 import subprocess
+import mv_to_dest
 
-
-def fetch_data(url, ofile):  
-        urllib.urlretrieve(url, ofile)
-
-                  
-if __name__=='__main__':
+def get_r1_r2_20cr_esrl_data(destination='.')        
     # some details of the base urls / paths to data
     baseurl = 'ftp://ftp.cdc.noaa.gov/Datasets/'
     r1p = 'ncep.reanalysis.derived/'  # R1 path
@@ -34,6 +30,14 @@ if __name__=='__main__':
     
     for (path, ofile) in data_path_ofile:
         print 'Saving: ' + baseurl + path + '\nas: ' + ofile +'\n\n'
-        fetch_data(baseurl + path, ofile)
+        urllib.urlretrieve(baseurl + path, ofile)
+
+    # move to destination
+    files = glob.glob('*.mon.mean.nc')
+    mv_to_dest.mv_to_dest(destination, *files)        
+                  
+if __name__=='__main__':
+    get_r1_r2_20cr_esrl_data(destination='./data/')
+    
         
   

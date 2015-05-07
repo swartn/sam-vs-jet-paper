@@ -10,10 +10,12 @@
 
 .. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
 """
-
+import os
+import glob
 import pandas as pd
+import cdo; cdo = cdo.Cdo()
 from ecmwfapi import ECMWFDataServer
-server = ECMWFDataServer()
+import mv_to_dest
 
 def fetch_era_data(variable_dict):
     """ Download data from ECMWF
@@ -42,10 +44,10 @@ def fetch_era_data(variable_dict):
       
           Downloads files to PWD.
     """
-    for varname, params in variables.iteritems():
-        server.retrieve(variable_dict)
+    server = ECMWFDataServer()
+    server.retrieve(variable_dict)
 
-if __name__ == '__main__':
+def get_era_int_data(destination='.'):
     # Generate the date ranges
     dates = pd.date_range('1979-01-01', '2012-12-01', freq='MS')
     date_string = [str(d.year) + str( "%02d" % d.month) + 
@@ -77,10 +79,25 @@ if __name__ == '__main__':
         vdict = variable_dict
         vdict['date'] = date_string
         vdict['target'] = outfilename.format(var=key)
-        for key, val in pdict.iteritems():
-            vdict[key] = val
+        for key2, val in pdict.iteritems():
+            vdict[key2] = val
 
         # fetch the data
-        fetch_era_data(vdict)
+        fetch_era_data(vdict)   
+        
+        # Change variable names
+        old_names = {'uflx' : 'iews', 'u10m' : 'u10', 'slp' : 'msl'}
+        cdo.chname(old_names[key] + ',' + key, input=outfilename.format(var=key),
+                   output='tmp.nc')
+        os.remove(outfilename.format(var=key))
+        os.rename('tmp.nc', outfilename.format(var=key))
+        
+    # move to destination
+    files = glob.glob('ERA-Int*.mon.mean.nc')
+    mv_to_dest.mv_to_dest(destination, *files)   
+
+if __name__ == '__main__':
+    get_era_int_data(destination='../data/')
+
 
 

@@ -10,8 +10,9 @@
 import subprocess
 import glob
 import os
+import mv_to_dest
 
-def get_cfsr_data():
+def get_cfsr_data(destination='.'):
 
     # Define the wget files:
     wget_ouput_files = {'get_cfsr_psl_test.csh' : 'pgblnl.gdas.PRMSL.MSL.grb2' , 
@@ -39,12 +40,16 @@ def get_cfsr_data():
             os.remove(output + '.nc')
 
         if wget == 'get_cfsr_u10m_test.csh':
-            subprocess.Popen(['cdo', 'chname,10u,uwnd','-selvar,10u', 
-                              output + '.nc',  'CFSR_uwnd.mon.mean.nc']).wait()
+            subprocess.Popen(['cdo', 'chname,10u,u10m','-selvar,10u', 
+                              output + '.nc',  'CFSR_u10m.mon.mean.nc']).wait()
             os.remove(output + '.nc')
 
         if wget == 'get_cfsr_uflx_test.csh':
             os.rename(output + '.nc', 'CFSR_uflx.mon.mean.nc')
+            
+    # move to destination
+    files = glob.glob('CFSR*.mon.mean.nc')
+    mv_to_dest.mv_to_dest(destination, *files)    
           
 if __name__=='__main__':
-    get_cfsr_data()
+    get_cfsr_data(destination='../data/')

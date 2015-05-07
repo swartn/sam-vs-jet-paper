@@ -9,8 +9,9 @@
 import subprocess
 import glob
 import os
+import mv_to_dest
 
-def get_ccmp_data():
+def get_ccmp_data(destination='.'):
 
     # make sure permissions are set on the wget.
     subprocess.Popen(['chmod', 'u+x', 'wget_ccmp.sh'])
@@ -31,5 +32,8 @@ def get_ccmp_data():
     for f in files:
         os.remove(f) 
 
+    # move to destination
+    mv_to_dest.mv_to_dest(destination, 'CCMP_198701-201112.nc')
+
 if __name__=='__main__':
-    get_ccmp_data()
+    get_ccmp_data('../data/')

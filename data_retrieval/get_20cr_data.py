@@ -9,9 +9,11 @@ Requires cdo
 """
 import urllib
 import subprocess
-import numpy
+import os
+import glob
+import mv_to_dest
 
-def fetch_data():
+def get_20cr_data(destination='.'):
     # 20CR ensemble data is held in yearly files at the url below:
     baseurl = 'http://portal.nersc.gov/pydap/20C_Reanalysis_ensemble'
     slp_path = '/analysis.derived/prmsl/' 
@@ -24,18 +26,32 @@ def fetch_data():
         urllib.urlretrieve (baseurl + slp_path + slp_filename, slp_filename)
         urllib.urlretrieve (baseurl + u10m_path + u10m_filename, u10m_filename)
 
-
     #time-merge the files into one
-    subprocess.Popen(['cdo', 'mergetime', 'prmsl_*.mnmean.nc',
-                  'prmsl_1871-2012.mon.mean.nc'])
+    prmsl_files = glob.glob('prmsl_*.mnmean.nc')
+    subprocess.Popen(['cdo', '-mergetime', ' '.join(prmsl_files),
+                      'prmsl_1871-2012.mon.mean.nc']).wait()
 
-    subprocess.Popen(['cdo', 'mergetime', 'u10m_*.mnmean.nc',
-                  'u10m_1871-2012.mon.mean.nc'])  
+    u10m_files = glob.glob('u10m_*.mnmean.nc')
+    subprocess.Popen(['cdo', '-mergetime', ' '.join(u10m_files),
+                      'u10m_1871-2012.mon.mean.nc'])  
+
+    # Rename variables and files
+    subprocess.Popen(['cdo', 'chname,prmsl,slp', 
+                      'prmsl_1871-2012.mon.mean.nc',
+                      '20CR_slp.mon.mean.nc']).wait()
+    os.remove('prmsl_1871-2012.mon.mean.nc')
+
+    os.rename('u10m_1871-2012.mon.mean.nc', '20CR_u10m.mon.mean.nc')
+
+    # move to destination
+    files = glob.glob('20CR*.mon.mean.nc')
+    mv_to_dest.mv_to_dest(destination, *files)  
+    
+    # delete old files
+    files = glob.glob('*.mnmean.nc')
+    for f in files:
+        os.remove(f)
                   
 if __name__=='__main__':
-    import timeit
-    print '20CR download time:'
-    print(timeit.timeit("fetch_data()", setup="from __main__ import fetch_data",
-          number=1) )
-    
+    get_20cr_data(destination='./data/')   
                   

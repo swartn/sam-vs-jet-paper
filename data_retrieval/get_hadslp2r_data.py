@@ -9,11 +9,9 @@ import subprocess
 import os
 from netCDF4 import Dataset
 import numpy as np
+import mv_to_dest
 
-def fetch_data(url, ofile):  
-        urllib.urlretrieve(url, ofile)
-
-def make_hadslp2r():
+def get_hadslp2r_data(destination='.'):
     # HadSLP2r url at NOAA ESRL
     url_2 = 'ftp://ftp.cdc.noaa.gov/Datasets.other/hadslp2/slp.mnmean.real.nc'
 
@@ -56,7 +54,10 @@ def make_hadslp2r():
     subprocess.Popen(['cdo', 'mergetime', 
                       'HadSLP2r_185001-200412.mon.mean.nc', 
                       'HadSLP2r_200501-201212.mon.mean.nc',
-                      'HadSLP2r_185001-201212.mon.mean.nc']).wait()
+                      'HadSLP2r_lowvar.mon.mean.nc']).wait()
+
+    # move to destination
+    mv_to_dest.mv_to_dest(destination, 'HadSLP2r_lowvar.mon.mean.nc')   
 
     # cleanup
     infiles = ['HadSLP2r_185001-200412.mon.mean.nc', 
@@ -68,4 +69,4 @@ def make_hadslp2r():
       os.remove(f)
     
 if __name__=='__main__':
-    make_hadslp2r()
+    get_hadslp2r_data(destination='./data/')
