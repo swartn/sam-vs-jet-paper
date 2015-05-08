@@ -28,10 +28,10 @@ dest = os.path.join(os.getcwd(), 'data/')
 get_20cr_data.get_20cr_data(destination=dest)
 
 # CCMP
-get_ccmp_data.get_ccmp_data(destination=dest)
+get_ccmp_data.get_ccmp_data(destination=dest, src_path='./ccmp/')
 
 # CFSR
-get_cfsr_data.get_cfsr_data(destination=dest)
+get_cfsr_data.get_cfsr_data(destination=dest, src_path='./cfsr/')
 
 # ERA-Int
 get_era_int_data.get_era_int_data(destination=dest)
