@@ -19,8 +19,10 @@ def preprocess_observations(destination='./'):
     files.extend(['CCMP_198701-201112.nc', 'HadSLP2r_lowvar.mon.mean.nc'])
 
     for f in files:
-        cdo.remapdis('r360x180', input=f, output='remap_' + f)
-        cdo.zonmean(input='remap_' + f, output='zonal-mean_remap_' + f)
+        if not os.path.isfile('remap_' + f):
+            cdo.remapdis('r360x180', input=f, output='remap_' + f)
+        if not os.path.isfile('zonal-mean_remap_' + f):        
+            cdo.zonmean(input='remap_' + f, output='zonal-mean_remap_' + f)
         #os.remove(f)
 
     # move back
