@@ -10,7 +10,6 @@
 .. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
 """
 import pandas as pd
-import pandas_tools as pt
 import numpy as np
 import matplotlib.pyplot as plt
 import os
