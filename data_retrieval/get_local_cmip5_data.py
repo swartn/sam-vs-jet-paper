@@ -49,8 +49,8 @@ def get_local_cmip5_data():
         for model, experiment, realization, variable, files in ens_remap.iterate():
             for f in files:
                 mv_to_dest.mv_to_dest(f, destination)
-        for model, experiment, realization, variable, files in                       
-                                      ens_zonmean.iterate():
+        for model,experiment,realization,variable,files in
+            ens_zonmean.iterate():
             for f in files:
                 mv_to_dest.mv_to_dest(f, destination)
    
