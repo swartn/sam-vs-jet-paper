@@ -20,36 +20,127 @@ NOTE:
 Some of the data servers require authentication credentials, that you will need to 
 have. Specifically for the CMIP5, CFSR, CCMP and ERA-Interim data - see below.
 
+Also note that these scripts generally worked when I tried them in May 2015, but 
+since webpages are dynamics, I can't help it if data moves or the scripts no longer 
+work. Indeed, there are no guarantees whatsoever, see the license file.
+
 Authentication requirements
 ---------------------------
 
 - CMIP5 data downloaded from the ESGF need credentials, and a valid certificate see 
-  the [ESGF site](http://pcmdi9.llnl.gov/esgf-web-fe/) for details.
+  the [ESGF site](http://pcmdi9.llnl.gov/esgf-web-fe/) for details. When running 
+  the script will ask for your openid and password. Scripts:
+    - `get_cmip5_data.py`
 
 - Data downloaded using the ECMWF API (i.e. ERA-Interim), require registration and
-  and an authentication file at ` $HOME/.ecmwfapirc`. See 
-  (https://software.ecmwf.int/wiki/display/WEBAPI/Access+ECMWF+Public+Datasets)
+  and an authentication file needs to be placed at ` $HOME/.ecmwfapirc`. See 
+ [ECMWF public datasets page]
+(https://software.ecmwf.int/wiki/display/WEBAPI/Access+ECMWF+Public+
+Datasets ). Scripts:
+    - `get_era_int_data.py`
+
 
 - Data downloaded from the [CISL Research Data Archive](http://rda.ucar.edu/)
-  require login credentials. These login credentials must be put into the wget
-  scripts for the CFSR and CCMP data, or they will fail (see below).
-  
-Data specifics and scripts
---------------------------
+  require login credentials. These login credentials must be manually written into 
+  the wget scripts (`.csh files`) for the CFSR and CCMP data, or they will fail. 
+  Scripts:
+    - ccmp/`get_ccmp_data.py`
+    - ccmp/`wget_ccmp.sh`
+    - cfsr/`get_cfsr_data.py`
+    - cfsr/`get_cfsr_*.csh`
+
+Data specifics and Notes
+-------------------------
 
 ### CMIP5 data
-script : get_cmip5_data.py
+script : `get_cmip5_data.py`
+
 authentication : ESGF credentials required (will be requested by wget scripts).
+
 notes : The script provided attempts to download the psl, uas and tauu data for
         ensemble member 1 of the 30 CMIP5 models used in the paper. Unfortunately,
         because the ESGF nodes and data are dynamic, and the way 
         searching/downloading is handled it's hard to ensure that the data for all 
-        30 models is downloaded everytime. Alternative strategies are to manually
-        download the data from the [ESGF
-        website](http://pcmdi9.llnl.gov/esgf-web-fe/), or from other sources. If you
-        have the data available locally, you could just use the processing section 
-        of the script. Processing mostly involves time-merging the files across the 
-        historical and RCP4.5 experiments.
+        30 models is downloaded everytime. During testing, I struggled to get more 
+        than about 11 models this way, even though many more are available. 
+        Alternative strategies are to manually download the data from the [ESGF
+        website](http://pcmdi9.llnl.gov/esgf-web-fe/), or from other sources and 
+        then just do the processing on the local files (see below), which is what
+        I ultimately did. This script also does time-merging, remapping and zonal
+        means.
+
+script : `get_local_cmip5_data.py`
+
+authentication : None
+
+notes : This script is used to process the CMIP5 data if it is already available on 
+        local disk. It is an example, and the paths are specific to my machine. You 
+        will need to change where data is linked in from.       
         
+### R1, R2 and 20CR ensemble mean
+script : `get_r1_r2_20cr_esrl_data.py`
+
+authentication : None
+
+notes : This works well since no authentication is needed. 
         
+### 20CR individual ensemble member files
+script : `get_20cr_data.py`
+
+authentication : None
+
+notes : This works well since no authentication is needed. Files are downloaded on 
+a per year basis, then time merged afterwards.
+
+### HadSLP2r_lowvar
+script : `get_hadslp2r_data.py`
+
+authentication : None
+
+notes : This works well since no authentication is needed. The process of getting 
+        the HadSLP2r data from the ESRL website, and then getting the 
+        HadSLP2r_lowvar data (covering 2005-2012) from the MetOffice site, and 
+        merging the two together is a bit messy. This is mostly because the 
+        metoffice HadSLP2r_lowvar netCDF file is not CF compliant, and they do not 
+        provide the baseline HadSLP2r in netCDF format (hence getting it from ESRL).
         
+### CFSR
+script : cfsr/`get_cfsr_data.py`
+
+authentication : requires http://rda.ucar.edu/ login credentials that must be 
+                 manually inserted in the `email` and `passwd` fields in the `.csh` 
+                 wget scripts in the cfsr directory.
+
+notes : 
+
+### CCMP
+script : ccmp/`get_ccmp_data.py`
+
+authentication : requires http://rda.ucar.edu/ login credentials that must be 
+                 manually inserted in the `email` and `passwd` fields in the `.csh` 
+                 wget scripts in the ccmp directory.
+
+notes : data is quite large and takes some time to download 
+
+### MERRA
+script : merra/`get_merra_data.py`
+
+authentication : None
+
+notes : This works well since no authentication is needed. Files are large and take 
+some time to download and come in individual months. Time joining done afterwards.
+
+### ERA-Int
+script : `get_era_int_data.py`
+
+authentication : requires an authentication file needs to be placed at ` 
+                 $HOME/.ecmwfapirc`.
+
+notes :  This ECMWF api works well.
+
+### Marshall
+script : marshall_sam/`get_marshall_data.py`
+
+authentication : None
+
+notes : 

@@ -73,10 +73,16 @@ def get_cmip5_data(destination='.'):
         ens = cd.mkensemble(filepattern)
         ens = cd.cat_experiments(ens, var, 'historical', 'rcp45') 
         
-        for model, experiment, realization, variable, files in ens.iterate():
-            for f in files:
-                mv_to_dest.mv_to_dest(destination, f)
-              
+        # remap to a 1x1 grid
+        ens_remap = cd.remap(ens,remap='r360x180', delete=True)
+
+        # Compute zonal means
+        ens_zonmean = cd.zonmean(ens_remap, delete=False)
+
+        #Move files to destination
+        files = glob.glob('*' + var + '*.nc')
+        mv_to_dest.mv_to_dest(destination, *files)
+   
 if __name__=='__main__':
      get_cmip5_data(destination='./data/')
     

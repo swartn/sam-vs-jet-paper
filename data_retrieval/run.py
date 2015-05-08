@@ -42,10 +42,13 @@ get_r1_r2_20cr_esrl_data.get_r1_r2_20cr_esrl_data(destination=dest)
 # MERRA
 get_merra_data.get_merra_data(destination=dest, src_path='./merra/')
 
-# CMIP5
-get_cmip5_data.get_cmip5_data(destination=dest)
-
 # Marshall SLP data
 get_marshall_data.get_marshall_data(destination=dest, 
                                      src_path='./marshall_sam/')
 
+# HadSLP2r_lowvar data
+get_hadslp2r_data.get_hadslp2r_data(destination=dest)
+
+# CMIP5
+#get_cmip5_data.get_cmip5_data(destination=dest)
+get_local_cmip5_data.get_local_cmip5_data(destination=dest)
