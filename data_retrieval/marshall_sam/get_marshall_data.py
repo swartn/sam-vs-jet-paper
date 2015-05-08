@@ -15,7 +15,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-def get_marshall_data(destination='./')
+def get_marshall_data(destination='./'):
     # data is contained in .dat files here and just needs some processing
     
     #load the data into pandas
