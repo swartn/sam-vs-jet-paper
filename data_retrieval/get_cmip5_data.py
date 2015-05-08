@@ -75,7 +75,7 @@ def get_cmip5_data(destination='.'):
         
         for model, experiment, realization, variable, files in ens.iterate():
             for f in files:
-                mv_to_dest.mv_to_dest(f, destination)
+                mv_to_dest.mv_to_dest(destination, f)
               
 if __name__=='__main__':
      get_cmip5_data(destination='./data/')

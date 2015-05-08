@@ -33,7 +33,7 @@ def process_local_cmip5_data(var):
     ens_zonmean = cd.zonmean(ens_remap, delete=False)
     return ens_remap, ens_zonmean
 
-def get_local_cmip5_data():
+def get_local_cmip5_data(destination='./'):
     variables = ['uas', 'psl', 'tauu']
     for var in variables:
         # Soft-link in the CMIP5 data from elsewhere on disk
@@ -48,8 +48,7 @@ def get_local_cmip5_data():
         
         # Move files to destination
         files = glob.glob('*' + var + '*.nc')
-        for f in files:
-            mv_to_dest.mv_to_dest(f)
+        mv_to_dest.mv_to_dest(destination, *files)
    
 if __name__ == '__main__':   
     get_local_cmip5_data(destination='./data/')
