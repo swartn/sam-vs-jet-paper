@@ -10,13 +10,14 @@
 import subprocess
 import glob
 import os
+import cdo
 import mv_to_dest
 
-def get_merra_data(destination='.'):
+def get_merra_data(destination='.', src_path='./'):
     varnames = ['slp', 'u10m', 'uflx']
     for var in varnames:   
-        subprocess.Popen(['wget', '--content-disposition', '-i', url_file + 
-                          var]).wait()
+        wget_file = os.path.join(src_path, 'wget_merra_' + var)
+        subprocess.Popen(['wget', '--content-disposition', '-i', wget_file]).wait()
         
         # time-merge the data
         subprocess.Popen(['cdo', 'mergetime', 'MERRA*', 
@@ -26,7 +27,11 @@ def get_merra_data(destination='.'):
         files = glob.glob('*SUB.nc')
         for f in files:
             os.remove(f)
-        
+    
+    # Change some variable names
+    cdo.chname('taux,uflx', input='MERRA_uflx.mon.mean.nc', output='tmp1.nc')
+    os.rename('tmp1.nc',  'MERRA_uflx.mon.mean.nc')
+    
     # move to destination
     files = glob.glob('MERRA*.mon.mean.nc')
     mv_to_dest.mv_to_dest(destination, *files)   

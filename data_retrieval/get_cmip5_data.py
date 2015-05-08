@@ -27,7 +27,7 @@ def fetch_cmip5(experiment, variable, time_frequency, models, ensembles):
     ctx = conn.new_context(project='CMIP5', experiment=experiment, 
                            time_frequency=time_frequency, variable=variable, 
                            model=models, ensemble=ensembles, latest=True,
-                           replica=True, download_emptypath='unknown')
+                           download_emptypath='unknown')
 
     a = ctx.get_download_script()
     
@@ -71,7 +71,7 @@ def get_cmip5_data(destination='.'):
         # time-merge the data across the historical and rcp45 experiments
         filepattern = var + '_Amon*.nc'
         ens = cd.mkensemble(filepattern)
-        ens = cd.cat_experiments(ens, 'uas', 'historical', 'rcp45') 
+        ens = cd.cat_experiments(ens, var, 'historical', 'rcp45') 
         
         for model, experiment, realization, variable, files in ens.iterate():
             for f in files:

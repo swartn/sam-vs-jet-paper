@@ -11,13 +11,14 @@ import glob
 import os
 import mv_to_dest
 
-def get_ccmp_data(destination='.'):
+def get_ccmp_data(destination='.', src_path='./'):
 
     # make sure permissions are set on the wget.
-    subprocess.Popen(['chmod', 'u+x', 'wget_ccmp.sh'])
+    wget_file = os.path.join(src_path, 'wget_ccmp.sh') 
+    subprocess.Popen(['chmod', 'u+x', wget_file])
 
     # download the data, which is specified in the defined wget script.
-    #subprocess.Popen(['./wget_ccmp.sh']).wait()
+    subprocess.Popen(['./' + wget_file]).wait()
 
     # unzip the data
     gzfiles = glob.glob('month_*_v11l35flk.nc.gz')

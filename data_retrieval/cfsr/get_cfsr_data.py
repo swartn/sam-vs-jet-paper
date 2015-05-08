@@ -12,7 +12,7 @@ import glob
 import os
 import mv_to_dest
 
-def get_cfsr_data(destination='.'):
+def get_cfsr_data(destination='.', src_path='./'):
 
     # Define the wget files:
     wget_ouput_files = {'get_cfsr_psl_test.csh' : 'pgblnl.gdas.PRMSL.MSL.grb2' , 
@@ -21,11 +21,12 @@ def get_cfsr_data(destination='.'):
                  } 
 
     for wget, output in wget_ouput_files.iteritems(): 
+        wget_file = os.path.join(src_path, wget)
         # make sure permissions are set on the wget
-        subprocess.Popen(['chmod', 'u+x', wget])
+        subprocess.Popen(['chmod', 'u+x', wget_file])
 
         # download the data, which is specified in the defined wget script.
-        subprocess.Popen(['./' + wget]).wait()
+        subprocess.Popen(['./' + wget_file]).wait()
 
         # convert from grib2 to netcdf using cdo
         subprocess.Popen(['cdo', '-f', 'nc', 'copy', output, output + '.nc']).wait()
