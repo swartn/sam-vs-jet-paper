@@ -10,7 +10,7 @@ for d in dirs:
     sys.path.insert(0, d)
 import get_20cr_data
 import get_ccmp_data
-import get cfsr_data
+import get_cfsr_data
 import get_cmip5_data
 import get_era_int_data
 import get_hadslp2r_data
