@@ -15,6 +15,7 @@ The follow steps are needed.
 import cmipdata as cd
 import subprocess
 import os
+import glob
 import mv_to_dest
 
 def process_local_cmip5_data(var):
@@ -46,13 +47,9 @@ def get_local_cmip5_data():
         ens_remap, ens_zonmean = process_local_cmip5_data(var)
         
         # Move files to destination
-        for model, experiment, realization, variable, files in ens_remap.iterate():
-            for f in files:
-                mv_to_dest.mv_to_dest(f, destination)
-        for model,experiment,realization,variable,files in
-            ens_zonmean.iterate():
-            for f in files:
-                mv_to_dest.mv_to_dest(f, destination)
+        files = glob.glob('*' + var + '*.nc')
+        for f in files:
+            mv_to_dest.mv_to_dest(f)
    
 if __name__ == '__main__':   
     get_local_cmip5_data(destination='./data/')
