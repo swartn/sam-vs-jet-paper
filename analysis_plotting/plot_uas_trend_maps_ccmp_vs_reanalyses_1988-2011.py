@@ -120,5 +120,5 @@ plt.colorbar(cot, cax=tl, label='m s$^{-1}$\ndecade$^{-1}$',
 
 fig.delaxes(axa[0,1])
 axa[0,0].set_title('u10m trends 1988-2011')
-plt.savefig('../plots/u10m_trends_ccmp_vs_reanlayses_1988-2011.pdf',
+plt.savefig('../plots/uas_trend_maps_1988-2011.pdf',
             bbox_inches='tight', dpi=300)

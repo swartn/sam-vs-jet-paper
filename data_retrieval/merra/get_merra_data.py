@@ -10,7 +10,7 @@
 import subprocess
 import glob
 import os
-import cdo
+import cdo; cdo = cdo.Cdo()
 import mv_to_dest
 
 def get_merra_data(destination='.', src_path='./'):
@@ -21,7 +21,7 @@ def get_merra_data(destination='.', src_path='./'):
         
         # time-merge the data
         subprocess.Popen(['cdo', 'mergetime', 'MERRA*', 
-                         'MERRA_' + var + 'mon.mean.nc']).wait()
+                         'MERRA_' + var + '.mon.mean.nc']).wait()
         
         # Remove input files
         files = glob.glob('*SUB.nc')

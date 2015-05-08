@@ -1,11 +1,13 @@
 """
-Create cmip5 timeseries
-===========================
+Create required CMIP5 fields from data on local disks
+=====================================================
 
 The follow steps are needed.
+1. soft link in the data from local disk
 2. Join all time-slices (within and across experiments)
 3. remap to a 1-degree grid
 4. Compute the zonal means
+5. Move to destination
 
 .. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
 """
@@ -13,6 +15,7 @@ The follow steps are needed.
 import cmipdata as cd
 import subprocess
 import os
+import mv_to_dest
 
 def process_local_cmip5_data(var):
     # 2. Join the time-slices
@@ -23,13 +26,13 @@ def process_local_cmip5_data(var):
     ens = cd.cat_experiments(ens, var, 'historical', 'rcp45')    
 
     # remap to a 1x1 grid
-    ens = cd.remap(ens,remap='r360x180', delete=True)
+    ens_remap = cd.remap(ens,remap='r360x180', delete=True)
 
     # Compute zonal means
-    ens = cd.zonmean(ens, delete=False)
+    ens_zonmean = cd.zonmean(ens_remap, delete=False)
+    return ens_remap, ens_zonmean
 
-
-if __name__ == '__main__':   
+def get_local_cmip5_data():
     variables = ['uas', 'psl', 'tauu']
     for var in variables:
         # Soft-link in the CMIP5 data from elsewhere on disk
@@ -40,8 +43,19 @@ if __name__ == '__main__':
         os.system('ln -s ' + rcp45_path + ' .' )
         
         # Do the processing
-        process_local_cmip5_data(var)
-
+        ens_remap, ens_zonmean = process_local_cmip5_data(var)
+        
+        # Move files to destination
+        for model, experiment, realization, variable, files in ens_remap.iterate():
+            for f in files:
+                mv_to_dest.mv_to_dest(f, destination)
+        for model, experiment, realization, variable, files in 
+                                                              ens_zonmean.iterate():
+            for f in files:
+                mv_to_dest.mv_to_dest(f, destination)
+   
+if __name__ == '__main__':   
+    get_local_cmip5_data(destination='./data/')
 
 
 

@@ -262,5 +262,5 @@ axa[0,1].legend(ncol=1, prop={'size':12},numpoints=1,
 axa[0,0].set_title(str(tys1[0]) + '-' + str(tye1[0]) )
 axa[0,1].set_title(str(tys1[1]) + '-' + str(tye1[1]) )
 
-plt.savefig('../plots/marshall_sam_trends.pdf',format='pdf',dpi=300,
+plt.savefig('../plots/marshall_trends.pdf',format='pdf',dpi=300,
                        bbox_inches='tight')

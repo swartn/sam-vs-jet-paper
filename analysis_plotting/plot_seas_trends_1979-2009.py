@@ -257,7 +257,7 @@ plt.figure(2).subplots_adjust(hspace=0.06, wspace=0.05, right=0.8, left=0.2)
 f2a.legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.5, 1.05),
            handlelength=0.01, handletextpad=1, borderpad=1, frameon=False )
 
-plt.figure(2).savefig('../plots/sam_pos_str_width_trends_1979-2009.pdf',
+plt.figure(2).savefig('../plots/seas_trends_1979-2009.pdf',
                       format='pdf', dpi=300, bbox_inches='tight')
 
 ##-------------------------------------------------------------------------------

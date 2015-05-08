@@ -8,3 +8,9 @@
 *.kate-swp
 *~
 data_retrieval/data/*
+*.aux
+*.fff
+*.lof
+*.log
+*.lot
+*.ttt

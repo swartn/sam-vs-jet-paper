@@ -136,7 +136,7 @@ axt.text(xp, 65, '1979-2004')
 axm.text(xp, 0.25, '1988-2011')
 axb.text(xp, 1.325, '1988-2011')
 	
-plt.savefig('../plots/psl_uas_zonmean_trend_comp_all_1979c1988-2011.pdf'
+plt.savefig('../plots/zonmean_trends.pdf'
             , bbox_inches = 'tight', dpi=300)    
   
     

@@ -117,5 +117,5 @@ plt.colorbar(cot, cax=tl, label='Pa decade$^{-1}$',spacing='proportional',
 
 fig.delaxes(axa[0,1])
 axa[0,0].set_title('SLP trends 1951-2004')
-plt.savefig('../plots/psl_maps_HadSLP2r_vs_20CR_vs_C5_1951-2004.pdf',
+plt.savefig('../plots/slp_trend_maps_1951-2004.pdf',
             bbox_inches='tight', dpi=300)

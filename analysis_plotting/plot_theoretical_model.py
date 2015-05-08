@@ -129,4 +129,4 @@ for sp in [0,1,2]:
   gs[1,sp].text(-67, 8.5, sp_labs[sp])
   gs[2,sp].text(-4.25, 3.5, sp_labs[sp+3])
 
-plt.savefig('../plots/sam_v_jet_theory.pdf',format='pdf',bbox_inches='tight')
+plt.savefig('../plots/gaussian_jet.pdf',format='pdf',bbox_inches='tight')

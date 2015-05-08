@@ -273,7 +273,7 @@ f3a.legend(ncol=3, prop={'size':12},numpoints=1, bbox_to_anchor=(1.075, 1.265),
            handlelength=0.01, handletextpad=0.8, frameon=False )
 
 # save some pdfs
-plt.figure(3).savefig('../plots/sam_pos_str_width_trends_1951-2011.pdf',format='pdf'
+plt.figure(3).savefig('../plots/seas_trends_1951-2011.pdf',format='pdf'
                       , dpi=300, bbox_inches='tight') 
   
 #for i in range(5):
@@ -445,7 +445,7 @@ for i,var in enumerate(lvars):
     xr = abs(gs2[i,1].axis()[1] - gs2[i,1].axis()[0])*0.05 + gs2[i,1].axis()[0]
     gs2[i,1].text(xr, 1.75, lab2[i])    
     
-plt.savefig('../plots/sam_trends_v_jet_scatter_1951-2011.pdf',format='pdf',dpi=300,
+plt.savefig('../plots/sam_vs_jet_scatter.pdf',format='pdf',dpi=300,
             bbox_inches='tight')
 
 

@@ -38,10 +38,10 @@ def get_20cr_data(destination='.'):
     # Rename variables and files
     subprocess.Popen(['cdo', 'chname,prmsl,slp', 
                       'prmsl_1871-2012.mon.mean.nc',
-                      '20CR_slp.mon.mean.nc']).wait()
+                      '20CR_ens_slp.mon.mean.nc']).wait()
     os.remove('prmsl_1871-2012.mon.mean.nc')
 
-    os.rename('u10m_1871-2012.mon.mean.nc', '20CR_u10m.mon.mean.nc')
+    os.rename('u10m_1871-2012.mon.mean.nc', '20CR_ens_u10m.mon.mean.nc')
 
     # move to destination
     files = glob.glob('20CR*.mon.mean.nc')
