@@ -16,16 +16,16 @@ def preprocess_observations(destination='./'):
     # Get the reanalysis monthly mean files
     files = glob.glob('*.mon.mean.nc')
     # Add in CCMp and HadSLP2r files
-    file.extend(['CCMP_198701-201112.nc', 'HadSLP2r_lowvar.mon.mean.nc'])
+    files.extend(['CCMP_198701-201112.nc', 'HadSLP2r_lowvar.mon.mean.nc'])
 
     for f in files:
         cdo.remapdis('r360x180', input=f, output='remap_' + f)
-        cdo.zonmean(input='remap_' + f, output='zonmean_remap_' + f)
+        cdo.zonmean(input='remap_' + f, output='zonal-mean_remap_' + f)
         #os.remove(f)
 
     # move back
     os.chdir(cwd)
 
 if __name__ == '__main__':
-    preprocess_observations(destination='./data/')
+    preprocess_observations(destination='../data_retrieval/data/')
 
