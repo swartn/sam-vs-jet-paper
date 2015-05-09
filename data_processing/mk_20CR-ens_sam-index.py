@@ -24,7 +24,7 @@ def mk_20cr_sam_index(datapath='.'):
     df_sam = pd.DataFrame(sam_20cr, index=dims['time'])
     
     # Store the DataFrame in HDF5
-    out_file = os.path.join(datapath, '20cr_ensemble_sam_analysis.h5')
+    out_file = os.path.join(datapath, 'zonmean_sam-jet_analysis_20CR_ensemble.h5')
     store = pd.HDFStore(out_file, 'a')
     store['sam'] = df_sam
     store.close()

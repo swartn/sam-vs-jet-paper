@@ -58,7 +58,7 @@ def mk_20cr_jetprop(datapath='../data_retrieval/data/'):
     df_width = pd.DataFrame(width, index=dims['time'], columns=np.arange(1,57))
     
     # Store the DataFrame in HDF5
-    out_file = os.path.join(datapath, '20cr_ensemble_sam_analysis.h5')
+    out_file = os.path.join(datapath, 'zonmean_sam-jet_analysis_20CR_ensemble.h5')
     store = pd.HDFStore(outfile, 'a')
     store['width'] = df_width
     store['maxspd'] = df_umax
