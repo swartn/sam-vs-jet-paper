@@ -54,7 +54,7 @@ def get_r1_r2_20cr_esrl_data(destination='.'):
     cdo.selvar('u10m', input='20CR_u10m.mon.mean.nc', output='tmp4.nc')
     os.rename('tmp4.nc',  '20CR_u10m.mon.mean.nc')  
     cdo.selvar('slp', input='20CR_slp.mon.mean.nc', output='tmp5.nc')
-    os.rename('slp.nc',  '20CR_slp.mon.mean.nc')      
+    os.rename('tmp5.nc',  '20CR_slp.mon.mean.nc')      
 
     # move to destination
     files = glob.glob('*.mon.mean.nc')
