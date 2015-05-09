@@ -9,6 +9,7 @@ import subprocess
 import os
 from netCDF4 import Dataset
 import numpy as np
+import cdo; cdo = cdo.Cdo()
 import mv_to_dest
 
 def get_hadslp2r_data(destination='.'):
@@ -56,6 +57,11 @@ def get_hadslp2r_data(destination='.'):
                       'HadSLP2r_200501-201212.mon.mean.nc',
                       'HadSLP2r_lowvar.mon.mean.nc']).wait()
 
+    # make sure the grid is not generic
+    cdo.selvar('slp', input='HadSLP2r_lowvar.mon.mean.nc', 
+               output='tmp1.nc')
+    os.rename('tmp1.nc', 'HadSLP2r_lowvar.mon.mean.nc')   
+   
     # move to destination
     mv_to_dest.mv_to_dest(destination, 'HadSLP2r_lowvar.mon.mean.nc')   
 
