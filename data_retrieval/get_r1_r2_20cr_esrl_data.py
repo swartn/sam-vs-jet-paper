@@ -9,6 +9,7 @@ import subprocess
 import glob
 import os
 import cdo; cdo = cdo.Cdo()
+os.system('rm -f /tmp/cdo*')
 import mv_to_dest
 
 def get_r1_r2_20cr_esrl_data(destination='.'):        
@@ -37,18 +38,23 @@ def get_r1_r2_20cr_esrl_data(destination='.'):
         
     # Change some variable names
     for r in ['R1', 'R2', '20CR']:
-        cdo.chname('uwnd,u10m', input= '-selvar,uwnd ' + r + '_u10m.mon.mean.nc', 
+        cdo.chname('uwnd,u10m', input=r + '_u10m.mon.mean.nc', 
                    output='tmp.nc')
         os.rename('tmp.nc', r + '_u10m.mon.mean.nc')
     
     cdo.chname('mslp,slp', input='R2_slp.mon.mean.nc', output='tmp1.nc')
     os.rename('tmp1.nc',  'R2_slp.mon.mean.nc')
-    cdo.chname('prmsl,slp', input='-selvar,prmsl 20CR_slp.mon.mean.nc', 
+    cdo.chname('prmsl,slp', input='20CR_slp.mon.mean.nc', 
                output='tmp2.nc')
     os.rename('tmp2.nc',  '20CR_slp.mon.mean.nc')    
     
+    # make sure 20CR grids are not generic 
     cdo.selvar('uflx', input='20CR_uflx.mon.mean.nc', output='tmp3.nc')
     os.rename('tmp3.nc',  '20CR_uflx.mon.mean.nc')    
+    cdo.selvar('u10m', input='20CR_u10m.mon.mean.nc', output='tmp4.nc')
+    os.rename('tmp4.nc',  '20CR_u10m.mon.mean.nc')  
+    cdo.selvar('slp', input='20CR_slp.mon.mean.nc', output='tmp5.nc')
+    os.rename('slp.nc',  '20CR_slp.mon.mean.nc')      
 
     # move to destination
     files = glob.glob('*.mon.mean.nc')
