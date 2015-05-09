@@ -37,7 +37,7 @@ def get_r1_r2_20cr_esrl_data(destination='.'):
         
     # Change some variable names
     for r in ['R1', 'R2', '20CR']:
-        cdo.chname('uwnd,u10m', input= '-selvar,uwnd' + r + '_u10m.mon.mean.nc', 
+        cdo.chname('uwnd,u10m', input= '-selvar,uwnd ' + r + '_u10m.mon.mean.nc', 
                    output='tmp.nc')
         os.rename('tmp.nc', r + '_u10m.mon.mean.nc')
     

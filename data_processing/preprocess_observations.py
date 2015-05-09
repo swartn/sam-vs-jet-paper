@@ -15,6 +15,8 @@ def preprocess_observations(destination='./'):
     os.chdir(destination)
     # Get the reanalysis monthly mean files
     files = glob.glob('*.mon.mean.nc')
+    files = [f for f in files if not f.startswith('remap') and not 
+             f.startswith('zonal-mean')]
     # Add in CCMp and HadSLP2r files
     files.extend(['CCMP_198701-201112.nc', 'HadSLP2r_lowvar.mon.mean.nc'])
 
