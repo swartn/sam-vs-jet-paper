@@ -13,7 +13,7 @@ os.system( 'rm -rf /tmp/cdo*') # clean out tmp to make space for CDO processing.
 import cmipdata as cd
 from calc_sam import calc_sam
 
-def mk_rean_sam_index(datapath='.'):
+def mk_rean_sam_index(datapath='./'):
     # list in the pre-defined list of files to use. 
     rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA']
     rean2 = ['R1', 'R2', '20CR', 'ERA', 'CFSR', 'MERRA']
