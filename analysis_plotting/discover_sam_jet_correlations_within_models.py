@@ -17,8 +17,6 @@ from dateutil.parser import parse
 import sam_analysis_data as sad
 import pandas_tools as pt
 
-"""
-
 # set font size
 plt.close('all')
 plt.ion()
