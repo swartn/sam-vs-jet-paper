@@ -21,8 +21,7 @@ plt.rc('font', **font)
 
 def modlatplot(npa, ax):
     """ For the columns of df, compute the columnwise-ensemble mean and 95% 
-confidence interval, 
-    then plot the envelope and mean.
+        confidence interval, then plot the envelope and mean.
     """
     # compute the ensemble mean across all columns (models).
     ens_mean = npa.mean(axis=0)
@@ -35,10 +34,10 @@ confidence interval,
     p25 = np.percentile(npa,2.5, axis=0)
     p975 = np.percentile(npa,97.5, axis=0)
     # reample to annual and plot
-    ax.fill_between( dims['lat'], (ens_mean - ts_95_ci ),  
-		    ( ens_mean + ts_95_ci), color='r', alpha=0.275,
+    ax.fill_between(dims['lat'], (ens_mean - ts_95_ci ),  
+		    (ens_mean + ts_95_ci), color='r', alpha=0.275,
 		    linewidth=0)  
-    ax.fill_between( dims['lat'], p25, p975, color='r', alpha=0.125,
+    ax.fill_between(dims['lat'], p25, p975, color='r', alpha=0.125,
 		    linewidth=0)     
     ax.plot(dims['lat'], ens_mean, color='r',linewidth=3 ,label='CMIP5')
     

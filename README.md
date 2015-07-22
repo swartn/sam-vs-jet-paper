@@ -2,8 +2,8 @@
 
 This repository contains the code used for analyses in the paper
 
-Swart, N.C., J.C. Fyfe, N. Gillet and G.J. Marshall (2015), Comparing changes in the 
-Southern Annular Mode and surface westerly jet, J. Climate.
+Swart, N.C., J.C. Fyfe, N. Gillet and G.J. Marshall (2015), Comparing changes
+in the Southern Annular Mode and surface westerly jet, J. Climate.
 
 While the source code is provided, we do not provide code to automatically download 
 all the required data, however, all of the data is publicly available. 

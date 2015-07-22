@@ -15,8 +15,8 @@ def calc_sam(psl_file, varname, start_date='1871-01-01', end_date='2013-12-31'):
     Parameters:
     -----------
         psl_file : str
-            The name of the SLP netcdf file to compute the SAM from. Can be a full
-            path.
+            The name of the **zonal meaned** SLP netcdf file to compute the SAM
+            from. Can be a full path.
         varname : str
             The name of the Sea Level Pressure variable in psl_file.
     
@@ -27,7 +27,7 @@ def calc_sam(psl_file, varname, start_date='1871-01-01', end_date='2013-12-31'):
     """
     
     # Extract the pressure at 40 and 65S
-    (head, tail) = os.path.split(path)
+    (head, tail) = os.path.split(psl_file)
     ofile_40s = os.path.join(head, 'p40s_' + tail)
     ofile_60s = os.path.join(head, 'p65s_' + tail)
     ofile_sam = os.path.join(head, 'SAM_' + tail)
