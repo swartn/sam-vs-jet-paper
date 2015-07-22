@@ -76,7 +76,7 @@ def splot( lat, pres, u, sam, param, param0, col='k', cp=0):
     gs[1,cp].set_position(a)
     gs[1,cp].set_xlabel('Latitude')
 
-    refpres, refsam, refu, refumax = sam_model(strength0, position0, width0)
+    refpres, refsam, refu, refStrength = sam_model(strength0, position0, width0)
     gs[2,cp].plot( param-param0, sam - refsam,'o', color=col,zorder=5 )
     gs[2,cp].plot( [-10,10] , [0,0] ,'--k', linewidth=0.5, color=[0.5, 0.5, 0.5] ,zorder=1)
     gs[2,cp].plot( [0,0] , [-5,5] ,'--k',linewidth=0.5, color=[0.5, 0.5, 0.5], zorder=2)
@@ -84,7 +84,7 @@ def splot( lat, pres, u, sam, param, param0, col='k', cp=0):
 
     
     if cp == 0:
-        gs[1,cp].set_title('Umax') 
+        gs[1,cp].set_title('Strength') 
     elif cp == 1: 
         gs[1,cp].set_title('Position') 
     else:
@@ -101,16 +101,16 @@ col = cmap=brewer2mpl.get_map('RdBu', 'diverging', 8,reverse=True).mpl_colors
 
 # do a trend in Strength
 for i,str in enumerate( np.linspace( strength0*0.75, strength0*1.25, 8 ) ):
-    pres, sam, u, umax = sam_model(strength=str, position=position0, width=width0 )
+    pres, sam, u, Strength = sam_model(strength=str, position=position0, width=width0 )
     splot( lat, pres, u, sam, str, strength0,col=col[i], cp=0)
 
-gs[2,0].set_xlabel('$\Delta$ Umax (m/s)')
+gs[2,0].set_xlabel('$\Delta$ Strength (m/s)')
 gs[2,0].set_xlim([-5, 5])
     
 # do a trend in position
-refpres, refsam, refu, refumax = sam_model(strength0, position0, width0)
+refpres, refsam, refu, refStrength = sam_model(strength0, position0, width0)
 for i,pos in enumerate( np.linspace( position0+4, position0-4, 8 ) ):
-    pres, sam, u, umax = sam_model(strength=strength0, position=pos, width=width0 )
+    pres, sam, u, Strength = sam_model(strength=strength0, position=pos, width=width0 )
     splot( lat, pres, u, sam, pos, position0,col=col[i], cp=1)
     print pos, sam - refsam
     
@@ -119,7 +119,7 @@ gs[2,1].set_xlim([-5, 5])
 
 # do a trend in width
 for i,wid in enumerate( np.linspace( width0*0.75, width0*1.25, 8 ) ):
-    pres, sam, u, umax = sam_model(strength=strength0, position=position0, width=wid )
+    pres, sam, u, Strength = sam_model(strength=strength0, position=position0, width=wid )
     splot( lat, pres, u, sam, wid, width0,col=col[i], cp=2)
 gs[2,2].set_xlabel('$\Delta$ width ($^{\circ}$ lat.)')
 gs[2,2].set_xlim([-5, 5])    

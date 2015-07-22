@@ -189,9 +189,13 @@ def mod_proc(df, axtrend, tys, tye, color='r', label='CMIP5'):
                 mod_trend_mean = np.mean( mod_trends[ : , k ] )
                 mod_trend_std =  np.std( mod_trends[ : , k ] )
                 c = sp.stats.t.isf(0.025, num_models - 1 )
+                #print c, num_models, np.sqrt(num_models)
                 mod_95_ci = ( c * mod_trend_std ) / np.sqrt( num_models )
                 mod_5thp = np.percentile( mod_trends[ : , k ] , 2.5 )
                 mod_95thp = np.percentile( mod_trends[ : , k ] , 97.5 )
+                
+                #print 'comp:', (mod_95thp - mod_5thp)/(mod_trend_std*4), (mod_trend_std*2)/mod_95_ci
+                
                 axtrend.plot( [ k , k ] , [ mod_5thp  , mod_95thp ],color, 
                              linewidth=4, alpha=0.25)
                 axtrend.plot([k, k], [mod_trend_mean - mod_95_ci, 
@@ -243,18 +247,18 @@ panlab = ['a)', 'b)', 'c)', 'd)', 'e)', 'f)' ,'g)', 'h)']
 f3ax = [ f3a, f3b, f3c, f3d]
 
 yaxlab = ['SAM trend \n(hPa dec$^{-1}$)', 
-          'Umax trend \n(ms$^{-1}$ dec$^{-1}$)', 
+          'Strength trend \n(ms$^{-1}$ dec$^{-1}$)', 
           'Position trend \n($^{\circ}$ lat. dec$^{-1}$)', 
           'Width trend \n($^{\circ}$ lat. dec$^{-1}$)' 
           ]
 
 yaxlab1 = ['SAM Index (hPa)' , 
-           'Umax (m/s)',
+           'Strength (m/s)',
            'Position ($^{\circ}$S)', 
            'Width ($^{\circ}$ lat.)'
            ]
 
-for i, ax in enumerate( f3ax ):
+for i, ax in enumerate(f3ax):
     ylim = ax.get_ylim()
     yrange = max(ylim) - min(ylim)
     ax.text( -0.35, max( ylim ) -0.15*yrange, panlab[i])
@@ -268,9 +272,11 @@ for i, ax in enumerate( f3ax ):
     ax.set_ylabel( yaxlab[i] )
   
 f3d.set_xticklabels(  [ s.upper() for s in seas]  )   
+#f3d.yaxis.set_major_locator(mpl.ticker.MaxNLocator(5, prune='upper'))
 plt.figure(3).subplots_adjust(hspace=0.06, wspace=0.05, right=0.8, left=0.2)
 f3a.legend(ncol=3, prop={'size':12},numpoints=1, bbox_to_anchor=(1.075, 1.265),
            handlelength=0.01, handletextpad=0.8, frameon=False )
+f3d.yaxis.set_ticks([-0.4, -0.2, 0, 0.2])
 
 # save some pdfs
 plt.figure(3).savefig('../plots/seas_trends_1951-2011.pdf',format='pdf'
@@ -360,7 +366,7 @@ for i,ord in enumerate(order):
          color='g', label='20CR')
 
 seas_label = [ ['a) ANN', '' ] , ['b) MAM','c) JJA'] , ['d) SON', 'e) DJF'] ]
-plt.text( maxis[0] -maxis[1],maxis[2]*1.7  , 'Umax trend (ms$^{-1}$dec$^{-1}$)')
+plt.text( maxis[0] -maxis[1],maxis[2]*1.7  , 'Strength trend (ms$^{-1}$dec$^{-1}$)')
 #gs2[0,0].set_ylabel('SAM (hPa dec$^{-1}$)')
 gs2[1,0].set_ylabel('SAM trend (hPa dec$^{-1}$)')
 #gs2[2,0].set_ylabel('SAM (hPa dec$^{-1}$)')

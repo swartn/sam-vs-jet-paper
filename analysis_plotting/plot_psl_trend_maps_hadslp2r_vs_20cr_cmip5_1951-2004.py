@@ -41,6 +41,13 @@ dims = {'lat' : np.arange(-89.5,89.6,1),
 	'lon' : np.arange(0,360,1)
         }
 
+#The locations of the Marshall Stations to plot over
+# Marshall locations
+marshlat = np.array([46.9, 37.8, 42.9, 43.5, 39.6, 40.4, 70.8, 67.6, 66.6, 66.3, 66.7, 
+                 65.2])*-1
+marshlon = np.array([37.9, 77.5, 147.3, 172.6, 360-73.1, 360-9.9, 11.8, 62.9, 93.0, 
+                     110.5, 140.0, 360-64.3])
+
 fig, axa = plt.subplots(3,2, sharex=True, figsize=(7,7))
 fig.subplots_adjust(top=0.5, hspace=0.1, wspace=0.05)
 
@@ -62,6 +69,8 @@ xpt, ypt = m(20,-86)
 cot = m.pcolor(x, y, psl_slope_hadslp,vmin=vmin, vmax=vmax, cmap=cmap_anom, 
                ax=axa[0,0], rasterized=True)
 axa[0,0].text(xpt, ypt, 'HadSLP2r')
+xm, ym = m(marshlon, marshlat)
+m.plot(xm, ym, 'ok', zorder=5, ax=axa[0,0])
 
 m.pcolor(x, y, psl_slope_20cr,vmin=vmin, vmax=vmax, cmap=cmap_anom, 
                ax=axa[1,0], rasterized=True )

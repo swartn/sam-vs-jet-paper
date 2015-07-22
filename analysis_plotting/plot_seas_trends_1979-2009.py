@@ -220,14 +220,14 @@ mod_width_trends = mod_proc(df_c5_ens_width, f2d, tys=tys, tye=tye, color='r')
 # ========= Do some figure beautifying and labelled etc ========= #
 panlab = ['a)', 'b)', 'c)', 'd)', 'e)', 'f)' ,'g)', 'h)']
 yaxlab1 = ['SAM Index (hPa)' ,
-           'Umax (m/s)',
+           'Strength (m/s)',
            'Position ($^{\circ}$S)', 
            'Width ($^{\circ}$ lat.)'
            ]
 f2ax = [f2a, f2b, f2c, f2d]
 
 yaxlab = ['SAM trend \n(hPa dec$^{-1}$)', 
-          'Umax trend \n(ms$^{-1}$ dec$^{-1}$)', 
+          'Strength trend \n(ms$^{-1}$ dec$^{-1}$)', 
           'Position trend \n($^{\circ}$ lat. dec$^{-1}$)', 
           'Width trend \n($^{\circ}$ lat. dec$^{-1}$)' 
          ]
@@ -329,7 +329,7 @@ plt.figure(2).savefig('../plots/seas_trends_1979-2009.pdf',
     #reanp( uspd_trends[ : , ord ], sam_trends[ : , ord ] )
 
 #seas_label = [ ['a) ANN', '' ] , ['b) MAM','c) JJA'] , ['d) SON', 'e) DJF'] ]
-#plt.text( maxis[0] -maxis[1],maxis[2]*1.7  , 'Umax trend (ms$^{-1}$/dec)')
+#plt.text( maxis[0] -maxis[1],maxis[2]*1.7  , 'Strength trend (ms$^{-1}$/dec)')
 #gs2[1,0].set_ylabel('SAM trend (hPa/dec)')
 
 #[ gs2[m,n].text(-0.2, 3, seas_label[m][n] ) for m in range(3) for n in range(2)  ]

@@ -112,7 +112,7 @@ def modtsplot(df, ax, color='r', label='CMIP5'):
     ens_mean = ens_mean.resample('A')
     ts_95_ci = ts_95_ci.resample('A')
     ax.fill_between(ens_mean.index , ( ens_mean - ts_95_ci ) ,  ( ens_mean + 
-                    ts_95_ci), color=color, alpha=0.25, linewidth=0)  
+                    ts_95_ci), color=color, alpha=0.35, linewidth=0)  
     ax.plot(ens_mean.index, ens_mean, color=color,linewidth=1 ,label=label)   
                   
 def rean_proc(dfr, axts):
@@ -143,8 +143,13 @@ modtsplot(df_20cr_ens_sam, f1a, color='g', label='20CR')
 
 #dfmarshall['sam'].resample('A').plot(ax=f1a, color='0.5', style='-', 
              #linewidth=2, grid=False, label='Marshall', zorder=3)
-dfhadslp['sam'].resample('A').plot(ax=f1a, color='k', style='--', 
-             linewidth=2, grid=False, label='HadSLP2r')
+#dfhadslp['sam'].resample('A').plot(ax=f1a, color='k', style='--', 
+#             linewidth=2, grid=False, label='HadSLP2r')
+
+hslp = dfhadslp['sam'].resample('A')
+l = f1a.plot(hslp.index, hslp, 'k--', 
+         linewidth=1, label='HadSLP2r')
+l[0].set_dashes([3,2])
 
 #rean_proc(maxspd, axts=f1b)
 #modtsplot(modmaxspd, f1b)
@@ -165,7 +170,7 @@ modtsplot(df_20cr_ens_width, f1d, color='g', label='20CR')
 # defines some lists of labels.
 f1ax = [ f1a, f1b, f1c, f1d ]
 panlab = ['a)', 'b)', 'c)', 'd)', 'e)', 'f)' ,'g)', 'h)']
-yaxlab1 = ['SAM Index (hPa)' , 'Umax (m s$^{-1}$)','Position ($^{\circ}$S)', 
+yaxlab1 = ['SAM Index (hPa)' , 'Strength (m s$^{-1}$)','Position ($^{\circ}$S)', 
 	   'Width ($^{\circ}$ lat.)']
 
 
