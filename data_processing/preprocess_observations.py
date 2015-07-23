@@ -18,7 +18,7 @@ def preprocess_observations(destination='./'):
     files = [f for f in files if not f.startswith('remap') and not 
              f.startswith('zonal-mean')]
     # Add in CCMp and HadSLP2r files
-    files.extend(['CCMP_198701-201112.nc', 'HadSLP2r_lowvar.mon.mean.nc'])
+    files.extend(['CCMP_198701-201112.nc', 'HadSLP2r_slp.mon.mean.nc'])
 
     for f in files:
         if not os.path.isfile('remap_' + f):

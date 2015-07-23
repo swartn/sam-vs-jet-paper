@@ -68,17 +68,6 @@ def get_cmip5_data(destination='.'):
     for var in variables:
         fetch_cmip5(variable=var, **data_to_get)
     
-        # time-merge the data across the historical and rcp45 experiments
-        filepattern = var + '_Amon*.nc'
-        ens = cd.mkensemble(filepattern)
-        ens = cd.cat_experiments(ens, var, 'historical', 'rcp45') 
-        
-        # remap to a 1x1 grid
-        ens_remap = cd.remap(ens,remap='r360x180', delete=True)
-
-        # Compute zonal means
-        ens_zonmean = cd.zonmean(ens_remap, delete=False)
-
         #Move files to destination
         files = glob.glob('*' + var + '*.nc')
         mv_to_dest.mv_to_dest(destination, *files)

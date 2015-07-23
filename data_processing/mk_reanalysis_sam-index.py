@@ -15,12 +15,10 @@ from calc_sam import calc_sam
 
 def mk_rean_sam_index(datapath='./'):
     # list in the pre-defined list of files to use. 
-    rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA']
-    rean2 = ['R1', 'R2', '20CR', 'ERA', 'CFSR', 'MERRA']
+    rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA', 'HadSLP2r']
+    rean2 = ['R1', 'R2', '20CR', 'ERA', 'CFSR', 'MERRA', 'HadSLP2r']
     tail = '_slp.mon.mean.nc'
     names = [ 'zonal-mean_remap_' + r + tail for r in rean ]
-
-    # Use cdo to get the p at 40S, 65S and compute the SAM.
 
     df_sam = pd.DataFrame()
  
@@ -39,7 +37,7 @@ def mk_rean_sam_index(datapath='./'):
     # Store the DataFrame in HDF5
     out_file = os.path.join(datapath, 'zonmean_sam-jet_analysis_reanalysis.h5')
     store = pd.HDFStore(out_file, 'a')
-    store['sam'] = df_sam
+    store['zonmean_sam'] = df_sam
     store.close()    
 
 if __name__ == '__main__':

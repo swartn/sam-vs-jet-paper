@@ -20,6 +20,9 @@ import get_marshall_data
 
 dest = os.path.join(os.getcwd(), 'data/')
 
+if not os.path.isdir(dest):
+    os.mkdir(dest)
+    
 #==============================
 # Run the data fetching scripts
 #==============================

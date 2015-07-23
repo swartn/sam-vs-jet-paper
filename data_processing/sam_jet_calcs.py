@@ -117,6 +117,8 @@ def calc_marshall_sam(psl_file, varname, start_date='1871-01-01', end_date='2013
     dfsam = df40s - df65s
     dft = pd.concat([df40s, df65s, dfsam], keys=['p40s', 'p65s', 'sam']) 
     
+    return dft
+    
 def jetprop(uas, lat):
     """ Computes and returns the kinematic properties of the jet.   
     

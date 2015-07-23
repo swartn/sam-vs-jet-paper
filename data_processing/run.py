@@ -11,6 +11,9 @@ dest = os.path.join(os.getcwd(), '../data_retrieval/data/')
 # Preprocess the observational data (remap to a 1x1 grid and make zonal means).
 preprocess_observations.preprocess_observations(destination=dest)
 
+# Preprocess the model data (remap to a 1x1 grid and make zonal means).
+preprocess_models.preprocess_models(destination=dest)
+
 #========================
 # Calculate the SAM index
 #========================
