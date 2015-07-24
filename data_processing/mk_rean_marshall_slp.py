@@ -19,9 +19,8 @@ def mk_rean_sam_index(datapath='./'):
     rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA', 'HadSLP2r']
     rean2 = ['R1', 'R2', '20CR', 'ERA', 'CFSR', 'MERRA', 'HadSLP2r']
     tail = '_slp.mon.mean.nc'
-    names = [ 'zonal-mean_remap_' + r + tail for r in rean ]
+    names = [ 'remap_' + r + tail for r in rean ]
 
-    df_sam = pd.DataFrame()
     # initalize empty dataframes
     df40s = pd.DataFrame()
     df65s = pd.DataFrame()
@@ -30,8 +29,7 @@ def mk_rean_sam_index(datapath='./'):
     for i, name in enumerate(names):
         print name
         ifile = os.path.join(datapath, name)
-        s40s, s65s = sjc.calc_marshall_sam(ifile, 'slp', 
-                           start_date='1951-01-01', end_date='2011-12-31')
+        s40s, s65s = sjc.calc_marshall_sam(ifile, 'slp')
         
         df40s = pd.concat([df40s, s40s], axis=1)
         df65s = pd.concat([df65s, s65s], axis=1)

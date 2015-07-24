@@ -79,6 +79,11 @@ def calc_marshall_sam(psl_file, varname, start_date='1871-01-01', end_date='2013
     
     # load the data 
     dims = cd.get_dimensions(psl_file, varname, toDatetime=True)
+    #dims['time'] = [pd.datetime(d.year, d.month, 1) for d in dims['time']]
+    tmin = dims['time'].min()
+    ds = pd.datetime(tmin.year, tmin.month, 1)
+    dates = pd.date_range(ds, periods=(len(dims['time']))
+                              , freq='MS')
     p40 = np.zeros((len(dims['time']), 6))
     p65 = np.zeros((len(dims['time']), 6))   
     ncvar = Dataset(psl_file).variables[varname]
@@ -98,8 +103,8 @@ def calc_marshall_sam(psl_file, varname, start_date='1871-01-01', end_date='2013
 	p65[:,k] = scale(ncvar, var2)
     
     # Now create the mean pressure at 40S and 65S and return
-    s40s = pd.Series(p40.mean(axis=1), index=dims['time'])
-    s65s = pd.Series(p65.mean(axis=1), index=dims['time'])
+    s40s = pd.Series(p40.mean(axis=1), index=dates)
+    s65s = pd.Series(p65.mean(axis=1), index=dates)
     return s40s, s65s
     
 def jetprop(uas, lat):

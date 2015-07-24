@@ -22,7 +22,7 @@ def mk_cmip5_marshall_slp(datapath='./'):
               ]    
     
     tail = '_historical-rcp45_r1i1p1_188101-201212.nc'
-    names = [ 'zonal-mean_remap_psl_Amon_' + m + tail for m in model_list ]
+    names = [ 'remap_psl_Amon_' + m + tail for m in model_list ]
     cnames = [ n.replace('-', '_') for n in model_list ]
     
     # initalize empty dataframes
