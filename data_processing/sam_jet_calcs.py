@@ -3,10 +3,13 @@ Calculate the SAM index from a netCDF file containing sea-level pressure.
 
 .. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
 """
+import numpy as np
+import pandas as pd
 import cdo as cdo; cdo = cdo.Cdo() # recommended import
 import os
 os.system( 'rm -rf /tmp/cdo*') # clean out tmp to make space for CDO processing.
 import cmipdata as cd
+from netCDF4 import Dataset
 
 def calc_sam(psl_file, varname, start_date='1871-01-01', end_date='2013-12-31'):
     """
@@ -95,8 +98,8 @@ def calc_marshall_sam(psl_file, varname, start_date='1871-01-01', end_date='2013
 	p65[:,k] = scale(ncvar, var2)
     
     # Now create the mean pressure at 40S and 65S and return
-    s40s = pd.Series(p40.mean(axis=1), index=dates)
-    s65s = pd.Series(p65.mean(axis=1), index=dates)
+    s40s = pd.Series(p40.mean(axis=1), index=dims['time'])
+    s65s = pd.Series(p65.mean(axis=1), index=dims['time'])
     return s40s, s65s
     
 def jetprop(uas, lat):

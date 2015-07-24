@@ -11,7 +11,7 @@ import pandas as pd
 import cdo as cdo; cdo = cdo.Cdo() # recommended import
 os.system( 'rm -rf /tmp/cdo*') # clean out tmp to make space for CDO processing.
 import cmipdata as cd
-from calc_sam import calc_sam
+from sam_jet_calcs import calc_sam
 
 def mk_rean_sam_index(datapath='./'):
     # list in the pre-defined list of files to use. 

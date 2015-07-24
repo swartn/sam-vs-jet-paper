@@ -7,7 +7,7 @@ import os
 import numpy as np
 import pandas as pd
 import cmipdata as cd
-from calc_sam import calc_sam
+from sam_jet_calcs import calc_sam
 
 def mk_cmip5_sam_index(datapath='./'):
     # List of models to get data for

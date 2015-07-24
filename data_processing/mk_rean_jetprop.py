@@ -11,7 +11,7 @@ import numpy as np
 from netCDF4 import Dataset
 import pandas as pd
 import cmipdata as cd
-from calc_shw_jet_properties import jetprop
+from sam_jet_calcs import jetprop
 
 def mk_rean_jetprop(datapath='./'):
     # list in the pre-defined list of files to use. 
