@@ -13,11 +13,11 @@ import pandas as pd
 import cmipdata as cd
 from calc_shw_jet_properties import jetprop
 
-def mk_rean_jetprop(datapath='./')
+def mk_rean_jetprop(datapath='./'):
     # list in the pre-defined list of files to use. 
     rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA']
     rean2 = ['R1', 'R2', '20CR', 'ERA', 'CFSR', 'MERRA']
-    tail = '_uwnd.10m.mon.mean.nc'
+    tail = '_u10m.mon.mean.nc'
     names = [ 'zonal-mean_remap_' + r + tail for r in rean ]
 
     # Initialize some jetprop arrays
@@ -29,9 +29,10 @@ def mk_rean_jetprop(datapath='./')
     for i, name in enumerate(names):
         # define the input
         ifile = os.path.join(datapath, name)
+        print ifile
          
         # Get the dimensions     
-        dims = cd.get_dimensions(ifile, 'u10', toDatetime=True)
+        dims = cd.get_dimensions(ifile, 'u10m', toDatetime=True)
         dims['time'] = [pd.datetime(d.year, d.month, 1) for d in dims['time']]
     
         # load the data
@@ -68,7 +69,8 @@ def mk_rean_jetprop(datapath='./')
     df_width.columns = rean2
 
     # Store the DataFrame in HDF5
-    out_file = os.path.join(datapath, 'zonmean_sam-jet_analysis_reanalysis.h5')   
+    out_file = os.path.join(datapath, 'zonmean_sam-jet_analysis_reanalysis.h5')  
+    store = pd.HDFStore(out_file, 'a')
     store['width'] = df_width
     store['maxspd'] = df_umax
     store['locmax'] = df_uloc

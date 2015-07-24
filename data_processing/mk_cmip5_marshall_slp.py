@@ -38,14 +38,15 @@ def check_ensemble(ens, model_list):
 	    print "not all 30 required models are present" 
     
 
-def mk_cmip5_marshall_sam(datapath='./'):
+def mk_cmip5_marshall_slp(datapath='./'):
     """Compute the proxy SAM index using the 12 Marshall Stn locations.
     """    
     # Make a cmipdata ensemble object from the CMIP5 psl files
     prefix = os.path.join(datapath, 'remap_')
-    filepattern = os.path.join(head, 'psl_Amon_*r1i1p1*')
+    filepattern = os.path.join(datapath, 'remap_psl_Amon_*r1i1p1*')
     ens = cd.mkensemble(filepattern, prefix=prefix)
-    
+    model_names = [ model.name for model in ens.models]
+
     # Marshall locations
     mlat40s = np.array([46.9, 37.8, 42.9, 43.5, 39.6, 40.4])*-1
     mlon40s = np.array([37.9, 77.5, 147.3, 172.6, -73.1, -9.9])
@@ -92,9 +93,10 @@ def mk_cmip5_marshall_sam(datapath='./'):
 
     # Store the DataFrame in HDF5
     out_file = os.path.join(datapath, 'zonmean_sam-jet_analysis_cmip5.h5')
+    h5f = pd.HDFStore(out_file, 'a')
     h5f['marshall_sam/sam'] = dft
     h5f.close() 
 
 if __name__ == '__main__':
-    mk_cmip5_marshall_sam(datapath='../data_retrieval/data/')
+    mk_cmip5_marshall_slp(datapath='../data_retrieval/data/')
     

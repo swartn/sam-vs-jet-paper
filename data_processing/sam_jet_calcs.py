@@ -74,50 +74,30 @@ def calc_marshall_sam(psl_file, varname, start_date='1871-01-01', end_date='2013
     mlat65s = np.array([70.8, 67.6, 66.6, 66.3, 66.7, 65.2])*-1
     mlon65s = np.array([11.8, 62.9, 93.0, 110.5, 140.0, -64.3])
     
-    # initalize empty dataframes
-    df40s = pd.DataFrame()
-    df65s = pd.DataFrame()
-    dfsam = pd.DataFrame()
-
-    for i, r in enumerate(names):   
-        # load the data and make dataframes
-        ifile = os.path.join(datapath, name)	
-	dims = cd.get_dimensions(ifile, 'slp', toDatetime=True)
-	p40 = np.zeros((len(dims['time']), 6))
-	p65 = np.zeros((len(dims['time']), 6))   
-	tmin = dims['time'].min()
-	ds = pd.datetime(tmin.year, tmin.month, 1)
-	dates = pd.date_range(ds, periods=(len(dims['time']))
-			      , freq='MS')
-	ncvar = Dataset(ifile).variables['slp']
+    # load the data 
+    dims = cd.get_dimensions(psl_file, varname, toDatetime=True)
+    p40 = np.zeros((len(dims['time']), 6))
+    p65 = np.zeros((len(dims['time']), 6))   
+    ncvar = Dataset(psl_file).variables[varname]
     
-	for k in range(6):
-	    # loop over the six stations at each lat and get data at each one.
-	    var = cdo.remapnn('lon=' + str( mlon40s[k] ) + '/lat='\
+    for k in range(6):
+    # loop over the six stations at each lat and get data at each one.
+        var = cdo.remapnn('lon=' + str( mlon40s[k] ) + '/lat='\
 			   + str( mlat40s[k] )
-			   , input=('-selvar,slp ' + ifile)
-			   , returnMaArray='slp').squeeze()
-	    p40[:,k] = scale(ncvar, var)
+			   , input=('-selvar,' + varname + ' ' + psl_file)
+			   , returnMaArray=varname).squeeze()
+        p40[:,k] = scale(ncvar, var)
 	    
-	    var2 = cdo.remapnn('lon=' + str( mlon65s[k] ) + '/lat='\
+	var2 = cdo.remapnn('lon=' + str( mlon65s[k] ) + '/lat='\
 			   + str( mlat65s[k] )
-			   , input=('-selvar,slp ' + ifile)
-			   , returnMaArray='slp').squeeze()
-	    p65[:,k] = scale(ncvar, var2)
+			   , input=('-selvar,' + varname + ' ' + psl_file)
+			   , returnMaArray=varname).squeeze()
+	p65[:,k] = scale(ncvar, var2)
     
-	# Now create the mean pressure at 40S and 65S and add to dataframe
-	s40s = pd.Series(p40.mean(axis=1), index=dates)
-	s65s = pd.Series(p65.mean(axis=1), index=dates)
-	df40s = pd.concat([df40s, s40s], axis=1)
-	df65s = pd.concat([df65s, s65s], axis=1)
-       
-    # assign column names to the dataframes and calculate SAM
-    df40s.columns = rean
-    df65s.columns = rean
-    dfsam = df40s - df65s
-    dft = pd.concat([df40s, df65s, dfsam], keys=['p40s', 'p65s', 'sam']) 
-    
-    return dft
+    # Now create the mean pressure at 40S and 65S and return
+    s40s = pd.Series(p40.mean(axis=1), index=dates)
+    s65s = pd.Series(p65.mean(axis=1), index=dates)
+    return s40s, s65s
     
 def jetprop(uas, lat):
     """ Computes and returns the kinematic properties of the jet.   

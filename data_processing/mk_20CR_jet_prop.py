@@ -59,7 +59,7 @@ def mk_20cr_jetprop(datapath='../data_retrieval/data/'):
     
     # Store the DataFrame in HDF5
     out_file = os.path.join(datapath, 'zonmean_sam-jet_analysis_20CR_ensemble.h5')
-    store = pd.HDFStore(outfile, 'a')
+    store = pd.HDFStore(out_file, 'a')
     store['width'] = df_width
     store['maxspd'] = df_umax
     store['locmax'] = df_uloc

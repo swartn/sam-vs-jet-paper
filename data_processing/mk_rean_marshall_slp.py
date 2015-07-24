@@ -12,7 +12,6 @@ from netCDF4 import Dataset
 import h5py
 import cdo as cdo; cdo = cdo.Cdo() # recommended import
 os.system('rm -f /tmp/cdo*')
-os.chdir('/raid/ra40/data/ncs/tmp_proc/')
 
 def plot_stn_locs(lats, lons):
     """ Plots lat, lon positions on a basemap
@@ -68,7 +67,7 @@ def mk_rean_marshall_sam(datapath='./'):
 
     for i, r in enumerate(names):   
         # load the data and make dataframes
-        ifile = os.path.join(datapath, name)	
+        ifile = os.path.join(datapath, r)	
 	dims = cd.get_dimensions(ifile, 'slp', toDatetime=True)
 	p40 = np.zeros((len(dims['time']), 6))
 	p65 = np.zeros((len(dims['time']), 6))   

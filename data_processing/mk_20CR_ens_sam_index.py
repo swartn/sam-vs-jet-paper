@@ -10,7 +10,7 @@ import pandas as pd
 import cmipdata as cd
 from calc_sam import calc_sam
 
-def mk_20cr_sam_index(datapath='.'):
+def mk_20cr_ens_sam_index(datapath='.'):
     """Calculates the SAM index for the 20CR ensemble
     """
     #The pre-computed zonal mean SLP file
@@ -30,4 +30,4 @@ def mk_20cr_sam_index(datapath='.'):
     store.close()
 
 if __name__ == '__main__':
-    mk_20cr_sam_index(datapath='../data_retrieval/data/')
+    mk_20cr_ens_sam_index(datapath='../data_retrieval/data/')

@@ -14,13 +14,22 @@ def preprocess_observations(destination='./'):
     # move to where the data is
     os.chdir(destination)
     # Get the reanalysis monthly mean files
-    files = glob.glob('*.mon.mean.nc')
+    rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA']
+    var = ['slp', 'u10m', 'uflx']
+    files = []
+    for r in rean:
+        for v in var:
+            files.extend([r + '_' + v + '.mon.mean.nc'])
+
     files = [f for f in files if not f.startswith('remap') and not 
-             f.startswith('zonal-mean')]
+            f.startswith('zonal-mean')]
     # Add in CCMp and HadSLP2r files
+    
     files.extend(['CCMP_198701-201112.nc', 'HadSLP2r_slp.mon.mean.nc'])
+    files.extend(['20CR_ens_slp.mon.mean.nc', '20CR_ens_u10m.mon.mean.nc'])
 
     for f in files:
+        print f
         if not os.path.isfile('remap_' + f):
             cdo.remapdis('r360x180', input=f, output='remap_' + f)
         if not os.path.isfile('zonal-mean_remap_' + f):        

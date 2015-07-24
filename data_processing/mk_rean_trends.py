@@ -10,24 +10,21 @@ import scipy as sp
 import h5py
 import cdo as cdo; cdo = cdo.Cdo() # recommended import
 os.system('rm -f /tmp/cdo*')
-os.chdir('/raid/ra40/data/ncs/tmp_proc/')
-
 
 def save_reanalysis_trends(var, rean, start_date, end_date, datapath):
     """Compute reanalysis trends and save to HDF5
     """
     lr = len(rean)
     slopes = np.zeros((180, 360, lr))
-    cdo_str = 'seldate,' + start_date + ',' + end_date + ' -selvar,' + var
+    cdo_str = '-seldate,' + start_date + ',' + end_date + ' -selvar,' + var + ' '
     tail =  '_' + var + '.mon.mean.nc'
 
      # Loop over the reanalyses
     for i, r in enumerate(rean):    
-        ifile = os.path.join(datapath, r + tail)
-
+        ifile = os.path.join(datapath, 'remap_' + r + tail)
         cdo.trend(input=(cdo_str + ifile)
                   , output="int.nc " + r + "_slope.nc")
-        slopes[:,:,i] = cd.loadvar(r + '_slope.nc', 'uflx')    
+        slopes[:,:,i] = cd.loadvar(r + '_slope.nc', var)    
         os.system('rm -f int.nc ' + r + '_slope.nc')
         os.system('rm -f int.nc ' + r + '_slope.nc')
 
@@ -44,29 +41,34 @@ def save_reanalysis_trends(var, rean, start_date, end_date, datapath):
     #f[ds_name].dims[2].attach_scale(h5f[ds_path + 'model_names'])
     h5f.close()
 
-def mk_reanalysis_trends(datapath='./'):
+def mk_rean_trends(datapath='./'):
     """Compute reanalysis trends in slp, u10m and uflx over various periods.
     """
+    # remove old trends if they exist
+    ot = datapath + 'reanalysis_trends.h5'
+    if os.path.isfile(ot):
+        os.remove(ot)
     # do slp
     rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA', 'HadSLP2r']
     save_reanalysis_trends('slp', rean=rean, start_date='1979-01-01',
                            end_date='2004-12-31', datapath=datapath)
 
-    save_reanalysis_trends('slp', rean=['20CR', 'HadSLP2r', start_date='1951-01-01',
-                           end_date='2004-12-31', datapath=datapath)
+    save_reanalysis_trends('slp', rean=['20CR', 'HadSLP2r'], 
+                           start_date='1951-01-01', end_date='2004-12-31', 
+                           datapath=datapath)
 
 
     # do u10m
-    save_reanalysis_trends('u10m', rean=['20CR', start_date='1951-01-01',
+    save_reanalysis_trends('u10m', rean=['20CR'], start_date='1951-01-01',
                            end_date='2011-12-31', datapath=datapath)
 
     rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA']
     save_reanalysis_trends('u10m', rean=rean, start_date='1988-01-01',
                            end_date='2011-12-31', datapath=datapath)
-
+    
     # do uflx
     save_reanalysis_trends('uflx', rean=rean, start_date='1988-01-01',
                            end_date='2011-12-31', datapath=datapath)
     
 if __name__ == '__main__':
-    mk_reanalysis_trends(datapath='../data_retieval/data/')
+    mk_rean_trends(datapath='../data_retrieval/data/')

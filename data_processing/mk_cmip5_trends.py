@@ -48,6 +48,11 @@ def save_cmip5_trends(ens, var, start_date, end_date, datapath='./'):
 def mk_cmip5_trends(datapath='./'):
     """Compute trends for uas, uflx and slp over various periods.
     """
+        # remove old trends if they exist
+    ot = datapath + 'cmip5_trends.h5'
+    if os.path.isfile(ot):
+        os.remove(ot)
+        
     # list of models being used
     model_list = ['ACCESS1-0', 'ACCESS1-3', 'BNU-ESM', 'CMCC-CMS', 'CMCC-CM',
                   'CNRM-CM5', 'CSIRO-Mk3-6-0', 'CanESM2', 
@@ -63,21 +68,23 @@ def mk_cmip5_trends(datapath='./'):
     
     # Do psl
     # make an ensemble object and the calculate the trends for req. dates
-    filepattern = prefix + 'psl' + *r1i1p1*.nc
+    filepattern = prefix + 'psl*' +  '_historical-rcp45_r1i1p1_188101-201212.nc'
     ens = cd.mkensemble(filepattern, prefix=prefix)
     save_cmip5_trends(ens, 'psl', '1951-01-01', '2004-12-31', datapath=datapath)
+    ens = cd.mkensemble(filepattern, prefix=prefix)
     save_cmip5_trends(ens, 'psl', '1979-01-01', '2004-12-31', datapath=datapath)
 
     # Do uas
     # make an ensemble object and the calculate the trends for req. dates
-    filepattern = prefix + 'uas' + *r1i1p1*.nc
+    filepattern = prefix + 'uas*_historical-rcp45_r1i1p1_188101-201212.nc'
     ens = cd.mkensemble(filepattern, prefix=prefix)
     save_cmip5_trends(ens, 'uas', '1951-01-01', '2011-12-31', datapath=datapath)
+    ens = cd.mkensemble(filepattern, prefix=prefix)
     save_cmip5_trends(ens, 'uas', '1988-01-01', '2011-12-31', datapath=datapath)
 
     # Do tauu
     # make an ensemble object and the calculate the trends for req. dates
-    filepattern = prefix + 'tauu' + *r1i1p1*.nc
+    filepattern = prefix + 'tauu*_historical-rcp45_r1i1p1_188101-201212.nc'
     ens = cd.mkensemble(filepattern, prefix=prefix)
     save_cmip5_trends(ens, 'tauu', '1988-01-01', '2011-12-31', datapath=datapath)
 

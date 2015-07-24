@@ -6,7 +6,7 @@ model fields.
 """
 import os
 import glob
-import cdo; cdo = cdo.Cdo()
+import cmipdata as cd
 
 def preprocess_models(destination='./'):
     # where we are starting from

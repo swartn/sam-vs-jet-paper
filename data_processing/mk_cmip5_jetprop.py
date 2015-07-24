@@ -4,6 +4,7 @@ and saves them in an HDF store containing PD DataFrames.
 
 .. moduleauthor:: Neil Swart <neil.swart@ec.gc.ca>
 """
+import os
 import numpy as np
 from netCDF4 import Dataset
 import pandas as pd
@@ -21,17 +22,18 @@ def mk_cmip5_jetprop(datapath='./'):
               'NorESM1-ME', 'NorESM1-M', 'bcc-csm1-1-m', 'bcc-csm1-1','inmcm4'
               ]    
     
-    tail = '_r1i1p1.nc'
-    names = [ 'zonal-mean_remap_uas_Amon' + m + tail for m in model_list ]
+    tail = '_historical-rcp45_r1i1p1_188101-201212.nc'
+    names = [ 'zonal-mean_remap_uas_Amon_' + m + tail for m in model_list ]
     
     # Initialize some arrays
-    width = np.zeros((1596, 30))
-    umax = np.zeros((1596, 30))
-    uloc = np.zeros((1596, 30))
+    width = np.zeros((1584, 30))
+    umax = np.zeros((1584, 30))
+    uloc = np.zeros((1584, 30))
      
     for i, name in enumerate(names):
         # define and load the file dimensions and uas data
         ifile = os.path.join(datapath, name)
+        print ifile
         dims = cd.get_dimensions(ifile, 'uas', toDatetime=True)
         nc = Dataset(ifile)
         uas = nc.variables['uas'][:].squeeze()
@@ -49,6 +51,7 @@ def mk_cmip5_jetprop(datapath='./'):
 
     # Store the DataFrame in HDF5
     out_file = os.path.join(datapath, 'zonmean_sam-jet_analysis_cmip5.h5')
+    store = pd.HDFStore(out_file, 'a')
     store['width'] = df_width
     store['maxspd'] = df_umax
     store['locmax'] = df_uloc

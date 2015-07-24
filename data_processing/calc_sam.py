@@ -8,7 +8,7 @@ import os
 os.system( 'rm -rf /tmp/cdo*') # clean out tmp to make space for CDO processing.
 import cmipdata as cd
 
-def calc_sam(psl_file, varname, start_date='1871-01-01', end_date='2013-12-31'):
+def calc_sam(psl_file, varname, start_date='1800-01-01', end_date='2013-12-31'):
     """
     Compute the SAM index as the pressure difference between 40 and 65S
     
@@ -36,8 +36,8 @@ def calc_sam(psl_file, varname, start_date='1871-01-01', end_date='2013-12-31'):
     cdo.remapnn('lon=0/lat=-65.0', input=psl_file, output=ofile_60s)
 
     # Compute the SAM index
-    cdo.sub(input=ofile_40s + ' ' + ofile_60s, output=ofile_sam, 
-            options='-f nc -b 64')
+    cdo.sub(input=ofile_40s + ' ' + ofile_60s, output=ofile_sam
+                   , options='-f nc -b 64')
 
     # load the data and make dataframes
     sam = cd.loadvar(ofile_sam, varname, start_date=start_date,
@@ -47,4 +47,4 @@ def calc_sam(psl_file, varname, start_date='1871-01-01', end_date='2013-12-31'):
     for f in [ofile_40s, ofile_60s, ofile_sam]:
         os.remove(f)
         
-    return sam
+    return sam + 0
