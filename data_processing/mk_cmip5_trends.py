@@ -34,7 +34,7 @@ def save_cmip5_trends(ens, var, start_date, end_date, datapath='./'):
     ds_name = os.path.join(ds_path, 'c5_' + var + '_trend_' + sy + '_' + ey)    
     h5f.create_dataset(ds_name, data=slopes)
     model_names = [ model.name for model in ens1.models]
-    h5f.create_dataset(ds_path + 'model_names', data=model_names)
+    h5f.create_dataset(ds_path + '/model_names', data=model_names)
     #h5f[ds_name].dims.create_scale(h5f[ds_path + 'model_names'], 'model_names')
     #f[ds_name].dims[2].attach_scale(h5f[ds_path + 'model_names'])
     h5f.close()

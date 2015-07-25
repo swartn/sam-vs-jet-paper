@@ -41,8 +41,10 @@ def modlatplot(npa, ax):
 		    linewidth=0)     
     ax.plot(dims['lat'], ens_mean, color='r',linewidth=3 ,label='CMIP5')
     
+datapath = '../data_retrieval/data/'
+
 # Load the CMIP5 data
-h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/cmip5_trends.h5','r')
+h5f = h5py.File(datapath + 'cmip5_trends.h5','r')
 psl_slope_c5 = h5f['psl/1979_2004/c5_psl_trend_1979_2004'][:]*120
 uas_slope_c5_88 = h5f['uas/1988_2011/c5_uas_trend_1988_2011'][:]*120
 uflx_slope_c5_88 = h5f['tauu/1988_2011/c5_tauu_trend_1988_2011'][:]*120*100
@@ -50,9 +52,9 @@ h5f.close()
 
 # load in the reanlaysis data
 rlc = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm' ] 
-h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/reanalysis_trends.h5','r')
-psl_slope_rean = h5f['psl/1979_2004/rean_psl_trend_1979_2004'][:]*120
-uas_slope_rean_88 = h5f['uas/1988_2011/rean_uas_trend_1988_2011'][:]*120
+h5f = h5py.File(datapath + 'reanalysis_trends.h5','r')
+psl_slope_rean = h5f['slp/1979_2004/rean_slp_trend_1979_2004'][:]*120
+uas_slope_rean_88 = h5f['u10m/1988_2011/rean_u10m_trend_1988_2011'][:]*120
 uflx_slope_rean_88 = h5f['uflx/1988_2011/rean_uflx_trend_1988_2011'][:]*120*100
 rean = h5f['uflx/1988_2011/reanalysis_names'][:]
 h5f.close()
@@ -61,7 +63,7 @@ h5f.close()
 psl_slope_hadslp = psl_slope_rean[:,:,6]
 
 # load in the CCMP data
-ifile_ccmp = '/raid/ra40/data/ncs/ccmp/ccmp_slope_199801-201112.nc'
+ifile_ccmp = datapath + 'slope_remap_CCMP_198701-201112.nc' #despite name, starts 88
 slope_ccmp = cd.loadvar(ifile_ccmp, 'uwnd')*120.
 slope_ccmp = np.ma.masked_outside(slope_ccmp, -1,1)
 uflx_slope_ccmp = cd.loadvar(ifile_ccmp, 'upstr')*120.
@@ -69,8 +71,7 @@ uflx_slope_ccmp = np.ma.masked_outside(uflx_slope_ccmp, -15,15)
 uflx_slope_ccmp = uflx_slope_ccmp*1.2*1.4e-3*120
 
 # load in the Marshall SAM data
-df = pd.read_csv('/HOME/ncs/data/marshall_sam/marshall_sam.csv', 
-		  index_col=0, parse_dates=True)
+df = pd.read_csv(datapath + 'marshall_sam.csv', index_col=0, parse_dates=True)
 
 df = pt.time_lim(df, pd.datetime(1979,1,1), pd.datetime(2004,12,31))
 dft = pt.ols(df, units='decades')

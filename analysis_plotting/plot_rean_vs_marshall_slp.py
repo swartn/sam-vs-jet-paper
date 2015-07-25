@@ -45,28 +45,32 @@ confidence interval,
                   #grid=False)
     ax.plot(ens_mean.index, ens_mean, color='r',linewidth=1 ,label='CMIP5')  
 
+
+
+datapath = '../data_retrieval/data/'
+
 # load in the Marshall SAM data
-df = pd.read_csv('/HOME/ncs/data/marshall_sam/marshall_sam.csv', 
-		  index_col=0, parse_dates=True)
+df = pd.read_csv(datapath + 'marshall_sam.csv', index_col=0, parse_dates=True)
 
 # load the reanalysis data
-# load in the reanlaysis data
 rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA', 'HadSLP2r']
 rlc = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm', 'k']
 ls = ['-k', '-y', '-g', '-b', '-c', '-m', '--k']
-h5f = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/rean_sam.h5', 'a')
-dfr = h5f['sam/df']
-h5f.close() 
+
+# load the reanalysis data
+h5f = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_reanalysis.h5', 'r')
+dfr = h5f['marshall_sam/sam']
+h5f.close()
+
 dfr2 = dfr['HadSLP2r']
 dfr = dfr.drop('HadSLP2r', axis=1)
 
 # load in the cmip5 data
-h5fc5 = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/c5_sam.h5', 'a')
-dfc5 = h5fc5['sam/df'] 
+h5fc5 = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_cmip5.h5', 'r')
+dfc5 = h5fc5['marshall_sam/sam'] 
 h5fc5.close() 
 d1 = pd.datetime(1957,1,1)
 d2 = pd.datetime(2011,12,31)
-
 
 si = 60
 fig, (axt, axm, axb) = plt.subplots(3,1, sharex=True, figsize=(7,7))

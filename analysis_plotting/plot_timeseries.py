@@ -62,38 +62,35 @@ xtics    = [datetime(1870,1,1) + relativedelta(years=20*jj) for jj in range(8) ]
 #locmax.columns = rean
 #width.columns = rean
 
+datapath = '../data_retrieval/data/'
+
 # load in the Marshall SAM data
-dfmarshall = pd.read_csv('/HOME/ncs/data/marshall_sam/marshall_sam.csv', 
+dfmarshall = pd.read_csv(datapath + 'marshall_sam.csv', 
 		  index_col=0, parse_dates=True)
 
 # load the reanalysis data
-h5f = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/rean_sam.h5', 'r')
-dfr = h5f['zonmean_sam/df']
-h5f.close()
+h5f = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_reanalysis.h5', 'r')
+dfr = h5f['zonmean_sam']
 dfhadslp = dfr['HadSLP2r']/100.
+h5f.close()
 
 # load in the 20CR ensemble data
-h5f_20CR = pd.HDFStore(
-    '/raid/ra40/data/ncs/reanalyses/20CR/20cr_ensemble_sam_analysis.h5',
-    'r')
-df_20cr_ens_sam = h5f_20CR['sam']/100.
+h5f_20CR = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_20CR_ensemble.h5', 'r')
+df_20cr_ens_sam = h5f_20CR['zonmean_sam']/100.
 df_20cr_ens_locmax = h5f_20CR['locmax']
 df_20cr_ens_maxspd = h5f_20CR['maxspd'] 
 df_20cr_ens_width = h5f_20CR['width'] 
 h5f_20CR.close()
 
 # load in the next set of model data
-h5f_c5 = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/c5_zonmean_sam-jet_analysis.h5',
-                     'r')
-df_c5_ens_sam = h5f_c5['sam']/100.
+h5f_c5 = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_cmip5.h5', 'r')
+df_c5_ens_sam = h5f_c5['zonmean_sam']/100.
 df_c5_ens_locmax = h5f_c5['locmax']
 df_c5_ens_maxspd = h5f_c5['maxspd'] 
 df_c5_ens_width = h5f_c5['width'] 
 h5f_c5.close()
 
-
 #============================================#
-
 
 def modtsplot(df, ax, color='r', label='CMIP5'):
     """ For the columns of df, compute the columnwise-ensemble mean and 95% 
@@ -146,7 +143,7 @@ modtsplot(df_20cr_ens_sam, f1a, color='g', label='20CR')
 #dfhadslp['sam'].resample('A').plot(ax=f1a, color='k', style='--', 
 #             linewidth=2, grid=False, label='HadSLP2r')
 
-hslp = dfhadslp['sam'].resample('A')
+hslp = dfhadslp.resample('A')
 l = f1a.plot(hslp.index, hslp, 'k--', 
          linewidth=1, label='HadSLP2r')
 l[0].set_dashes([3,2])

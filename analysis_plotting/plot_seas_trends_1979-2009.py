@@ -57,19 +57,19 @@ xtics    = [datetime(1870,1,1) + relativedelta(years=20*jj)
 #the reanalyses is given in the variable rean above. We're not differentiating 
 #models by name here.
 
+datapath = '../data_retrieval/data/'
+
 # load in the python calculated reanalysis data
-h5f_rean = pd.HDFStore(
-    '/raid/ra40/data/ncs/cmip5/sam/reanalysis_zonmean_sam-jet_analysis.h5',
-    'r')
-df_rean_sam = h5f_rean['sam']/100.
+h5f_rean = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_reanalysis.h5', 'r')
+df_rean_sam = h5f_rean['zonmean_sam']/100.
+df_rean_sam = df_rean_sam.drop('HadSLP2r', axis=1)
 df_rean_locmax = h5f_rean['locmax']
 df_rean_maxspd = h5f_rean['maxspd'] 
 df_rean_width = h5f_rean['width'] 
 h5f_rean.close()
 
 # load in the python calculated model data
-h5f_c5 = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/c5_zonmean_sam-jet_analysis.h5',
-                     'r')
+h5f_c5 = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_cmip5.h5', 'r')
 df_c5_ens_sam = h5f_c5['sam']/100.
 df_c5_ens_locmax = h5f_c5['locmax']
 df_c5_ens_maxspd = h5f_c5['maxspd'] 
@@ -167,10 +167,10 @@ def mod_proc(df, axtrend, tys, tye, color='r', label='CMIP5'):
     mod_trends = np.empty( ( num_models  , lensea ) )
     df.seasons = get_seasons(df)
 
-    for i in np.arange( num_models ):  
+    for i, cn in enumerate(df.columns):  
         for ( k , nm ) in enumerate( seas ):
             names = 'df.seasons.' + nm
-            mt = calc_trends( eval( names ), i+1, tys, tye )
+            mt = calc_trends( eval( names ), cn, tys, tye )
             mod_trends[ i , k ] = mt.slope * 10
             
             if i == ( num_models - 1 ):

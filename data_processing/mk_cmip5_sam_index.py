@@ -43,7 +43,7 @@ def mk_cmip5_sam_index(datapath='./'):
     # Store the DataFrame in HDF5
     out_file = os.path.join(datapath, 'zonmean_sam-jet_analysis_cmip5.h5')
     store = pd.HDFStore(out_file, 'a')
-    store['sam'] = df_sam
+    store['zonmean_sam'] = df_sam
     store.close()
     
 if __name__ == '__main__':

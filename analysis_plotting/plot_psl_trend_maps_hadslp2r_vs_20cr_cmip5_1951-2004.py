@@ -17,19 +17,20 @@ from discrete_cmap import discrete_cmap
 from netCDF4 import Dataset,num2date,date2num
 plt.ion()
 plt.close('all')
-pth = '/raid/ra40/data/ncs/cmip5/psl/'
 plt.rc('font', size=10)
 
+datapath = '../data_retrieval/data/'
+
 # Load in the CMIP5 data
-h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/cmip5_trends.h5','r')
+h5f = h5py.File(datapath + 'cmip5_trends.h5','r')
 psl_slope_c5 = h5f['psl/1951_2004/c5_psl_trend_1951_2004'][:]*120
 names2 = h5f['psl/1951_2004/model_names'][:]
 h5f.close()
 
 # Load the data for 20CR
-h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/reanalysis_trends.h5','r')
-slopes = h5f['psl/1951_2004/rean_psl_trend_1951_2004'][:]*120
-rean = h5f['psl/1951_2004/reanalysis_names'][:]
+h5f = h5py.File(datapath + 'reanalysis_trends.h5','r')
+slopes = h5f['slp/1951_2004/rean_slp_trend_1951_2004'][:]*120
+rean = h5f['slp/1951_2004/reanalysis_names'][:]
 h5f.close()
 
 psl_slope_20cr = slopes[:,:,0]

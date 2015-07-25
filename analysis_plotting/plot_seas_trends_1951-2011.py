@@ -62,34 +62,31 @@ xtics    = [datetime(1870,1,1) + relativedelta(years=20*jj) for jj in range(8) ]
 #the reanalyses is given in the variable rean above. We're not differentiating 
 #models by name here.
 
+datapath = '../data_retrieval/data/'
 
 # load in the reanlaysis data
-h5f = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/rean_sam.h5', 'a')
-dfr = h5f['zonmean_sam/df']
+h5f = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_reanalysis.h5', 'r')
+dfr = h5f['zonmean_sam']
 h5f.close()
 dfhadslp = dfr['HadSLP2r']/100.
-dfhadslp = pd.DataFrame(dfhadslp.ix['sam'].dropna(), columns=['HadSLP2r'])
+dfhadslp = pd.DataFrame(dfhadslp.dropna(), columns=['HadSLP2r'])
 
 # load in the 20CR ensemble data
-h5f_20CR = pd.HDFStore(
-    '/raid/ra40/data/ncs/reanalyses/20CR/20cr_ensemble_sam_analysis.h5',
-    'r')
-df_20cr_ens_sam = h5f_20CR['sam']/100.
-df_20cr_ens_sam.columns = np.arange(1,57)
-
+h5f_20CR = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_20CR_ensemble.h5', 'r')
+df_20cr_ens_sam = h5f_20CR['zonmean_sam']/100.
 df_20cr_ens_locmax = h5f_20CR['locmax']
-df_20cr_ens_maxspd = h5f_20CR['maxspd']
-df_20cr_ens_width = h5f_20CR['width']
+df_20cr_ens_maxspd = h5f_20CR['maxspd'] 
+df_20cr_ens_width = h5f_20CR['width'] 
 h5f_20CR.close()
 
-# load in the python calculated model data
-h5f_c5 = pd.HDFStore('/raid/ra40/data/ncs/cmip5/sam/c5_zonmean_sam-jet_analysis.h5',
-                     'r')
-df_c5_ens_sam = h5f_c5['sam']/100.
+# load in the next set of model data
+h5f_c5 = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_cmip5.h5', 'r')
+df_c5_ens_sam = h5f_c5['zonmean_sam']/100.
 df_c5_ens_locmax = h5f_c5['locmax']
 df_c5_ens_maxspd = h5f_c5['maxspd'] 
 df_c5_ens_width = h5f_c5['width'] 
 h5f_c5.close()
+
 #============================================#
 # Define some functions
 def get_seasons(df):
@@ -179,11 +176,11 @@ def mod_proc(df, axtrend, tys, tye, color='r', label='CMIP5'):
     mod_trends = np.empty( ( num_models  , lensea ) )
     df.seasons = get_seasons(df)
 
-    for i in np.arange( num_models ):  
-        for ( k , nm ) in enumerate( seas ):
+    for i, cn in enumerate(df.columns):  
+        for (k , nm) in enumerate(seas):
             names = 'df.seasons.' + nm
-            mt = calc_trends( eval( names ), i+1, tys, tye )
-            mod_trends[ i , k ] = mt.slope * 10
+            mt = calc_trends( eval(names), cn, tys, tye )
+            mod_trends[i, k] = mt.slope * 10
             
             if i == ( num_models - 1 ):
                 mod_trend_mean = np.mean( mod_trends[ : , k ] )

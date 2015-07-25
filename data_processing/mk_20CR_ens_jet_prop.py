@@ -11,9 +11,9 @@ import os
 from netCDF4 import Dataset
 import pandas as pd
 import cmipdata as cd
-from calc_shw_jet_properties import jetprop
+from sam_jet_calcs import jetprop
 
-def mk_20cr_jetprop(datapath='../data_retrieval/data/'):
+def mk_20cr_ens_jetprop(datapath='../data_retrieval/data/'):
     """Calculated the kinematic properties of the jet for the 20CR ensemble
     """
     #The pre-computed zonal mean u10m file
@@ -66,5 +66,5 @@ def mk_20cr_jetprop(datapath='../data_retrieval/data/'):
     store.close()      
 
 if __name__ == '__main__':
-    mk_20cr_jetprop(datapath='../data_retrieval/data/')
+    mk_20cr_ens_jetprop(datapath='../data_retrieval/data/')
     

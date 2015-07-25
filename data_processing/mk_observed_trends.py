@@ -20,22 +20,21 @@ def mk_observed_trends(datapath='./'):
     cwd = os.getcwd()
     # move to where the data is
     os.chdir(datapath)
-
-        
+   
     # do slp
-    save_observed_trends('20CR_ens_slp.mon.mean.nc', start_date='1979-01-01',
+    save_observed_trends('remap_20CR_ens_slp.mon.mean.nc', start_date='1979-01-01',
                            end_date='2004-12-31', datapath=datapath)
     
-    save_observed_trends('20CR_ens_slp.mon.mean.nc', start_date='1951-01-01',
+    save_observed_trends('remap_20CR_ens_slp.mon.mean.nc', start_date='1951-01-01',
                            end_date='2004-12-31', datapath=datapath)
 
 
     # do u10m
-    save_observed_trends('20CR_ens_u10m.mon.mean.nc', 
+    save_observed_trends('remap_20CR_ens_u10m.mon.mean.nc', 
                          start_date='1951-01-01', end_date='2011-12-31', 
                          datapath=datapath)
 
-    save_observed_trends('CCMP_198701-201112.nc', 
+    save_observed_trends('remap_CCMP_198701-201112.nc', 
                          start_date='1988-01-01', end_date='2011-12-31', 
                          datapath=datapath)
 

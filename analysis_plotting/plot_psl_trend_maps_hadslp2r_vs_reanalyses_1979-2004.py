@@ -22,17 +22,18 @@ plt.close('all')
 font = {'size'   : 10}
 plt.rc('font', **font)
 
+datapath = '../data_retrieval/data/'
 
 # Load the CMIP5 data
-h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/cmip5_trends.h5','r')
+h5f = h5py.File(datapath + 'cmip5_trends.h5','r')
 psl_slope_c5 = h5f['psl/1979_2004/c5_psl_trend_1979_2004'][:]*120
 h5f.close()
 
 # load in the reanlaysis data
 rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA']
 rlc = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm' ] 
-h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/reanalysis_trends.h5','r')
-slopes = h5f['psl/1979_2004/rean_psl_trend_1979_2004'][:]*120
+h5f = h5py.File(datapath + 'reanalysis_trends.h5','r')
+slopes = h5f['slp/1979_2004/rean_slp_trend_1979_2004'][:]*120
 h5f.close()
 
 # HadSLP data is now with reanlyses.

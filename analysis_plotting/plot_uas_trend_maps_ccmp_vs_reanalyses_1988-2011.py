@@ -21,21 +21,24 @@ plt.close('all')
 font = {'size'   : 10}
 plt.rc('font', **font)
 
+datapath = '../data_retrieval/data/'
+
 # Load the CMIP5 data
-h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/cmip5_trends.h5','r')
+h5f = h5py.File(datapath + 'cmip5_trends.h5','r')
 uas_slope_c5 = h5f['uas/1988_2011/c5_uas_trend_1988_2011'][:]*120
 #names2 = h5f['uas/1988_2011/model_names'][:]
 h5f.close()
 
 # load in the reanalysis data
-h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/reanalysis_trends.h5','r')
-slopes = h5f['uas/1988_2011/rean_uas_trend_1988_2011'][:]*120
-rean = h5f['uas/1988_2011/reanalysis_names'][:]
+h5f = h5py.File(datapath + 'reanalysis_trends.h5','r')
+slopes = h5f['u10m/1988_2011/rean_u10m_trend_1988_2011'][:]*120
+rean = h5f['u10m/1988_2011/reanalysis_names'][:]
 h5f.close()
 
 # load in the CCMP data
-ifile_ccmp = '/raid/ra40/data/ncs/ccmp/ccmp_slope_199801-201112.nc'
-slope_ccmp = cd.loadvar(ifile_ccmp, 'uwnd')*120.
+ifile_ccmp = datapath + 'slope_remap_CCMP_198701-201112.nc' #despite name, starts 88
+slope_ccmp = cd.loadvar(ifile_ccmp, 'uwnd')
+slope_ccmp = slope_ccmp*120.
 slope_ccmp = np.ma.masked_outside(slope_ccmp, -1,1)
 
 dims = {'lat' : np.arange(-89.5,90.1,1),

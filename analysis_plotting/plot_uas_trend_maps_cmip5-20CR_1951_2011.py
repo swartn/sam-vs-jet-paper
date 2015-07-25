@@ -19,21 +19,26 @@ plt.ion()
 plt.close('all')
 plt.rc('font', size=10)
 
-pth = '/raid/ra40/data/ncs/cmip5/psl/'
+datapath = '../data_retrieval/data/'
 
 # Load the CMIP5 data
-#h5f = h5py.File('/raid/ra40/data/ncs/cmip5_trends.h5','r')
-h5f = h5py.File('/raid/ra40/data/ncs/cmip5/sam/cmip5_trends.h5','r')
+h5f = h5py.File(datapath + 'cmip5_trends.h5','r')
 uas_slope_c5 = h5f['uas/1951_2011/c5_uas_trend_1951_2011'][:]*120
 names2 = h5f['uas/1951_2011/model_names'][:]
 h5f.close()
 
 # load the data for 20CR
-ifile_20CR_slope = '/raid/ra40/data/ncs/reanalyses/20CR/'\
-                   + '20CR_uwnd_slope_195101-201112.nc'
-                   
-uas_slope_20cr = cd.loadvar(ifile_20CR_slope, 'uwnd')*120 # convert to dec
-dims = cd.get_dimensions(ifile_20CR_slope, 'uwnd')
+# Load the data for 20CR
+h5f = h5py.File(datapath + 'reanalysis_trends.h5','r')
+slopes = h5f['u10m/1951_2011/rean_u10m_trend_1951_2011'][:]*120
+rean = h5f['u10m/1951_2011/reanalysis_names'][:]
+h5f.close()
+                  
+uas_slope_20cr = slopes[:,:,0]
+
+dims = {'lat' : np.arange(-89.5,89.6,1),
+        'lon' : np.arange(0,360,1)
+        }
 
 fig, axa = plt.subplots(3,2, sharex=True, figsize=(7,7))
 fig.subplots_adjust(top=0.5, hspace=0.1, wspace=0.05)

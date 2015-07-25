@@ -23,16 +23,15 @@ dims = {'lat' : np.arange(-89.5,89.6,1),
         'lon' : np.arange(0,360,1)
         }
 
+datapath = '../data_retrieval/data/'
 
 # load the data for all 20CR ense members
-ifile_20CR_slopes_all ='/raid/ra40/data/ncs/reanalyses/20CR/slp/\
-remap_prmsl_slope_195101-201112.nc'
+ifile_20CR_slopes_all = datapath + 'slope_remap_20CR_ens_slp.mon.mean.nc'
 nc = Dataset(ifile_20CR_slopes_all)
-psl_slopes_all_20cr = nc.variables['prmsl'][:].squeeze()*120 
-dims20cr = cd.get_dimensions(ifile_20CR_slopes_all, 'prmsl')
+psl_slopes_all_20cr = nc.variables['slp'][:].squeeze()*120 
+dims20cr = cd.get_dimensions(ifile_20CR_slopes_all, 'slp')
            
-ifile_20CR_slopes_all_u10m = '/home/ncs/ra40/reanalyses/20CR/winds_10m/u_10m/\
-remap_u10m_slope_195101-201112.nc'
+ifile_20CR_slopes_all_u10m = datapath + 'slope_remap_20CR_ens_u10m.mon.mean.nc'
 nc = Dataset(ifile_20CR_slopes_all_u10m)
 u10m_slopes_all_20cr = nc.variables['u10m'][:].squeeze()*120            
 dims20cr2 = cd.get_dimensions(ifile_20CR_slopes_all_u10m, 'u10m')

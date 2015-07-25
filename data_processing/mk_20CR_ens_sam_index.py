@@ -8,7 +8,7 @@ import numpy as np
 from netCDF4 import Dataset,num2date,date2num
 import pandas as pd
 import cmipdata as cd
-from calc_sam import calc_sam
+from sam_jet_calcs import calc_sam
 
 def mk_20cr_ens_sam_index(datapath='.'):
     """Calculates the SAM index for the 20CR ensemble
@@ -26,7 +26,7 @@ def mk_20cr_ens_sam_index(datapath='.'):
     # Store the DataFrame in HDF5
     out_file = os.path.join(datapath, 'zonmean_sam-jet_analysis_20CR_ensemble.h5')
     store = pd.HDFStore(out_file, 'a')
-    store['sam'] = df_sam
+    store['zonmean_sam'] = df_sam
     store.close()
 
 if __name__ == '__main__':
