@@ -131,7 +131,7 @@ zlib                      1.2.8                         0
 ## License
 This ``sam-vs-jet-paper`` software is Copyright (C) 2015  Neil Swart. It is 
 licensed under the [GNU General Public License 
-version 2](http://www.gnu.org/licenses/gpl-2.0.txt) -see below and LICENSE.txt.
+version 2](http://www.gnu.org/licenses/gpl-2.0.txt) -see below and the LICENSE file.
 
 ## Disclaimer
 This was a mult-author paper, but all the software is the responsibility of me, Neil 
