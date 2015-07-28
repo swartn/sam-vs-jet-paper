@@ -30,53 +30,6 @@ font = {'size'   : 12}
 plt.rc('font', **font)
 
 #============================================#
-# Define the years for the trend analysis
-tys = 1979 # start (inclusive)
-tye = 2009 # stop (inclusive)
-#============================================#
-#
-# Define some global variables that we use repeatedly
-#
-# the names of the reanalyses we are using (in column-order of the dataframes)
-rean     = ['R1', 'R2', '20CR', 'ERA', 'CFSR', 'MERRA']
-num_rean = len( rean )
-rlc      = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm' ] 
-ls      = [ '_k' , '_y', '_g' , '_b' , '_c' , '_m' ] 
-seas     = ['mam', 'jja', 'son', 'djf', 'ann']  
-lensea   = len( seas )
-xtics    = [datetime(1870,1,1) + relativedelta(years=20*jj) 
-            for jj in range(8) 
-           ] 
-#============================================#
-# Load the data which is saved in HDF. The data are in pandas dataframes. There 
-# is one dataframe for each variable of interest (SAM, jet speed = maxpsd, jet 
-#position = locmax and jet width. For each variable there is one dataframe for 
-#reanalyses and one dataframe for the CMIP5 models. With each dataframe the 
-#indices (rows) are a datetime index representing the monthly data while each 
-#column refers to an individual reanalysis or CMIP5 model. The column order of 
-#the reanalyses is given in the variable rean above. We're not differentiating 
-#models by name here.
-
-datapath = '../data_retrieval/data/'
-
-# load in the python calculated reanalysis data
-h5f_rean = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_reanalysis.h5', 'r')
-df_rean_sam = h5f_rean['zonmean_sam']/100.
-df_rean_sam = df_rean_sam.drop('HadSLP2r', axis=1)
-df_rean_locmax = h5f_rean['locmax']
-df_rean_maxspd = h5f_rean['maxspd'] 
-df_rean_width = h5f_rean['width'] 
-h5f_rean.close()
-
-# load in the python calculated model data
-h5f_c5 = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_cmip5.h5', 'r')
-df_c5_ens_sam = h5f_c5['sam']/100.
-df_c5_ens_locmax = h5f_c5['locmax']
-df_c5_ens_maxspd = h5f_c5['maxspd'] 
-df_c5_ens_width = h5f_c5['width'] 
-h5f_c5.close()
-
-#============================================#
 # Define some functions
 def get_seasons(df):
     """Extract the 4 seasons and the annual mean from dataframe df, and save 
@@ -117,7 +70,7 @@ def calc_trends( dfp, var, ys , ye ):
     dfp['yhat'] = dfp.slope * dfp.index.year + intercept
     return dfp
 
-def rean_proc(dfr, axtrend=None, tys=None, tye=None, mew=2, ms=15):
+def rean_proc(dfr, axtrend=None, tys=None, tye=None, mew=2, ms=15, ls=['_']):
     """ Loop over the columns of dfr (corresponding to different reanalyses) 
     and:
     2. if axtrend is given then compute the linear trend between years tys and 
@@ -128,8 +81,8 @@ def rean_proc(dfr, axtrend=None, tys=None, tye=None, mew=2, ms=15):
     in the global variable rlc, and similarly are labelled using the names 
     listed in the global variable rean.
     """
-
-    rean_trends = np.zeros((len(dfr.columns), lensea))
+    seas = ['mam', 'jja', 'son', 'djf', 'ann']
+    rean_trends = np.zeros((len(dfr.columns), 5))
     dfr.seasons = get_seasons( dfr ) ; 
     
     # Loop over reanalyses and do some basic dataframe checks and adjustments.
@@ -156,15 +109,16 @@ def rean_proc(dfr, axtrend=None, tys=None, tye=None, mew=2, ms=15):
                     axtrend.plot(k, rean_trends[i, k], ls[i],
                                  ms=ms, mew=mew, label='')
 
-            axtrend.set_xticks(np.arange(lensea + 1))
+            axtrend.set_xticks(np.arange(5 + 1))
             axtrend.plot([-1, 5], [0, 0], 'k--')  
     return rean_trends      
 
 def mod_proc(df, axtrend, tys, tye, color='r', label='CMIP5'):
     """ Loop over the columns of df calculate trends for each one, plus 
     plot the ensemble trend stats"""
+    seas = ['mam', 'jja', 'son', 'djf', 'ann']
     num_models =  len( df.columns )
-    mod_trends = np.empty( ( num_models  , lensea ) )
+    mod_trends = np.empty( ( num_models  , 5 ) )
     df.seasons = get_seasons(df)
 
     for i, cn in enumerate(df.columns):  
@@ -191,74 +145,124 @@ def mod_proc(df, axtrend, tys, tye, color='r', label='CMIP5'):
                 else:
                     axtrend.plot(k, np.mean(mod_trends[:, k]), '_' + color, ms=15, 
                                  mew=2, label='')    
-    axtrend.set_xticks(np.arange(lensea + 1))
+    axtrend.set_xticks(np.arange(5 + 1))
     axtrend.plot([-1, 5], [0, 0], 'k--')                 
-    return mod_trends   	  
-                          
-#========= SAM - press ===============#
-f2 = plt.figure(2)
-plt.figure(2).set_size_inches((8,8), forward=True )
-f2a = plt.subplot(421)
-sam_trends = rean_proc(df_rean_sam, axtrend=f2a, tys=tys, tye=tye)   
-mod_sam_trends = mod_proc(df_c5_ens_sam, f2a, tys=tys, tye=tye, color='r')
+    return mod_trends   
 
-#========= Jet max speed - uspd ===============#
-f2b = plt.subplot(423)
-uspd_trends = rean_proc(df_rean_maxspd, axtrend=f2b, tys=tys, tye=tye)       
-mod_uspd_trends = mod_proc(df_c5_ens_maxspd, f2b, tys=tys, tye=tye, color='r')
+def plot_seas_trends_1979_2009(datapath):
 
-#========= Location - locmax ===============#
-f2c = plt.subplot(425)
-pos_trends = rean_proc(df_rean_locmax, axtrend=f2c, tys=tys, tye=tye)   
-mod_pos_trends = mod_proc(df_c5_ens_locmax, f2c, tys=tys, tye=tye, color='r')
+    #============================================#
+    # Define the years for the trend analysis
+    tys = 1979 # start (inclusive)
+    tye = 2009 # stop (inclusive)
+    #============================================#
+    #
+    # Define some global variables that we use repeatedly
+    #
+    # the names of the reanalyses we are using (in column-order of the dataframes)
+    rean     = ['R1', 'R2', '20CR', 'ERA', 'CFSR', 'MERRA']
+    num_rean = len( rean )
+    rlc      = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm' ] 
+    ls      = [ '_k' , '_y', '_g' , '_b' , '_c' , '_m' ] 
+    seas     = ['mam', 'jja', 'son', 'djf', 'ann']  
+    xtics    = [datetime(1870,1,1) + relativedelta(years=20*jj) 
+                for jj in range(8) 
+            ] 
+    #============================================#
+    # Load the data which is saved in HDF. The data are in pandas dataframes. There 
+    # is one dataframe for each variable of interest (SAM, jet speed = maxpsd, jet 
+    #position = locmax and jet width. For each variable there is one dataframe for 
+    #reanalyses and one dataframe for the CMIP5 models. With each dataframe the 
+    #indices (rows) are a datetime index representing the monthly data while each 
+    #column refers to an individual reanalysis or CMIP5 model. The column order of 
+    #the reanalyses is given in the variable rean above. We're not differentiating 
+    #models by name here.
 
-#========= Width ===============#
-f2d = plt.subplot(427)
-width_trends = rean_proc(df_rean_width, axtrend=f2d, tys=tys, tye=tye)      
-mod_width_trends = mod_proc(df_c5_ens_width, f2d, tys=tys, tye=tye, color='r')
+    # load in the python calculated reanalysis data
+    h5f_rean = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_reanalysis.h5', 'r')
+    df_rean_sam = h5f_rean['zonmean_sam']/100.
+    df_rean_sam = df_rean_sam.drop('HadSLP2r', axis=1)
+    df_rean_locmax = h5f_rean['locmax']
+    df_rean_maxspd = h5f_rean['maxspd'] 
+    df_rean_width = h5f_rean['width'] 
+    h5f_rean.close()
 
-# ========= Do some figure beautifying and labelled etc ========= #
-panlab = ['a)', 'b)', 'c)', 'd)', 'e)', 'f)' ,'g)', 'h)']
-yaxlab1 = ['SAM Index (hPa)' ,
-           'Strength (m/s)',
-           'Position ($^{\circ}$S)', 
-           'Width ($^{\circ}$ lat.)'
-           ]
-f2ax = [f2a, f2b, f2c, f2d]
+    # load in the python calculated model data
+    h5f_c5 = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_cmip5.h5', 'r')
+    df_c5_ens_sam = h5f_c5['zonmean_sam']/100.
+    df_c5_ens_locmax = h5f_c5['locmax']
+    df_c5_ens_maxspd = h5f_c5['maxspd'] 
+    df_c5_ens_width = h5f_c5['width'] 
+    h5f_c5.close()
+                            
+    #========= SAM - press ===============#
+    f2 = plt.figure(2)
+    plt.figure(2).set_size_inches((8,8), forward=True )
+    f2a = plt.subplot(421)
+    sam_trends = rean_proc(df_rean_sam, axtrend=f2a, tys=tys, tye=tye, ls=ls)   
+    mod_sam_trends = mod_proc(df_c5_ens_sam, f2a, tys=tys, tye=tye, color='r')
 
-yaxlab = ['SAM trend \n(hPa dec$^{-1}$)', 
-          'Strength trend \n(ms$^{-1}$ dec$^{-1}$)', 
-          'Position trend \n($^{\circ}$ lat. dec$^{-1}$)', 
-          'Width trend \n($^{\circ}$ lat. dec$^{-1}$)' 
-         ]
-majorFormatter = mpl.ticker.FormatStrFormatter('%1.2f')
+    #========= Jet max speed - uspd ===============#
+    f2b = plt.subplot(423)
+    uspd_trends = rean_proc(df_rean_maxspd, axtrend=f2b, tys=tys, tye=tye, ls=ls)       
+    mod_uspd_trends = mod_proc(df_c5_ens_maxspd, f2b, tys=tys, tye=tye, color='r')
 
-# Loop of figure 2 and label plus adjust subplots.
-for i, ax in enumerate( f2ax ):
-    ylim = ax.get_ylim()
-    yrange =  max(ylim) - min(ylim)
-    ax.text( -0.35, max( ylim ) -0.15*yrange, panlab[i])
-    ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(5) )
-    ax.yaxis.set_major_formatter(majorFormatter)
-    ax.set_xlim([-0.5, lensea -0.5])
+    #========= Location - locmax ===============#
+    f2c = plt.subplot(425)
+    pos_trends = rean_proc(df_rean_locmax, axtrend=f2c, tys=tys, tye=tye, ls=ls)   
+    mod_pos_trends = mod_proc(df_c5_ens_locmax, f2c, tys=tys, tye=tye, color='r')
 
-    if (ax != f2d): # only keep xlabels for the bottom panels
-        ax.set_xticklabels([])
-        ax.set_xlabel('')
-        
-    ax.set_ylabel( yaxlab[i] )
+    #========= Width ===============#
+    f2d = plt.subplot(427)
+    width_trends = rean_proc(df_rean_width, axtrend=f2d, tys=tys, tye=tye, ls=ls)      
+    mod_width_trends = mod_proc(df_c5_ens_width, f2d, tys=tys, tye=tye, color='r')
 
-f2a.yaxis.set_major_locator(mpl.ticker.MultipleLocator(1))
-f2a.yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%1.1f'))
-f2c.yaxis.set_ticks([-1.5, -0.75, 0, 0.75])
+    # ========= Do some figure beautifying and labelled etc ========= #
+    panlab = ['a)', 'b)', 'c)', 'd)', 'e)', 'f)' ,'g)', 'h)']
+    yaxlab1 = ['SAM Index (hPa)' ,
+            'Strength (m/s)',
+            'Position ($^{\circ}$S)', 
+            'Width ($^{\circ}$ lat.)'
+            ]
+    f2ax = [f2a, f2b, f2c, f2d]
 
-f2d.set_xticklabels([s.upper() for s in seas])  
-plt.figure(2).subplots_adjust(hspace=0.06, wspace=0.05, right=0.8, left=0.2)
-f2a.legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.5, 1.05),
-           handlelength=0.01, handletextpad=1, borderpad=1, frameon=False )
+    yaxlab = ['SAM trend \n(hPa dec$^{-1}$)', 
+            'Strength trend \n(ms$^{-1}$ dec$^{-1}$)', 
+            'Position trend \n($^{\circ}$ lat. dec$^{-1}$)', 
+            'Width trend \n($^{\circ}$ lat. dec$^{-1}$)' 
+            ]
+    majorFormatter = mpl.ticker.FormatStrFormatter('%1.2f')
 
-plt.figure(2).savefig('../plots/seas_trends_1979-2009.pdf',
-                      format='pdf', dpi=300, bbox_inches='tight')
+    # Loop of figure 2 and label plus adjust subplots.
+    for i, ax in enumerate( f2ax ):
+        ylim = ax.get_ylim()
+        yrange =  max(ylim) - min(ylim)
+        ax.text( -0.35, max( ylim ) -0.15*yrange, panlab[i])
+        ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(5) )
+        ax.yaxis.set_major_formatter(majorFormatter)
+        ax.set_xlim([-0.5, 5 -0.5])
+
+        if (ax != f2d): # only keep xlabels for the bottom panels
+            ax.set_xticklabels([])
+            ax.set_xlabel('')
+            
+        ax.set_ylabel( yaxlab[i] )
+
+    f2a.yaxis.set_major_locator(mpl.ticker.MultipleLocator(1))
+    f2a.yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%1.1f'))
+    f2c.yaxis.set_ticks([-1.5, -0.75, 0, 0.75])
+
+    f2d.set_xticklabels([s.upper() for s in seas])  
+    plt.figure(2).subplots_adjust(hspace=0.06, wspace=0.05, right=0.8, left=0.2)
+    f2a.legend(ncol=1, prop={'size':12},numpoints=1, bbox_to_anchor=(1.5, 1.05),
+            handlelength=0.01, handletextpad=1, borderpad=1, frameon=False )
+
+    plt.figure(2).savefig('../plots/seas_trends_1979-2009.pdf',
+                        format='pdf', dpi=300, bbox_inches='tight')
+
+if __name__ == '__main__':
+    plot_seas_trends_1979_2009(datapath='../data_retrieval/data/')
+
 
 ##-------------------------------------------------------------------------------
 ##                        Do SAM vs SPEED trend plots

@@ -1,0 +1,35 @@
+\documentclass[landscape]{slides}
+\usepackage[top=0.5in, bottom=1in, left=0.5in, right=1in]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{trees,arrows,positioning} 
+\usetikzlibrary{decorations.markings}
+\begin{document}
+
+\begin{tikzpicture}%[font=\Large]
+  \node[draw=blue, line width=1mm, text=blue] (0,0) (raw) {raw data};
+  \node[draw=red, line width=1mm, text=red, above left = (2,0.2) cm of raw, align=left] (dls) {Download scripts};
+  
+   \node[draw=blue, line width=1mm, text=blue, right=3cm of raw, align=left] (ppd) {Pre-processed\\data};
+   \node[draw=red, line width=1mm, text=red, above = of ppd, align=left] (pps) {Pre-processing\\scripts};
+
+   \node[draw=blue, line width=1mm, text=blue, right=3 cm of ppd, align=left] (ddp) {Derivative\\data};
+   \node[draw=red, line width=1mm, text=red, above = of ddp, align=left] (as) {Analysis scripts};
+
+
+   \node[draw=blue, line width=1mm, text=blue, below= 5cm of raw] (plots) {Plots};
+   \node[draw=red, line width=1mm, text=red, above = of plots, align=left] (ps) {Plotting\\scripts};
+
+   \node[draw=blue, line width=1mm, text=blue, right= 3cm of plots, align=left] (final) {Final\\paper};
+   \node[draw=red, line width=1mm, text=red, above = of final] (latex) {LaTeX};
+
+   \draw[-latex, red, line width=1mm, in=90] (dls.south) -- (raw.west);
+
+
+   \draw[-latex, red, line width=1mm] (raw) -- (ppd);
+   \draw[-latex, red, line width=1mm] (ppd) -- (ddp);
+   %\draw[-latex, red, line width=1mm] (ddp.east) -- (plots.west);
+   \draw[-latex, red, line width=1mm] (plots) -- (final.west);
+
+
+\end{tikzpicture}
+\end{document}  

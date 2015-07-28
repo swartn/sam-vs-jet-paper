@@ -7,89 +7,21 @@ import numpy as np
 import scipy as sp
 from scipy import stats
 import trend_ts
-reload(trend_ts)
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pandas as pd
 from dateutil.parser import parse
-#import sam_analysis_data as sad
 
-""" Analyze time series in 20CR, CMIP5 and HadSLP2r
-
-Neil Swart, v4, Feb 2015
-Neil.Swart@ec.gc.ca
-
-"""
-
-# set font size
+# set font size for plotting
 plt.close('all')
 plt.ion()
-font = {'size'   : 12}
+font = {'size' : 12}
 plt.rc('font', **font)
 
-#
-# Define some global variables that we use repeatedly
-#
-# the names of the reanalyses we are using (in column-order of the dataframes)
-rean     = ['R1', 'R2', '20CR', 'ERA', 'CFSR', 'MERRA']
-num_rean = len( rean )
-# corresponding colors to use for plotting each reanalysis
-rlc      = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm' ] 
-rlc      = [ 'g' , 'y', 'g' , 'b' , 'c' , 'm' ]
-seas     = ['mam', 'jja', 'son', 'djf', 'ann']  # names of the seasons
-lensea   = len( seas )
-xtics    = [datetime(1870,1,1) + relativedelta(years=20*jj) for jj in range(8) ] 
-# xticks for time-series plot.
 #============================================#
-# Load the data which is saved in HDF. The data are in pandas dataframes. There 
-#is one dataframe for each variable of interest
-# (SAM, jet speed = maxpsd, jet position = locmax and jet width. For each 
-#variable there is one dataframe for reanalyses and
-# one dataframe for the CMIP5 models. With each dataframe the indices (rows) 
-#are 
-#a datetime index representing the monthly data
-# while each column refers to an individual reanalysis or CMIP5 model. The 
-#column order of the reanalyses is given in the variable
-# rean above. We're not differentiating models by name here.
-
-# This was the old definitions computed in ferret and no longer used.
-#press, maxspd, locmax, width, modpress, modmaxspd, modlocmax, modwidth =\
-#                      sad.load_sam_df()
-#press.columns = rean
-#maxspd.columns = rean
-#locmax.columns = rean
-#width.columns = rean
-
-datapath = '../data_retrieval/data/'
-
-# load in the Marshall SAM data
-dfmarshall = pd.read_csv(datapath + 'marshall_sam.csv', 
-		  index_col=0, parse_dates=True)
-
-# load the reanalysis data
-h5f = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_reanalysis.h5', 'r')
-dfr = h5f['zonmean_sam']
-dfhadslp = dfr['HadSLP2r']/100.
-h5f.close()
-
-# load in the 20CR ensemble data
-h5f_20CR = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_20CR_ensemble.h5', 'r')
-df_20cr_ens_sam = h5f_20CR['zonmean_sam']/100.
-df_20cr_ens_locmax = h5f_20CR['locmax']
-df_20cr_ens_maxspd = h5f_20CR['maxspd'] 
-df_20cr_ens_width = h5f_20CR['width'] 
-h5f_20CR.close()
-
-# load in the next set of model data
-h5f_c5 = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_cmip5.h5', 'r')
-df_c5_ens_sam = h5f_c5['zonmean_sam']/100.
-df_c5_ens_locmax = h5f_c5['locmax']
-df_c5_ens_maxspd = h5f_c5['maxspd'] 
-df_c5_ens_width = h5f_c5['width'] 
-h5f_c5.close()
-
+# Define some plotting routines first
 #============================================#
 
 def modtsplot(df, ax, color='r', label='CMIP5'):
@@ -112,99 +44,127 @@ def modtsplot(df, ax, color='r', label='CMIP5'):
                     ts_95_ci), color=color, alpha=0.35, linewidth=0)  
     ax.plot(ens_mean.index, ens_mean, color=color,linewidth=1 ,label=label)   
                   
-def rean_proc(dfr, axts):
-    """ Loop over the columns of dfr (corresponding to different reanalyses) 
-        and plot the time-series in axis axts.
-    """
-    for (i, name) in enumerate( ['20CR'] ):#enumerate( rean ):     
-        axts.plot(dfr.resample('A').index, dfr[name].resample('A'), 
-                  color=rlc[ i ], linewidth=2, alpha=1, label=name)
-        axts.set_axisbelow(True)
-              
-                          
-#========= SAM - press ===============#
+#============================================#
+# The main routine
+#============================================#
 
-# Set up the figures
-f1 = plt.figure(1)
-plt.figure(1).set_size_inches((8,8), forward=True )
+def plot_timeseries(datapath):
+    # Load the data from `datapath` which is (mostly) saved as pandas dataframes 
+    #in HDF5, and plot annual mean timeseries. 
 
-f1a = plt.subplot( 421 )
-f1b = plt.subplot( 423 )
-f1c = plt.subplot( 425 )
-f1d = plt.subplot( 427 )
+    # load in the Marshall SAM data
+    dfmarshall = pd.read_csv(datapath + 'marshall_sam.csv', 
+                    index_col=0, parse_dates=True)
 
-#rean_proc(press, axts=f1a)    
-#modtsplot(modpress, f1a)
-modtsplot(df_c5_ens_sam, f1a, color='r', label='CMIP5')
-modtsplot(df_20cr_ens_sam, f1a, color='g', label='20CR')
+    # load the reanalysis data
+    h5f = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_reanalysis.h5', 'r')
+    dfr = h5f['zonmean_sam']
+    dfhadslp = dfr['HadSLP2r']/100.
+    h5f.close()
 
-#dfmarshall['sam'].resample('A').plot(ax=f1a, color='0.5', style='-', 
-             #linewidth=2, grid=False, label='Marshall', zorder=3)
-#dfhadslp['sam'].resample('A').plot(ax=f1a, color='k', style='--', 
-#             linewidth=2, grid=False, label='HadSLP2r')
+    # load in the 20CR ensemble data
+    h5f_20CR = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_20CR_ensemble.h5',
+                           'r')
+    df_20cr_ens_sam = h5f_20CR['zonmean_sam']/100.
+    df_20cr_ens_locmax = h5f_20CR['locmax']
+    df_20cr_ens_maxspd = h5f_20CR['maxspd'] 
+    df_20cr_ens_width = h5f_20CR['width'] 
+    h5f_20CR.close()
 
-hslp = dfhadslp.resample('A')
-l = f1a.plot(hslp.index, hslp, 'k--', 
-         linewidth=1, label='HadSLP2r')
-l[0].set_dashes([3,2])
+    # load in the next set of model data
+    h5f_c5 = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_cmip5.h5', 'r')
+    df_c5_ens_sam = h5f_c5['zonmean_sam']/100.
+    df_c5_ens_locmax = h5f_c5['locmax']
+    df_c5_ens_maxspd = h5f_c5['maxspd'] 
+    df_c5_ens_width = h5f_c5['width'] 
+    h5f_c5.close()            
+                            
+    # Now do the actual plotting
+    
+    
+    # Set up the figures
+    f1 = plt.figure(1)
+    f1.set_size_inches((8,8), forward=True )
 
-#rean_proc(maxspd, axts=f1b)
-#modtsplot(modmaxspd, f1b)
-modtsplot(df_c5_ens_maxspd, f1b, color='r', label='CMIP5')
-modtsplot(df_20cr_ens_maxspd, f1b, color='g', label='20CR')
+    f1a = plt.subplot(421)
+    f1b = plt.subplot(423)
+    f1c = plt.subplot(425)
+    f1d = plt.subplot(427)
 
-#rean_proc(locmax, axts=f1c)
-#modtsplot(modlocmax, f1c)
-modtsplot(df_c5_ens_locmax, f1c, color='r', label='CMIP5')
-modtsplot(df_20cr_ens_locmax, f1c, color='g', label='20CR')
+    # Plot SAM
+    modtsplot(df_c5_ens_sam, f1a, color='r', label='CMIP5')
+    modtsplot(df_20cr_ens_sam, f1a, color='g', label='20CR')
 
-#rean_proc(width, axts=f1d)
-#modtsplot(modwidth, f1d)
-modtsplot(df_c5_ens_width, f1d, color='r', label='CMIP5')
-modtsplot(df_20cr_ens_width, f1d, color='g', label='20CR')
+    # plot marshall data
+    #dfmarshall['sam'].resample('A').plot(ax=f1a, color='0.5', style='-', 
+                #linewidth=2, grid=False, label='Marshall', zorder=3)
+    #dfhadslp['sam'].resample('A').plot(ax=f1a, color='k', style='--', 
+    #             linewidth=2, grid=False, label='HadSLP2r')
 
-# FIGURE 1: Time-series
-# defines some lists of labels.
-f1ax = [ f1a, f1b, f1c, f1d ]
-panlab = ['a)', 'b)', 'c)', 'd)', 'e)', 'f)' ,'g)', 'h)']
-yaxlab1 = ['SAM Index (hPa)' , 'Strength (m s$^{-1}$)','Position ($^{\circ}$S)', 
-	   'Width ($^{\circ}$ lat.)']
+    hslp = dfhadslp.resample('A')
+    l = f1a.plot(hslp.index, hslp, 'k--', linewidth=1, label='HadSLP2r')
+    l[0].set_dashes([3,2])
 
+    # Plot jet strength
+    modtsplot(df_c5_ens_maxspd, f1b, color='r', label='CMIP5')
+    modtsplot(df_20cr_ens_maxspd, f1b, color='g', label='20CR')
 
-# Loop of figure 1 and label plus adjust subplots.
-for i, ax in enumerate( f1ax ):
-    ax.set_xticks( xtics )
-    ax.set_xlim( [datetime(1881,1,1) , datetime(2013,12,31)] )
-    ax.autoscale(enable=True, axis='y', tight=True )
-    ylim = ax.get_ylim()
-    yrange =  max(ylim) - min(ylim)
-    ax.text( datetime(1885,1,1), max( ylim ) -0.15*yrange, panlab[i])
-    #ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(6) )
-    ax.set_ylabel( yaxlab1[i] )
+    # Plot jet location
+    modtsplot(df_c5_ens_locmax, f1c, color='r', label='CMIP5')
+    modtsplot(df_20cr_ens_locmax, f1c, color='g', label='20CR')
 
-    if (ax != f1d): # only keep xlabels for the bottom panels
-        ax.set_xticklabels([])
-        ax.set_xlabel('')
-    else: 
-        plt.setp( ax.xaxis.get_majorticklabels(), rotation=35, ha='right' )
-        ax.set_xlabel('Year')
+    # Plot jet width
+    modtsplot(df_c5_ens_width, f1d, color='r', label='CMIP5')
+    modtsplot(df_20cr_ens_width, f1d, color='g', label='20CR')
 
-majorFormatter = mpl.ticker.FormatStrFormatter('%d')
-f1a.yaxis.set_major_locator(mpl.ticker.MultipleLocator(4))
-f1a.yaxis.set_major_formatter(majorFormatter)
-f1b.yaxis.set_major_locator(mpl.ticker.MultipleLocator(1))
-f1b.yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%1.1f'))
-f1c.yaxis.set_major_locator(mpl.ticker.MultipleLocator(2))
-f1c.yaxis.set_major_formatter(majorFormatter)
-f1d.yaxis.set_major_locator(mpl.ticker.MultipleLocator(1))
-f1d.yaxis.set_major_formatter(majorFormatter)
-      
-plt.figure(1).subplots_adjust(hspace=0.05)
+    # defines lists of labels
+    f1ax = [ f1a, f1b, f1c, f1d ]
+    panlab = ['a)', 'b)', 'c)', 'd)', 'e)', 'f)' ,'g)', 'h)']
+    yaxlab1 = ['SAM Index (hPa)' , 'Strength (m s$^{-1}$)','Position ($^{\circ}$S)', 
+            'Width ($^{\circ}$ lat.)']
 
-f1a.legend(ncol=3, prop={'size':12}, bbox_to_anchor=(1.05, 1.3),
-           handlelength=2.2, handletextpad=0.075, columnspacing=1.2,
-           frameon=False)
+    xtics = [datetime(1870,1,1) + relativedelta(years=20*jj) for jj in range(8)] 
 
-# save some pdfs
-plt.figure(1).savefig('../plots/timeseries.pdf',format='pdf',dpi=300,
-                      bbox_inches='tight')
+    # Loop of figure 1 and label plus adjust subplots.
+    for i, ax in enumerate(f1ax):
+        ax.set_xticks(xtics)
+        ax.set_xlim( [datetime(1881,1,1) , datetime(2013,12,31)] )
+        ax.autoscale(enable=True, axis='y', tight=True )
+        ylim = ax.get_ylim()
+        yrange =  max(ylim) - min(ylim)
+        ax.text( datetime(1885,1,1), max( ylim ) -0.15*yrange, panlab[i])
+        #ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(6) )
+        ax.set_ylabel( yaxlab1[i] )
+
+        if (ax != f1d): # only keep xlabels for the bottom panels
+            ax.set_xticklabels([])
+            ax.set_xlabel('')
+        else: 
+            plt.setp( ax.xaxis.get_majorticklabels(), rotation=35, ha='right' )
+            ax.set_xlabel('Year')
+
+    # Finesse some axis details.
+    majorFormatter = mpl.ticker.FormatStrFormatter('%d')
+    f1a.yaxis.set_major_locator(mpl.ticker.MultipleLocator(4))
+    f1a.yaxis.set_major_formatter(majorFormatter)
+    f1b.yaxis.set_major_locator(mpl.ticker.MultipleLocator(1))
+    f1b.yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%1.1f'))
+    f1c.yaxis.set_major_locator(mpl.ticker.MultipleLocator(2))
+    f1c.yaxis.set_major_formatter(majorFormatter)
+    f1d.yaxis.set_major_locator(mpl.ticker.MultipleLocator(1))
+    f1d.yaxis.set_major_formatter(majorFormatter)
+        
+    plt.figure(1).subplots_adjust(hspace=0.05)
+
+    f1a.legend(ncol=3, prop={'size':12}, bbox_to_anchor=(1.05, 1.3),
+            handlelength=2.2, handletextpad=0.075, columnspacing=1.2,
+            frameon=False)
+
+    # save some pdfs
+    f1.savefig('../plots/timeseries.pdf',format='pdf',dpi=300,
+                        bbox_inches='tight')
+
+if __name__ == '__main__':
+    plot_timeseries(datapath='../data_retrieval/data/')
+    
+    

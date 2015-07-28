@@ -4,16 +4,15 @@ Data retrieval and processing
 Introduction
 -------------
 
-This series of programs retrieves the data required for the analysis in the paper
->Comparing trends in the Southern Annular Mode and surface westerly jet
+This series of programs retrieves the data required for the analysis.
 
-`run.py` can be used to run all the sub-modules and retrieve all the data. The 
+`run_retrieval.py` can be used to try and run all the sub-modules. The 
 individual download scripts described below can also be run to get just a 
 particular set of data. 
 
 After downloading the original data the scripts in some instances time-merge the 
 data, change variable names/units. The processed data is moved to the `./data/` 
-dir by default, but the destination can be specified.
+directory by default, but the destination can be specified.
 
 NOTE:
 
@@ -21,7 +20,7 @@ Some of the data servers require authentication credentials, that you will need 
 have. Specifically for the CMIP5, CFSR, CCMP and ERA-Interim data - see below.
 
 Also note that these scripts generally worked when I tried them in May 2015, but 
-since webpages are dynamics, I can't help it if data moves or the scripts no longer 
+since webpages are dynamic, I can't help it if data moves or the scripts no longer 
 work. Indeed, there are no guarantees whatsoever, see the license file.
 
 Authentication requirements
@@ -61,14 +60,13 @@ notes : The script provided attempts to download the psl, uas and tauu data for
         ensemble member 1 of the 30 CMIP5 models used in the paper. Unfortunately,
         because the ESGF nodes and data are dynamic, and the way 
         searching/downloading is handled it's hard to ensure that the data for all 
-        30 models is downloaded everytime. During testing, I struggled to get more 
+        30 models is downloaded every time. During testing, I struggled to get more 
         than about 11 models this way, even though many more are available. 
         Alternative strategies are to manually download the data from the [ESGF
         website](http://pcmdi9.llnl.gov/esgf-web-fe/), or from other sources and 
         then just do the processing on the local files (see below), which is what
-        I ultimately did. This script also does time-merging, remapping and zonal
-        means.
-
+        I ultimately did.
+        
 script : `get_local_cmip5_data.py`
 
 authentication : None

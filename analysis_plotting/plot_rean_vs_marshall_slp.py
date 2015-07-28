@@ -23,8 +23,7 @@ plt.rc('font', **font)
 
 def modtsplot(df, ax):
     """ For the columns of df, compute the columnwise-ensemble mean and 95% 
-confidence interval, 
-    then plot the envelope and mean.
+        confidence interval, then plot the envelope and mean.
     """
     # compute the ensemble mean across all columns (models).
     df = df.dropna()
@@ -46,94 +45,96 @@ confidence interval,
     ax.plot(ens_mean.index, ens_mean, color='r',linewidth=1 ,label='CMIP5')  
 
 
+def plot_rean_vs_marshall_slp(datapath):
+    
+    # load in the Marshall SAM data
+    df = pd.read_csv(datapath + 'marshall_sam.csv', index_col=0, parse_dates=True)
 
-datapath = '../data_retrieval/data/'
+    # load the reanalysis data
+    rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA', 'HadSLP2r']
+    rlc = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm', 'k']
+    ls = ['-k', '-y', '-g', '-b', '-c', '-m', '--k']
 
-# load in the Marshall SAM data
-df = pd.read_csv(datapath + 'marshall_sam.csv', index_col=0, parse_dates=True)
+    # load the reanalysis data
+    h5f = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_reanalysis.h5', 'r')
+    dfr = h5f['marshall_sam/sam']
+    h5f.close()
 
-# load the reanalysis data
-rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA', 'HadSLP2r']
-rlc = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm', 'k']
-ls = ['-k', '-y', '-g', '-b', '-c', '-m', '--k']
+    dfr2 = dfr['HadSLP2r']
+    dfr = dfr.drop('HadSLP2r', axis=1)
 
-# load the reanalysis data
-h5f = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_reanalysis.h5', 'r')
-dfr = h5f['marshall_sam/sam']
-h5f.close()
+    # load in the cmip5 data
+    h5fc5 = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_cmip5.h5', 'r')
+    dfc5 = h5fc5['marshall_sam/sam'] 
+    h5fc5.close() 
+    d1 = pd.datetime(1957,1,1)
+    d2 = pd.datetime(2011,12,31)
 
-dfr2 = dfr['HadSLP2r']
-dfr = dfr.drop('HadSLP2r', axis=1)
+    si = 60
+    fig, (axt, axm, axb) = plt.subplots(3,1, sharex=True, figsize=(7,7))
+    fig.subplots_adjust(right=0.5, hspace=0.05)
 
-# load in the cmip5 data
-h5fc5 = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_cmip5.h5', 'r')
-dfc5 = h5fc5['marshall_sam/sam'] 
-h5fc5.close() 
-d1 = pd.datetime(1957,1,1)
-d2 = pd.datetime(2011,12,31)
+    modtsplot(pd.rolling_mean(pt.time_lim(dfc5.ix['p40s'],d1,d2)/100.
+                    , si), axt) 		
+    pd.rolling_mean(dfr.ix['p40s']/100., si).plot(ax=axt, linewidth=1, 
+                    style=ls, legend=False, grid=False)
+    pd.rolling_mean(dfr2.ix['p40s']/100., si).plot(ax=axt, linewidth=2, 
+                    style='--k',label='HadSLP2r', legend=False, grid=False)
+    l = pd.rolling_mean(df.slp40, si).plot(ax=axt, linewidth=2, color='r'
+                    ,style='--', label='Marshall', grid=False)
 
-si = 60
-fig, (axt, axm, axb) = plt.subplots(3,1, sharex=True, figsize=(7,7))
-fig.subplots_adjust(right=0.5, hspace=0.05)
+    modtsplot(pd.rolling_mean(pt.time_lim(dfc5.ix['p65s'],d1,d2)/100.
+                    , si), axm)
+    pd.rolling_mean(dfr.ix['p65s']/100., si).plot(ax=axm, linewidth=1, style=ls
+                    , legend=False, grid=False)
+    pd.rolling_mean(dfr2.ix['p65s']/100., si).plot(ax=axm, linewidth=2, 
+                    style='--k', legend=False, grid=False)
+    pd.rolling_mean(df.slp65, si).plot(ax=axm, linewidth=2, color='r'
+                    , style='--', label='Marshall', grid=False)
 
-modtsplot(pd.rolling_mean(pt.time_lim(dfc5.ix['p40s'],d1,d2)/100.
-		, si), axt) 		
-pd.rolling_mean(dfr.ix['p40s']/100., si).plot(ax=axt, linewidth=1, 
-	        style=ls, legend=False, grid=False)
-pd.rolling_mean(dfr2.ix['p40s']/100., si).plot(ax=axt, linewidth=2, 
-                style='--k',label='HadSLP2r', legend=False, grid=False)
-l = pd.rolling_mean(df.slp40, si).plot(ax=axt, linewidth=2, color='r'
-		,style='--', label='Marshall', grid=False)
+    modtsplot(pd.rolling_mean(pt.time_lim(dfc5.ix['sam'],d1,d2)/100.
+                    , si), axb) 		
+    pd.rolling_mean(dfr.ix['sam']/100., si).plot(ax=axb, linewidth=1, style=ls
+                    , legend=False, grid=False)
+    pd.rolling_mean(dfr2.ix['sam']/100., si).plot(ax=axb, linewidth=2
+                    , style='--k', legend=False, grid=False)
+    pd.rolling_mean(df.sam, si).plot(ax=axb, linewidth=2, color='r'
+                    , style='--', label='Marshall', grid=False)
 
-modtsplot(pd.rolling_mean(pt.time_lim(dfc5.ix['p65s'],d1,d2)/100.
-		, si), axm)
-pd.rolling_mean(dfr.ix['p65s']/100., si).plot(ax=axm, linewidth=1, style=ls
-		, legend=False, grid=False)
-pd.rolling_mean(dfr2.ix['p65s']/100., si).plot(ax=axm, linewidth=2, 
-                style='--k', legend=False, grid=False)
-pd.rolling_mean(df.slp65, si).plot(ax=axm, linewidth=2, color='r'
-		, style='--', label='Marshall', grid=False)
+    axb.set_xlabel('Date')
+    axb.set_xlim([pd.datetime(1957,1,1), pd.datetime(2011,12,31)])
 
-modtsplot(pd.rolling_mean(pt.time_lim(dfc5.ix['sam'],d1,d2)/100.
-		, si), axb) 		
-pd.rolling_mean(dfr.ix['sam']/100., si).plot(ax=axb, linewidth=1, style=ls
-		, legend=False, grid=False)
-pd.rolling_mean(dfr2.ix['sam']/100., si).plot(ax=axb, linewidth=2
-                , style='--k', legend=False, grid=False)
-pd.rolling_mean(df.sam, si).plot(ax=axb, linewidth=2, color='r'
-		, style='--', label='Marshall', grid=False)
+    axt.set_ylabel('P at 40$^{\circ}$S (hPa)')
+    y_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
+    axt.yaxis.set_major_formatter(y_formatter)
+    axm.set_ylabel('P at 65$^{\circ}$S (hPa)')
+    axb.set_ylabel('SAM (hPa)')
 
-axb.set_xlabel('Date')
-axb.set_xlim([pd.datetime(1957,1,1), pd.datetime(2011,12,31)])
+    axt.set_ylim([1012, 1017])
+    axm.set_ylim([980, 1000])
+    axb.set_ylim([15, 35])
 
-axt.set_ylabel('P at 40$^{\circ}$S (hPa)')
-y_formatter = mpl.ticker.ScalarFormatter(useOffset=False)
-axt.yaxis.set_major_formatter(y_formatter)
-axm.set_ylabel('P at 65$^{\circ}$S (hPa)')
-axb.set_ylabel('SAM (hPa)')
+    axt.set_xlim([pd.datetime(1962,1,1), pd.datetime(2012,1,1)])
 
-axt.set_ylim([1012, 1017])
-axm.set_ylim([980, 1000])
-axb.set_ylim([15, 35])
+    xp = pd.datetime(1963,1,1)
+    axt.text(xp, 1016.4, 'a)')
+    axm.text(xp, 997.5, 'b)')
+    axb.text(xp, 32.5, 'c)')
 
-axt.set_xlim([pd.datetime(1962,1,1), pd.datetime(2012,1,1)])
+    axt.legend(bbox_to_anchor=(1.5,1), ncol=1, frameon=False, handletextpad=0.5,
+            numpoints=1, handlelength=1.5, fontsize=12)
 
-xp = pd.datetime(1963,1,1)
-axt.text(xp, 1016.4, 'a)')
-axm.text(xp, 997.5, 'b)')
-axb.text(xp, 32.5, 'c)')
+    xtics = [datetime(1970,1,1) + relativedelta(years=10*jj) for jj in range(5)] 
+    minorLocator = mpl.ticker.NullLocator()
 
-axt.legend(bbox_to_anchor=(1.5,1), ncol=1, frameon=False, handletextpad=0.5,
-	   numpoints=1, handlelength=1.5, fontsize=12)
+    for i, ax in enumerate(fig.axes):
+        ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(5, prune='upper') )
+        ax.set_xticks( xtics )  
+        #for the minor ticks, use no labels; default NullFormatter
+        ax.xaxis.set_minor_locator(minorLocator)
 
-xtics = [datetime(1970,1,1) + relativedelta(years=10*jj) for jj in range(5)] 
-minorLocator = mpl.ticker.NullLocator()
+    plt.savefig('../plots/marshall_timeseries.pdf'
+                , bbox_inches = 'tight', dpi=300) 
 
-for i, ax in enumerate(fig.axes):
-   ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(5, prune='upper') )
-   ax.set_xticks( xtics )  
-   #for the minor ticks, use no labels; default NullFormatter
-   ax.xaxis.set_minor_locator(minorLocator)
-
-plt.savefig('../plots/marshall_timeseries.pdf'
-            , bbox_inches = 'tight', dpi=300) 
+if __name__ == '__main__':
+    plot_rean_vs_marshall_slp(datapath='../data_retrieval/data/')

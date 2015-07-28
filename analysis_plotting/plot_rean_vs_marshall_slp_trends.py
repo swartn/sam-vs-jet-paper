@@ -45,29 +45,6 @@ confidence interval,
                   #grid=False)
     ax.plot(ens_mean.index, ens_mean, color='r',linewidth=1 ,label='CMIP5')  
 
-datapath = '../data_retrieval/data/'
-
-# load in the Marshall SAM data
-df = pd.read_csv(datapath + 'marshall_sam.csv', index_col=0, parse_dates=True)
-
-# load the reanalysis data
-rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA', 'HadSLP2r']
-rlc = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm', 'k']
-ls = ['-k', '-y', '-g', '-b', '-c', '-m', '--k']
-h5f = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_reanalysis.h5', 'r')
-dfr = h5f['marshall_sam/sam']
-h5f.close()
-
-
-# load in the cmip5 data
-h5fc5 = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_cmip5.h5', 'r')
-dfc5 = h5fc5['marshall_sam/sam'] 
-h5fc5.close() 
-
-d1 = pd.datetime(1957,1,1)
-d2 = pd.datetime(2011,12,31)
-
-          
  # Define some functions
 def get_seasons(df):
     """Extract the 4 seasons and the annual mean from dataframe df, and save 
@@ -105,7 +82,7 @@ def calc_trends( dfp, var, ys , ye ):
     return dfp      
           
           
-def rean_proc(dfr, axtrend=None, tys=0, tye=0, ms=15, mew=2):
+def rean_proc(dfr, axtrend=None, tys=0, tye=0, ms=15, mew=2, ls='_', reanl=''):
     """ Loop over the columns of dfr (corresponding to different reanalyses) 
     and:
     1. if axtrend is given then compute the linear trend between years tys and 
@@ -116,14 +93,14 @@ def rean_proc(dfr, axtrend=None, tys=0, tye=0, ms=15, mew=2):
     in the global variable rlc, and similarly are labelled using the names 
     listed in the global variable rean.
     """
-
-    rean_trends = np.zeros( ( num_rean  , lensea ) )
-    rean_ci = np.zeros( ( num_rean  , lensea ) )  
-    dfr.seasons = get_seasons( dfr ) ; # do the seasonal decomposition
+    seas = ['mam', 'jja', 'son', 'djf', 'ann']  
+    rean_trends = np.zeros((len(dfr.columns), 5))
+    rean_ci = np.zeros((len(dfr.columns), 5))  
+    dfr.seasons = get_seasons(dfr) ; # do the seasonal decomposition
     
     # Loop over reanalyses and do some basic dataframe checks and adjustments.
     # We're assuming len(dfr.columns) == len(rean).
-    for (i, name) in enumerate( rean ):               
+    for (i, name) in enumerate(dfr.columns):               
         # If axtrend was passed, plot the linear trend between tys and tye for 
         # each season and each reanalysis.
         # Season names are listed in the global variable seas.
@@ -140,15 +117,16 @@ def rean_proc(dfr, axtrend=None, tys=0, tye=0, ms=15, mew=2):
                     axtrend.plot(k, rean_trends[i, k], ls[i], 
                                  ms=ms, mew=mew, label='')
 
-            axtrend.set_xticks( np.arange( lensea + 1 ) )
+            axtrend.set_xticks( np.arange( 5 + 1 ) )
             axtrend.plot([-1, 5],[0, 0], 'k--')  
     return rean_trends, rean_ci            
           
 def mod_proc(df, axtrend, tys, tye ):
     """ Loop over the columns of df calculate trends for each one, plus plot the 
     ensemble trend stats"""
-    num_models =  len( df.columns )
-    mod_trends = np.empty( ( num_models  , lensea ) )
+    seas = ['mam', 'jja', 'son', 'djf', 'ann']  
+    num_models =  len(df.columns)
+    mod_trends = np.empty((num_models  , 5))
     df.seasons = get_seasons(df)
 
     for i, mname in enumerate( df.columns ):  
@@ -175,94 +153,121 @@ def mod_proc(df, axtrend, tys, tye ):
                 else:
                     axtrend.plot(k, np.mean(mod_trends[:, k]), 
                                  '_r', ms=15, mew=2, label='')    
-    return mod_trends                              
+    return mod_trends
 
-df40s = pd.concat([dfr.ix['p40s']/100., df.slp40], axis=1)
-df40s.columns=[u'R1', u'R2', u'TCR', u'ERA', u'CFSR', 
-               u'MERRA', u'HadSLP2r', u'Marshall']
-df65s = pd.concat([dfr.ix['p65s']/100., df.slp65], axis=1)
-df65s.columns=[u'R1', u'R2', u'TCR', u'ERA', u'CFSR', 
-               u'MERRA', u'HadSLP2r', u'Marshall']
-dfsam = pd.concat([dfr.ix['sam']/100., df.sam], axis=1)
-dfsam.columns=[u'R1', u'R2', u'TCR', u'ERA', u'CFSR', 
-               u'MERRA', u'HadSLP2r', u'Marshall']
+def plot_rean_vs_marshall_slp_trends(datapath):
 
-# setup some global variables          
-num_rean = len( rean )
-seas     = ['mam', 'jja', 'son', 'djf', 'ann']  
-lensea   = len( seas )          
-tys1 = [1958, 1979]
-tye1 = [2011, 2009]
+    # load in the Marshall SAM data
+    df = pd.read_csv(datapath + 'marshall_sam.csv', index_col=0, parse_dates=True)
 
-# make the plots          
-fig, axa = plt.subplots(3,2, sharex=True, figsize=(7,7), sharey=True)
-fig.subplots_adjust(hspace=0.05, wspace=0.05, right=0.8, left=0.2)
+    # load the reanalysis data
+    rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA', 'HadSLP2r']
+    rlc = [ 'k' , 'y', 'g' , 'b' , 'c' , 'm', 'k']
+    ls = ['-k', '-y', '-g', '-b', '-c', '-m', '--k']
+    h5f = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_reanalysis.h5', 'r')
+    dfr = h5f['marshall_sam/sam']
+    h5f.close()
 
-for c in [0,1]:
-    tys = tys1[c]
-    tye = tye1[c]
-    rean = ['R1', 'R2', 'TCR', 'ERA', 'CFSR', 'MERRA']
-    reanl = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA']
-    obs = ['HadSLP2r', 'Marshall']
-    ls = ['_k', '_y', '_g', '_b', '_c', '_m', '.k', 'kx']
-    rean_p40_trends, rean_p40_ci  = rean_proc(df40s.drop(obs,1), 
-                  axtrend=axa[0, c], tys=tys, tye=tye) 
-    mod_sam_trends = mod_proc(dfc5.ix['p40s']/100., axa[0, c], tys=tys, tye=tye)
 
-    rean_p65_trends, rean_p65_ci = rean_proc(df65s.drop(obs,1), 
-                  axtrend=axa[1, c], tys=tys, tye=tye) 
-    mod_sam_trends = mod_proc(dfc5.ix['p65s']/100., axa[1, c], tys=tys, 
-                  tye=tye)          
-    rean_sam_trends, rean_sam_ci = rean_proc(dfsam.drop(obs,1), 
-                  axtrend=axa[2, c], tys=tys, tye=tye) 
-    mod_sam_trends = mod_proc(dfc5.ix['sam']/100., axa[2, c], tys=tys, tye=tye) 
-        
-   
-    obs = ['R1', 'R2', 'TCR', 'ERA', 'CFSR', 'MERRA']   
-    rean = ['HadSLP2r', 'Marshall']
-    reanl = ['HadSLP2r', 'Marshall']
-    ls = ['.k', 'kx']   
-    obs_p40_trends, obs_p40_ci  = rean_proc(df40s.drop(obs,1), 
-                  axtrend=axa[0, c], tys=tys, tye=tye, ms=10, mew=2) 
-    obs_p65_trends, obs_p65_ci = rean_proc(df65s.drop(obs,1), 
-                  axtrend=axa[1, c], tys=tys, tye=tye, ms=10, mew=2) 
-    obs_sam_trends, obs_sam_ci = rean_proc(dfsam.drop(obs,1), 
-                  axtrend=axa[2, c], tys=tys, tye=tye, ms=10, mew=2) 
-    if c==0:
-        print obs_sam_trends[1,:]
+    # load in the cmip5 data
+    h5fc5 = pd.HDFStore(datapath + 'zonmean_sam-jet_analysis_cmip5.h5', 'r')
+    dfc5 = h5fc5['marshall_sam/sam'] 
+    h5fc5.close() 
 
-   
-yaxlab = ['P at 40$^{\circ}$S \n(hPa dec$^{-1}$)', '',
-          'P at 65$^{\circ}$S \n(hPa dec$^{-1}$)','',
-          'SAM \n(hPa dec$^{-1}$)', ''
-         ]
+    d1 = pd.datetime(1957,1,1)
+    d2 = pd.datetime(2011,12,31)                             
 
-panlab = ['a)', 'b)', 'c)', 'd)', 'e)', 'f)' ,'g)', 'h)']
-          
-# Loop of figure 2 and label plus adjust subplots.
-for i, ax in enumerate( fig.axes ):
-    ax.set_ylim([-2.5, 2.5])
-    ylim = ax.get_ylim()
-    yrange =  max(ylim) - min(ylim)
-    ax.text( -0.35, max( ylim ) -0.125*yrange, panlab[i])
-    ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(5) )
-    ax.set_xlim([-0.5, lensea -0.5])
+    df40s = pd.concat([dfr.ix['p40s']/100., df.slp40], axis=1)
+    df40s.columns=[u'R1', u'R2', u'TCR', u'ERA', u'CFSR', 
+                u'MERRA', u'HadSLP2r', u'Marshall']
+    df65s = pd.concat([dfr.ix['p65s']/100., df.slp65], axis=1)
+    df65s.columns=[u'R1', u'R2', u'TCR', u'ERA', u'CFSR', 
+                u'MERRA', u'HadSLP2r', u'Marshall']
+    dfsam = pd.concat([dfr.ix['sam']/100., df.sam], axis=1)
+    dfsam.columns=[u'R1', u'R2', u'TCR', u'ERA', u'CFSR', 
+                u'MERRA', u'HadSLP2r', u'Marshall']
 
-    if (ax != axa[2,0]) &  (ax != axa[2,1]): 
-        ax.set_xticklabels([])
-        ax.set_xlabel('')
-    if i%2==0:    
-        ax.set_ylabel( yaxlab[i] )          
-          
-axa[0,0].set_xticklabels(  [ s.upper() for s in seas]  )
-axa[0,1].set_xticklabels(  [ s.upper() for s in seas]  )
+    # setup some global variables          
+    num_rean = len( rean )
+    seas     = ['mam', 'jja', 'son', 'djf', 'ann']  
+    tys1 = [1958, 1979]
+    tye1 = [2011, 2009]
 
-axa[0,1].legend(ncol=1, prop={'size':12},numpoints=1, 
-                bbox_to_anchor=(1.65, 1.05), handlelength=0.01,
-                handletextpad=1, borderpad=1, frameon=False) 
+    # make the plots          
+    fig, axa = plt.subplots(3,2, sharex=True, figsize=(7,7), sharey=True)
+    fig.subplots_adjust(hspace=0.05, wspace=0.05, right=0.8, left=0.2)
 
-axa[0,0].set_title(str(tys1[0]) + '-' + str(tye1[0]) )
-axa[0,1].set_title(str(tys1[1]) + '-' + str(tye1[1]) )
+    for c in [0,1]:
+        tys = tys1[c]
+        tye = tye1[c]
+        rean = ['R1', 'R2', 'TCR', 'ERA', 'CFSR', 'MERRA']
+        reanl = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA']
+        obs = ['HadSLP2r', 'Marshall']
+        ls = ['_k', '_y', '_g', '_b', '_c', '_m', '.k', 'kx']
+        rean_p40_trends, rean_p40_ci  = rean_proc(df40s.drop(obs,1), 
+                    axtrend=axa[0, c], tys=tys, tye=tye, ls=ls, reanl=reanl) 
+        mod_sam_trends = mod_proc(dfc5.ix['p40s']/100., axa[0, c], tys=tys, tye=tye)
 
-plt.savefig('../plots/marshall_trends.pdf',format='pdf',dpi=300,
-                       bbox_inches='tight')
+        rean_p65_trends, rean_p65_ci = rean_proc(df65s.drop(obs,1), 
+                    axtrend=axa[1, c], tys=tys, tye=tye, ls=ls, reanl=reanl) 
+        mod_sam_trends = mod_proc(dfc5.ix['p65s']/100., axa[1, c], tys=tys, 
+                    tye=tye)          
+        rean_sam_trends, rean_sam_ci = rean_proc(dfsam.drop(obs,1), 
+                    axtrend=axa[2, c], tys=tys, tye=tye, ls=ls, reanl=reanl) 
+        mod_sam_trends = mod_proc(dfc5.ix['sam']/100., axa[2, c], tys=tys, tye=tye) 
+            
+    
+        obs = ['R1', 'R2', 'TCR', 'ERA', 'CFSR', 'MERRA']   
+        rean = ['HadSLP2r', 'Marshall']
+        reanl = ['HadSLP2r', 'Marshall']
+        ls = ['.k', 'kx']   
+        obs_p40_trends, obs_p40_ci  = rean_proc(df40s.drop(obs,1), 
+                    axtrend=axa[0, c], tys=tys, tye=tye, ms=10, mew=2, ls=ls, 
+                    reanl=reanl) 
+        obs_p65_trends, obs_p65_ci = rean_proc(df65s.drop(obs,1), 
+                    axtrend=axa[1, c], tys=tys, tye=tye, ms=10, mew=2, ls=ls, 
+                    reanl=reanl) 
+        obs_sam_trends, obs_sam_ci = rean_proc(dfsam.drop(obs,1), 
+                    axtrend=axa[2, c], tys=tys, tye=tye, ms=10, mew=2, ls=ls, 
+                    reanl=reanl) 
+        if c==0:
+            print obs_sam_trends[1,:]
+
+    
+    yaxlab = ['P at 40$^{\circ}$S \n(hPa dec$^{-1}$)', '',
+            'P at 65$^{\circ}$S \n(hPa dec$^{-1}$)','',
+            'SAM \n(hPa dec$^{-1}$)', ''
+            ]
+
+    panlab = ['a)', 'b)', 'c)', 'd)', 'e)', 'f)' ,'g)', 'h)']
+            
+    # Loop of figure 2 and label plus adjust subplots.
+    for i, ax in enumerate( fig.axes ):
+        ax.set_ylim([-2.5, 2.5])
+        ylim = ax.get_ylim()
+        yrange =  max(ylim) - min(ylim)
+        ax.text( -0.35, max( ylim ) -0.125*yrange, panlab[i])
+        ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(5) )
+        ax.set_xlim([-0.5, 5 -0.5])
+
+        if (ax != axa[2,0]) &  (ax != axa[2,1]): 
+            ax.set_xticklabels([])
+            ax.set_xlabel('')
+        if i%2==0:    
+            ax.set_ylabel( yaxlab[i] )          
+            
+    axa[0,0].set_xticklabels(  [ s.upper() for s in seas]  )
+    axa[0,1].set_xticklabels(  [ s.upper() for s in seas]  )
+
+    axa[0,1].legend(ncol=1, prop={'size':12},numpoints=1, 
+                    bbox_to_anchor=(1.65, 1.05), handlelength=0.01,
+                    handletextpad=1, borderpad=1, frameon=False) 
+
+    axa[0,0].set_title(str(tys1[0]) + '-' + str(tye1[0]) )
+    axa[0,1].set_title(str(tys1[1]) + '-' + str(tye1[1]) )
+
+    plt.savefig('../plots/marshall_trends.pdf',format='pdf',dpi=300,
+                        bbox_inches='tight')
+    
+if __name__ == '__main__':
+    plot_rean_vs_marshall_slp_trends(datapath='../data_retrieval/data/')    

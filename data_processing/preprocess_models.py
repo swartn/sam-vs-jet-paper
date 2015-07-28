@@ -8,11 +8,11 @@ import os
 import glob
 import cmipdata as cd
 
-def preprocess_models(destination='./'):
+def preprocess_models(datapath='./'):
     # where we are starting from
     cwd = os.getcwd()
     # move to where the data is
-    os.chdir(destination)
+    os.chdir(datapath)
 
     # time-merge, remap and zonal mean the model data
     variables = ['uas', 'psl', 'tauu']
@@ -31,5 +31,5 @@ def preprocess_models(destination='./'):
     os.chdir(cwd)
 
 if __name__ == '__main__':
-    preprocess_models(destination='../data_retrieval/data/')
+    preprocess_models(datapath='../data_retrieval/data/')
 

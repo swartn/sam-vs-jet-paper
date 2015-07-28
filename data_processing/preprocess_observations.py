@@ -8,11 +8,11 @@ import os
 import glob
 import cdo; cdo = cdo.Cdo()
 
-def preprocess_observations(destination='./'):
+def preprocess_observations(datapath='./'):
     # where we are starting from
     cwd = os.getcwd()
     # move to where the data is
-    os.chdir(destination)
+    os.chdir(datapath)
     # Get the reanalysis monthly mean files
     rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA']
     var = ['slp', 'u10m', 'uflx']
@@ -40,5 +40,5 @@ def preprocess_observations(destination='./'):
     os.chdir(cwd)
 
 if __name__ == '__main__':
-    preprocess_observations(destination='../data_retrieval/data/')
+    preprocess_observations(datapath='../data_retrieval/data/')
 

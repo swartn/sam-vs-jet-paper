@@ -14,7 +14,7 @@ os.system( 'rm -rf /tmp/cdo*') # clean out tmp to make space for CDO processing.
 import cmipdata as cd
 import sam_jet_calcs as sjc
 
-def mk_rean_sam_index(datapath='./'):
+def mk_rean_marshall_slp(datapath='./'):
     # list in the pre-defined list of files to use. 
     rean = ['R1', 'R2', '20CR', 'ERA-Int', 'CFSR', 'MERRA', 'HadSLP2r']
     rean2 = ['R1', 'R2', '20CR', 'ERA', 'CFSR', 'MERRA', 'HadSLP2r']
@@ -27,7 +27,6 @@ def mk_rean_sam_index(datapath='./'):
     dfsam = pd.DataFrame()
  
     for i, name in enumerate(names):
-        print name
         ifile = os.path.join(datapath, name)
         s40s, s65s = sjc.calc_marshall_sam(ifile, 'slp')
         
@@ -47,4 +46,4 @@ def mk_rean_sam_index(datapath='./'):
     h5f.close() 
 
 if __name__ == '__main__':
-    mk_rean_sam_index(datapath='../data_retrieval/data/')
+    mk_rean_marshall_slp(datapath='../data_retrieval/data/')
