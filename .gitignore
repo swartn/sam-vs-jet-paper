@@ -7,7 +7,6 @@
 *.eps
 *.kate-swp
 *~
-data_retrieval/data/*
 *.aux
 *.fff
 *.lof

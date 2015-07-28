@@ -11,24 +11,25 @@ final figures appearing in the paper.
 ## Project organization
 The project is organized in directories as follows:
 
-  - `data_retrieval` contains scripts for downloading the original (mostly netCDF) 
-     data. The `data`directory is the location where all raw and processed data 
-     is stored.
+  - [`data_retrieval`](data_retrieval/) contains scripts for downloading the 
+     original (mostly netCDF) data. The `data`directory is the location where 
+     all raw and processed data is stored.
   
-  - `data_processing` contains scripts for performing basic preprocessing of the 
-     data, and some analysis to produce derivative datasets (often stored in HDF5).
+  - [`data_processing`](data_processing/) contains scripts for performing basic 
+    preprocessing of the data, and some analysis to produce derivative datasets 
+    (mostly stored in HDF5).
      
-  - `analysis_and_plotting` contains the scripts that produces the 14 figures
-     in the paper.
+  - [`analysis_and_plotting`](analysis_and_plotting/) contains the scripts that 
+    produce the 14 figures in the paper.
      
-  - `plots` contains the output plots in PDF format.
+  - [`plots`](plots/) contains the output plots in PDF format.
   
-  - `paper` contains the LaTeX source for the final paper.
+  - [`paper`](paper/) contains the LaTeX source for the final paper.
   
 The first three directories each contain their own README with further information.
-They also contain a `run_*.py` script, that will automatically execute all the 
-relevant code. All modules have docstrings that explain their basic 
-function. 
+They also contain a script (e.g. `run_plotting.py`), that will automatically 
+execute all the relevant code. All modules have docstrings that explain their basic 
+function.  
 
 ## How to repeat the analysis
 
@@ -44,8 +45,14 @@ step is the most complicated and the most likely to be problematic. I cannot ens
 that the data download scripts will work given the dynamic nature 
 of the online data repositories, and the authentication credentials 
 some of the sites require. Users can also download the data manually 
-(referring to the comprehensive list provided at data_retrieval/input_data.csv), 
-or may request the input data from the authors.
+(referring to the comprehensive list provided 
+[here](data_retrieval/data/input_data.csv), 
+or may request the input data from the authors. 
+
+The `run.py` script will 
+automatically execute everything in steps 2 and 3, as long as all the 
+[required input data](data_retrieval/data/input_data.csv) is provided and the \
+environment is setup correctly (see below).
 
 ## Software and dependencies
 I wrote and tested the code using the Anaconda python distribution on Linux machines
@@ -60,19 +67,15 @@ operators [cdo](https://code.zmaw.de/projects/cdo) and their python bindings, my
 
 To create a suitable virtual env in anaconda I did:
 
-    conda create -n sam-jet-env python=2.7.9 pandas=0.15.2 numpy=1.9.2 
-    netcdf4=1.1.6 ipython=3.0.0 h5py=2.4.0 pip scipy=0.15.1 matplotlib=1.4.3
-    basemap=1.0.7 statsmodels=statsmodels-0.6.1 pytables=3.1.1 h5py=2.4.0
-    netCDF4 
+    conda create -n sam-jet-env python=2.7.9 pandas=0.15.2 numpy=1.9.2 netcdf4=1.1.6 ipython=3.0.0 h5py=2.4.0 pip scipy=0.15.1 matplotlib=1.4.3 basemap=1.0.7 statsmodels=0.6.1 pytables=3.1.1 h5py=2.4.0 netCDF4 
    
     pip install cdo==1.2.5 
     
-    pip install https://github.com/swartn/cmipdata.git
+    pip install git+https://github.com/swartn/cmipdata.git
     
-    pip install
-    https://software.ecmwf.int/wiki/download/attachments/23694554/ecmwf-api-client-
-    python.tgz
-    
+
+    pip install https://software.ecmwf.int/wiki/download/attachments/47287906/ecmwf-api-client-python.tgz
+
     pip install esgf-pyclient==0.1.2
     
 To give an overall idea, most of the basic data processing (like regridding to a 
