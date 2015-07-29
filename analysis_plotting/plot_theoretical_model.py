@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 plt.close('all')
-plt.ion()
 import scipy as sp
 from scipy.special import erf
 import brewer2mpl
@@ -153,4 +152,5 @@ def plot_theoretical_model():
     plt.savefig('../plots/gaussian_jet.pdf',format='pdf',bbox_inches='tight')
 
 if __name__ == '__main__':
+    plt.ion()
     plot_theoretical_model()

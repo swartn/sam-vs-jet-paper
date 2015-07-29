@@ -1,9 +1,9 @@
 # Comparing changes in the Southern Annular Mode and surface westerly jet
 
-This repository contains the python  code used for analyses in the paper
+This repository contains the python  code used for the paper
 
 Swart, N.C., J.C. Fyfe, N. Gillet and G.J. Marshall (2015), Comparing changes
-in the Southern Annular Mode and surface westerly jet, J. Climate (2015).
+in the Southern Annular Mode and surface westerly jet, J. Climate.
 
 This code will perform all the processing, analysis, and plotting to produce the 
 final figures appearing in the paper. 
@@ -46,7 +46,7 @@ that the data download scripts will work given the dynamic nature
 of the online data repositories, and the authentication credentials 
 some of the sites require. Users can also download the data manually 
 (referring to the comprehensive list provided 
-[here](data_retrieval/data/input_data_list.csv), 
+[here](data_retrieval/data/input_data_list.csv)), 
 or may request the input data from the authors. 
 
 The `run.py` script will 
@@ -56,7 +56,7 @@ environment is setup correctly (see below).
 
 ## Software and dependencies
 I wrote and tested the code using the Anaconda python distribution on Linux machines
-running Ubuntu 14.04.2 LTS. The Anaconda distribution of python was used:
+running Ubuntu 14.04.2 LTS. The specific Anaconda distribution used was:
 
     Python 2.7.9 |Anaconda 2.2.0 (64-bit)| (default, Mar  9 2015, 16:20:48) 
 
@@ -67,14 +67,17 @@ operators [cdo](https://code.zmaw.de/projects/cdo) and their python bindings, my
 
 To create a suitable virtual env in anaconda I did:
 
-    conda create -n sam-jet-env python=2.7.9 pandas=0.15.2 numpy=1.9.2 netcdf4=1.1.6 ipython=3.0.0 h5py=2.4.0 pip scipy=0.15.1 matplotlib=1.4.3 basemap=1.0.7 statsmodels=0.6.1 pytables=3.1.1 h5py=2.4.0 netCDF4 
+    conda create -n sam-jet-env python=2.7.9 pandas=0.15.2 numpy=1.9.2\
+    netcdf4=1.1.6 ipython=3.0.0 h5py=2.4.0 pip scipy=0.15.1 matplotlib=1.4.3\
+    basemap=1.0.7 statsmodels=0.6.1 pytables=3.1.1 h5py=2.4.0 netCDF4 
    
     pip install cdo==1.2.5 
     
     pip install git+https://github.com/swartn/cmipdata.git
     
 
-    pip install https://software.ecmwf.int/wiki/download/attachments/47287906/ecmwf-api-client-python.tgz
+    pip install https://software.ecmwf.int/wiki/download/attachments/47287906/\
+    ecmwf-api-client-python.tgz
 
     pip install esgf-pyclient==0.1.2
     
@@ -140,9 +143,9 @@ version 2](http://www.gnu.org/licenses/gpl-2.0.txt) -see below and the LICENSE f
 This was a mult-author paper, but all the software is the responsibility of me, Neil 
 Swart. I invested a lot of effort to get this code to the point of basically being
 reusable, and have tried to ensure that everything is correct. However there are
-no guarantees whatsoever (see License.txt), and inevitably some problems will be 
+no guarantees whatsoever (see License), and inevitably some problems will be 
 found. If you find one, please let me know. The code was not designed to be 
 particularly beautiful or efficient. Everything was originally written as scripts in 
 scientific exploration mode, and in the beginning I was quite new to python. There 
 are places where things could be more efficient, more pythonic, and there are some 
-limited sections of code that are repeated, but here it is.
+limited sections of code that are repeated, but here it is nonetheless.

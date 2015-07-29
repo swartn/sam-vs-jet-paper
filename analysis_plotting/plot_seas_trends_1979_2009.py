@@ -25,7 +25,6 @@ import pandas as pd
 
 # set font size and plotting options
 plt.close('all')
-plt.ion()
 font = {'size'   : 12}
 plt.rc('font', **font)
 
@@ -261,6 +260,7 @@ def plot_seas_trends_1979_2009(datapath):
                         format='pdf', dpi=300, bbox_inches='tight')
 
 if __name__ == '__main__':
+    plt.ion()
     plot_seas_trends_1979_2009(datapath='../data_retrieval/data/')
 
 

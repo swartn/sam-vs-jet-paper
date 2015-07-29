@@ -13,7 +13,6 @@ from netCDF4 import Dataset
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import brewer2mpl
-plt.ion()
 plt.close('all')
 font = {'size'   : 12}
 plt.rc('font', **font)
@@ -141,4 +140,5 @@ def plot_zonmean_trends(datapath):
                 , bbox_inches = 'tight', dpi=300)    
     
 if __name__ == '__main__':
+    plt.ion()
     plot_zonmean_trends(datapath='../data_retrieval/data/')

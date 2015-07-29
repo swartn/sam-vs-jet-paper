@@ -16,7 +16,6 @@ from dateutil.parser import parse
 
 # set font size for plotting
 plt.close('all')
-plt.ion()
 font = {'size' : 12}
 plt.rc('font', **font)
 
@@ -165,6 +164,7 @@ def plot_timeseries(datapath):
                         bbox_inches='tight')
 
 if __name__ == '__main__':
+    plt.ion()
     plot_timeseries(datapath='../data_retrieval/data/')
     
     

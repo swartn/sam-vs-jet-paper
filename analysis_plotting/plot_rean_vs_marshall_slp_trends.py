@@ -15,7 +15,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import brewer2mpl
-plt.ion()
 plt.close('all')
 font = {'size'   : 12}
 plt.rc('font', **font)
@@ -269,4 +268,5 @@ def plot_rean_vs_marshall_slp_trends(datapath):
                         bbox_inches='tight')
     
 if __name__ == '__main__':
+    plt.ion()
     plot_rean_vs_marshall_slp_trends(datapath='../data_retrieval/data/')    

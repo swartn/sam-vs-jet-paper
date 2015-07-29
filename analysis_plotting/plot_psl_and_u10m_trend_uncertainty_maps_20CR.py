@@ -15,7 +15,6 @@ import matplotlib as mpl
 import brewer2mpl
 from discrete_cmap import discrete_cmap
 from netCDF4 import Dataset,num2date,date2num
-plt.ion()
 plt.close('all')
 
 def plot_trend_maps(datapath):
@@ -109,6 +108,7 @@ def plot_trend_maps(datapath):
                 bbox_inches='tight', dpi=300)
 
 if __name__ == '__main__':
+    plt.ion()
     plot_trend_maps(datapath='../data_retrieval/data/')
 
 

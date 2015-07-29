@@ -25,7 +25,6 @@ import trend_ts
 
 # set plotting params.
 plt.close('all')
-plt.ion()
 font = {'size'   : 12}
 plt.rc('font', **font)
 
@@ -441,6 +440,7 @@ def plot_seas_trends_1951_2011(datapath):
                 bbox_inches='tight')
 
 if __name__ == '__main__':
+    plt.ion()
     plot_seas_trends_1951_2011(datapath='../data_retrieval/data/')
     
     

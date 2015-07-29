@@ -106,13 +106,13 @@ the HadSLP2r gridded sea-level pressure (SLP) dataset, and the Twentieth Century
 these trends demonstrates that the SAM index cannot be used to directly infer changes in any one kinematic 
 property of the jet. The spatial structure of the observed trends in SLP and zonal winds is shown to be largest, but also
 most uncertain, in the southeast Pacific. To constrain this uncertainty we include six reanalyses 
-and do comparisons with station based observations of SLP. We find the CMIP5 mean SLP trends generally agree well with the 
+and compare with station based observations of SLP. We find the CMIP5 mean SLP trends generally agree well with the 
 direct observations, despite some climatological 
 biases, while some reanalyses exhibit spuriously large SLP trends. Similarly, over the more reliable satellite era 
 the spatial pattern of CMIP5 SLP trends is in excellent agreement with HadSLP2r, while several reanalyses
 are not. Then we compare surface winds with a satellite based product, and show that the CMIP5 mean trend is 
 similar to observed in the core region of the westerlies, but that several reanalyses overestimate recent trends.  
-We caution that studies examining the impact of wind changes on the Southern ocean could 
+We caution that studies examining the impact of wind changes on the Southern Ocean could 
 be biased by these spuriously large trends in reanalysis products.}
 \begin{document}
 
@@ -124,7 +124,7 @@ The Southern Hemisphere (SH) westerlies are the strongest time-averaged surface 
 exert a pronounced influence on the global climate system. They do so in part by driving upwelling of deep waters
 in the Southern Ocean, and thereby the upper limb of the Atlantic Meridional Overturning Circulation (AMOC)
 \citep{Toggweiler_Samuels_1995, Marshall_and_Speer_2012}. The AMOC, in turn, strongly modulates the oceanic 
-uptake of heat and carbon \citep{Kostov_et_al_2014, Frolicher_et_al_2014}, as well as controlling global 
+uptake of heat and carbon \citep{Kostov_et_al_2014, Frolicher_et_al_2014}, as well as controls global 
 primary production through regulation of the nutrient supply to the ocean thermocline \citep{Sarmiento_et_al_2003, 
 Marinov_et_al_2006}. Variability and changes in the westerlies are thus of central interest when considering 
 human induced climate change \citep{Toggweiler_and_Russell_2008}.
@@ -168,8 +168,8 @@ that the reanalyses showed a large spread of trends and were poorly constrained 
 \citep{Swart_and_Fyfe_2012b}.
 
 More recently \cite{Gillett_and_Fyfe_2013} showed that over 1951 to 2011 the CMIP5 models simulate a SAM trend 
-which was consistent with observationally based estimates, at least during DJF. Since 
-trends in the strength of the westerly jet should be closely related to those in the SAM index (or sea-level 
+which is consistent with observationally based estimates, at least during DJF. Since 
+trends in the strength of the westerly jet may be closely related to those in the SAM index (or sea-level 
 pressure gradient) through geostrophy, the findings of \citet{Swart_and_Fyfe_2012b} and \cite{Gillett_and_Fyfe_2013}
  appear to be contradictory. However, given
 that the studies covered different time-frames and used different metrics, there are many potential 
@@ -198,7 +198,7 @@ reanalysis products and the CMIP5 models over the more recent and reliable satel
 we synthesise our findings and draw some broader conclusions.
 
 \section{Data and methods} \label{sec:data_and_methods}
-We use sea-level pressure, 10 meter zonal wind speed fields (u10m) and surface eastward wind stress
+We use monthly mean sea-level pressure, 10 meter zonal wind speed fields (u10m) and surface eastward wind stress
 from ensemble member 1 from 30 CMIP5 models 
 (ACCESS1-0, ACCESS1-3, bcc-csm1-1, bcc-csm1-1-m, BNU-ESM,
 CanESM2, CMCC-CM, CMCC-CMS, CNRM-CM5, CSIRO-Mk3-6-0, GISS-E2-H, GISS-E2-H-CC, GISS-E2-R, 
@@ -207,7 +207,15 @@ IPSL-CM5B-LR, MIROC5, MIROC-ESM, MIROC-ESM-CHEM, MPI-ESM-LR, MPI-ESM-MR, MRI-CGC
 NorESM1-M and NorESM1-ME). We also use the equivalent output from 6 reanalyses, listed with 
 their abbreviations, references and the data source in Table \ref{t:rean_list}. The 
 Twentieth Century Reanalysis \citep[20CR;][]{Compo_et_al_2011}, is an ensemble reanalysis
-consisting of 56 members. For both CMIP5 and 20CR we perform our analysis on the 
+consisting of 56 members. The 20CR ensemble members are not ``free running'' like the CMIP5 models, 
+but rather they are produced with an Ensemble Kalman Filter data assimilation system to estimate the 
+state of the atmosphere every 6 hours \citep{Compo_et_al_2011}. The spread across the 20CR ensemble 
+provides the uncertainty of that estimate, arising from ``atmospheric dynamics...imperfect observations
+and a finite-ensemble first guess generated using an imperfect NWP model'' \citep[][p. 4]{Compo_et_al_2011}. 
+The spread across the 20CR ensemble does not represent large scale differences in internal variability
+(e.g. phase of the SAM or ENSO), since all ensemble members are constrained to follow the observations. 
+Hence, we consider the spread across the 20CR ensemble to represent ``observational uncertainty''.
+For both CMIP5 and 20CR we perform our analysis on the 
 individual ensemble members, and then compute an ensemble mean with an associated uncertainty
 (see below).
 
@@ -242,7 +250,12 @@ field, which comes from the ERA-40 reanalysis from July 1987 to December 1998, a
 thereafter \citep{Atlas_et_al_2011}. Here we refer to CCMP as ``satellite observations``, while
 acknowledging the presence of other observational inputs, and the reanalysis-based first guess.
 
-The non-normalized SAM index is calculated as the zonal mean sea-level pressure difference between 
+Prior to any analysis, all the model, reanalysis and observation data were remapped 
+to a common $1\times1$ degree grid, using a distance weighting algorithm. The unitless SAM index is often 
+calculated as the difference between the normalized sea level pressure at 
+40$^{\circ}$ and 65$^{\circ}$S after \cite{Gong_and_Wang_1999}. However, normalization (i.e. subtracting the
+mean and dividing by the standard deviation), removes systematic biases in the pressure at each latitude.
+Our non-normalized SAM index is calculated as the zonal mean sea-level pressure difference between
 40$^{\circ}$ and 65$^{\circ}$S in hPa (across all longitudes), 
 as in \cite{Gillett_and_Fyfe_2013}, except where noted. Alternatively, in Figures 
 \ref{fig:marshall_timeseries}, \ref{fig:marshall_trends} and where noted, the 
@@ -251,23 +264,137 @@ stations used by \cite{Marshall_2003}. The strength of the westerly jet is taken
 the zonal mean u10m between 20$^{\circ}$ and 70$^{\circ}$S in m~s$^{-1}$. The position of
 the jet is taken as the latitude, in degrees, at the jet maximum. The jet width is taken as the range
 of contiguous latitudes between 20$^{\circ}$ and 70$^{\circ}$S, in degrees, where the zonal mean u10m 
-is positive.
-
-Trends in the SAM index and jet properties were 
-computed over various different time-intervals, to allow for comparison with different observational
-products that each cover a limited period. For the CMIP5 and 20CR ensembles we also compute 
-the ensemble mean and a 95\% confidence interval based on the standard deviation 
-of the trends across the individual ensemble members. The 2.5$^\textrm{th}$ to 
-97.5$^\textrm{th}$ percentile of trends across the individual 
-members of the CMIP5 and 20CR ensembles are also given where appropriate.
+is positive. Where appropriate, seasonal averages were constructed
+as a simple (unweighted) mean over the three month periods: December-January-February (DJF), 
+March-April-May (MAM), June-July-August (JJA) and September-October-November (SON) respectively (seasonal
+means were computed from monthly indices, where applicable). Trends in the SAM index and jet properties 
+were computed over various different time-intervals (years), to allow for comparison with different observational
+products that each cover a limited period. 
 
 The analysis carried out in this paper was performed with the aid of 
 IPython \citep{Perez_and_Granger_2007}, and graphics were produced 
 with matplotlib \citep{Hunter_2007} version 
 1.4.3 [\url{http://dx.doi.org/10.5281/zenodo.15423}]. The analysis is
 fully reproducible with the open source code 
-available from the authors upon request.
+available from [INSERT DOI BEFORE PUBLICATION].
 
+\subsection*{Ensembles, uncertainty and statistics}
+Observed and simulated climate trends contain various sources of uncertainty that
+must be properly accounted for when formulating statistical tests \citep{Fyfe_et_al_2013, Santer_et_al_2008}. 
+In this section we outline the sources of uncertainty in the CMIP5 ensemble of model simulations, 
+the 20CR observational ensemble and in other observations. We then discuss appropriate statistical tests 
+for i) determining if observed and simulated trends are (in)consistent and ii) determining whether
+an ensemble mean trend is significantly different from zero. A representation of the simulated and 
+observed trends can be given by:
+
+\begin{equation} \label{eq:mods}
+b^m_{ij} = u^m + Eint^m_{ij} + E^m_i, \; i=1,...., n^m,\; j=1 \;\; \textrm{and}
+\end{equation}
+
+\begin{equation}\label{eq:obs}
+b^o_k = u^o + Eint_k^o + E^o_k, \; k=1,...,n^o
+\end{equation}
+where $b^m_{ij}$ and $b^o_k$ are trends calculated from single model runs or the observations. 
+$u^m$ and $u^o$ are the true, unknown, deterministic trends due to external forcing 
+in the model and observations \citep{Fyfe_et_al_2013}. 
+$u^m$ is the component of the trend common to all models (in the limit as the collection of 
+exchangeable models grows infinitely large). $Eint^m_{ij}$ and $Eint_k^o$ are perturbations 
+to $b^m_{ij}$ and $b^o_k$ respectively due to 
+internal variability. For the models this is different for each run, but there is essentially only 
+one realization of internal variability for the observations. $E^m_i$ is the 
+perturbation to $b^m_{ij}$ that is introduced by model error in model $i$, and $E^o_k$ 
+is the observational error. $n^m$ is the number of models (and here we have only 
+used one realization for each model, $j=1$). $n^o$ is the size of the observational ensemble
+(which could be $n^o=56$ for 20CR, but is $n^o=1$ for the other observations). 
+
+In order to assess i) whether the observed and simulated trends are consistent, we formulate 
+the null hypothesis that the observed and simulated trends are equal:
+\begin{equation}
+H_0 : u^m = u^o
+\end{equation}
+An estimator of $u^m - u^o$ is $\overline{b^m} - \overline{b^o}$, 
+where the overline represents the average over all ensemble members.
+A test of null hypothesis may be given by a test similar to the t-test
+for the difference in means:
+\begin{equation} \label{eq:ttest}
+t = \frac{\overline{b^m} - \overline{b^o}}{\sqrt{\frac{s_{b^m}^2}{n^m} + {S^o}^2}}
+\end{equation} 
+where $s_{b^m}^2/n^m$ is an estimate of the variance of the mean of the model-mean trend,
+which arises due to model errors ($E^m_i$) and internal variability ($Eint^m_{ij}$) which
+are present in the CMIP5 ensemble \citep{Santer_et_al_2008}. The uncertainty estimated from 
+the CMIP5 ensemble in this
+way accounts for all the uncertainty terms in (\ref{eq:mods}). ${S^o}^2$ is an 
+estimate of the variance of the observed trend. This term should account
+for the uncertainty due to observational error ($E^o_k$) and internal 
+variability ($Eint^o_k$) present in the observations. Estimating the observational error
+requires more than a single observation (often not available) and the influence of 
+internal variability is hard to estimate robustly given that there is only a single 
+observed realization of this variability. 
+
+The uncertainty in the observed trend due to internal variability 
+($Eint^o_k$) can be estimated using the standard error of the trend adjusted for autocorrelation 
+\citep[e.g.][]{Santer_et_al_2008}. Alternatively, this uncertainty can be estimated by making 
+the assumption that the variance of the observed and simulated trends is equal (i.e. the spread 
+across the model ensemble is used as an estimate of the influence of internal variability on 
+the observations). Under this assumption of equal variances with a single observational
+estimate yields:
+\begin{equation}
+t = \frac{\overline{b^m} - \overline{b^o}}{s_{b^m} \cdot \sqrt{\frac{1}{n^m} + 1}} 
+\approx \frac{\overline{b^m} - \overline{b^o}}{s_{b^m}}
+\end{equation} 
+To reject the null hypothesis of equal trends at the 5\% level requires 
+$\mathopen|\overline{b^m} - \overline{b^o}\mathclose| > c \cdot s_{b^m}$, where $c$ is 
+the $97.5^\textrm{th}$ percentile of the Student's t-distribution with
+$n^m-1$ degrees of freedom. Since $c \approx 2$ (for $n_m \gtrsim 10$), a statistically 
+significant difference requires
+that the observations lie outside of 2 standard deviations from the model mean trend.
+For a large enough sample size of normally distributed data, this is equivalent to saying that the observed trend 
+should lie outside of the $2.5^{\textrm{th}}-97.5^{\textrm{th}}$ 
+percentile of the simulated trends (which we shall show in all trend plots). The 
+consistency of simulated and observed trends can thus be evaluating by asking 
+whether the observations fall within the $2.5^{\textrm{th}}-97.5^{\textrm{th}}$ 
+percentile of the simulated trends \citep{Swart_et_al_2015, Gillett_and_Fyfe_2013, Gillett_et_al_2013}.
+
+In the case of the 20CR ensemble, the observational uncertainty ($E^o_k$) may also be directly quantified as
+$s_{b^o}^2/n^o$, where $n^o=56$ is the number of members in the 20CR ensemble and $s_{b^o}^2$ is the variance across the 
+ensemble. Note, however, that we cannot simply
+replace ${S^o}^2$ in (\ref{eq:ttest}) with $s_{b^o}^2/n^o$. The reason for this is that on average over the
+free running CMIP5 models the influence of internal variability is zero ($\overline{Eint^m_{ij}}=0$), but for each
+20CR ensemble member the influence of internal variability is constrained to be the same by the observations 
+($\overline{Eint_k^o} \ne 0$).  If we neglected to account for this, as the number
+of model and 20CR ensemble members increased, we would inevitably find significant differences,  
+$\overline{b^m} - \overline{b^o} \ne 0$,  even if the true underlying trends were equal ($u^m - u^o = 0$),
+simply because of differences in internal variability. We could instead add the 20CR 
+observational uncertainty into the above test to make it even more conservative:
+
+\begin{equation}
+t = \frac{\overline{b^m} - \overline{b^o}}
+{\sqrt{ s_{b^m} \cdot \left( \frac{1}{n^m} + 1 \right) + \frac{s_{b^o}^2}{n^o}}} 
+\end{equation} 
+but since $s_{b^m} \gg s_{b^o}^2/n^o$, neglecting this term makes little practical difference. Therefore 
+throughout we will consider the observed and simulated trends to be significantly different at the
+5\% level when the observed trend (ensemble mean for 20CR), falls outside of the 
+$2.5^{\textrm{th}}-97.5^{\textrm{th}}$ 
+percentile of the simulated trends.
+
+The above tests relate to the question of whether the observed and simulated trends are consistent. 
+The second question ii) that we are interested in asking is whether a given ensemble mean
+trend is significantly different from zero. The appropriate Student's t-test of the null
+hypothesis that the mean trend is zero is given by:
+
+\begin{equation}
+t = \frac{\overline{b}}{s_{b} \cdot \sqrt{\frac{1}{n}}}
+\end{equation} 
+which could be tested for the models or 20CR ensemble. The uncertainty in the mean trend is
+represented by the (95\%) confidence interval, which is given by:
+
+\begin{equation}
+\overline{b} \pm \frac{c \cdot s_b}{\sqrt{n}}
+\end{equation} 
+where c is the $97.5^{\textrm{th}}$ percentile of the Student's t distribution with $n-1$ 
+degrees of freedom \citep{von_Storch_and_Zwiers_1999}. We also plot this 95\% confidence interval for the CMIP5 and 20CR trends. This
+definition of the 95\% confidence interval is used for both timeseries (e.g. Fig. \ref{fig:timeseries} 
+envelopes) and trends (e.g. Fig. \ref{fig:seas_trends_1951-2011}, solid vertical bars). 
 
 \section{Observed and simulated changes in the SAM and westerly jet} \label{sec:obs_sim_changes}
 \subsection{Time-series}
@@ -296,31 +423,31 @@ we will conduct a more thorough inter-observational product comparison.
 Over 1951 to 2011 both HadSLP2r and 20CR shows a positive SAM trend during all seasons 
 (Fig. \ref{fig:seas_trends_1951-2011}a). The HadSLP2r SAM trends are generally a little 
 smaller than those in 20CR, and exhibit more seasonality. The CMIP5 models also exhibit positive trends 
-on average during all seasons, but the model trends show the opposite seasonality to HadSLP2r,
+on average during all seasons, but the model trends show the opposite seasonality to HadSLP2r and 20CR,
 being largest in DJF and smallest in JJA on average, as would be expected from the ozone
 related forcing \citep{Son_et_al_2010, Thompson_et_al_2011}. 
 
 During DJF the model-mean SAM trend is almost identical to that seen in 20CR, consistent 
-with \cite{Gillett_and_Fyfe_2013}. However, during the Austral winter (JJA) and in the annual 
-mean, the models significantly underestimate the SAM trend relative to 20CR and HadSLP2r.
+with \cite{Gillett_and_Fyfe_2013}. However, during the Austral winter (JJA) 
+the models significantly underestimate the SAM trend relative to 20CR and HadSLP2r. The
+models also significantly underestimate the annual mean trend SAM relative to 20CR.
 Significance in this sense is determined from the fact that the 20CR ensemble mean trend 
 lies outside of the  2.5$^\textrm{th}$ to 97.5$^\textrm{th}$ percentile of CMIP5 trends, 
 and thus we can reject the null
-hypothesis that the 20CR and CMIP5 trends come from the same distribution, at the 5\% level.
-Similarly, we can reject the null hypothesis that the CMIP5 and 20CR SAM trends are equal
-at the 5\% level during all seasons except DJF using a Welch's t-test, which takes uncertainty 
-in both the CMIP5 and 20CR trends into account.
+hypothesis that the 20CR and CMIP5 trends come from the same distribution, at the 5\% level
+(see \ref{sec:data_and_methods}).
 
-In jet strength, 20CR exhibits a trend of between 0.15 and 0.25~m~s$^{-1}$~dec$^{-1}$ 
+
+For jet strength, 20CR exhibits a trend of between 0.15 and 0.25~m~s$^{-1}$~dec$^{-1}$ 
 (Fig. \ref{fig:seas_trends_1951-2011}b). The CMIP5 models also show positive jet strength 
 trends in all seasons on average. Yet for jet strength, the modelled trends are 
 significantly smaller than for 20CR in all seasons, with annual mean trend being about 
-5 times weaker in the models. In all seasons, the 20CR trends lie outside 
+5 times weaker in the models. In all seasons, the 20CR-mean trends lie outside 
 the 2.5$^\textrm{th}$ to 97.5$^\textrm{th}$ percentile of CMIP5 trends.
 
 Trends in jet position vary in sign over the seasons in 20CR (Fig. \ref{fig:seas_trends_1951-2011}c),
 with a small, non-significant trend in the annual mean. The CMIP5 models show poleward trends
-in jet position that are significant at the 5\% level during all season except JJA. The largest poleward
+in jet position that are significant at the 5\% level during all seasons except JJA. The largest poleward
 trend in jet position occurs in DJF, with nearly identical trends in 20CR and the CMIP5 mean. Jet width
 does not exhibit any significant trends in the CMIP5 models, except for in DJF which has a broadening
 trend of about 0.1$^{\circ}$ latitude per decade on average. 20CR, by contrast, shows narrowing trends in
@@ -351,14 +478,15 @@ P(\phi) = - \rho \int f U  \;\delta y
 where $f=2\omega \,\textrm{sin} ( \phi)$ is the Coriolis parameter, given the angular rotation
 rate of Earth, $\omega=7.3 \times10^{−5}$~s$^{-1}$, and $\rho=1.2$~kg~m$^{-3}$ is the 
 density of air. We can use this idealized model to examine how the SAM changes are related 
-to changes in an individual kinematic property of the jet, while the other kinematic 
-properties are held fixed (Fig. \ref{fig:gaussian_jet}).
+to changes in an individual kinematic property of the jet. We start with default values of
+$\eta=7$~m~s$^{-1}$, $\Phi=-48^{\circ}$ and $\sigma=6^{\circ}$, and then vary each of these 
+three parameters individually, while keeping the other two fixed (Fig. \ref{fig:gaussian_jet}).
 
 Changes in jet strength and the SAM index are linearly related, such that an increasing SAM is
 associated with a strengthening jet (Fig. \ref{fig:gaussian_jet}d). Changes in jet position and 
 the SAM index are inversely related, with a poleward shifting jet corresponding 
 to a strengthening SAM (Fig. \ref{fig:gaussian_jet}e).  However, the relationship
-is not identically linear. The increase in SAM is largest per unit of poleward shift for jets 
+is not linear. The increase in SAM is largest per unit of poleward shift for jets 
 which are more equatorward. For example, for a jet that is centred at 45$^{\circ}$S a poleward shift of one 
 degree latitude is associated with an increase in the SAM index of about 1.7 hPa, while 
 for a jet that is centred at 50$^{\circ}$S the increase in SAM is less than 1 hPa for 
@@ -369,30 +497,25 @@ The chief value of the model used here is to illustrate that changes in the SAM 
 influenced by changes in all three kinematic properties of the jet, as found previously 
 \citep{Monahan_and_Fyfe_2006, Monahan_and_Fyfe_2008}. Changes in the SAM may be associated 
 with changes in one kinematic property of the jet, while the other kinematic properties 
-remain constant or even change in the opposite sense. As such, it is generally not appropriate to assume that changes 
-in the SAM are directly interchangeable with changes in any one 
-property of the jet \citep{Monahan_and_Fyfe_2006, Monahan_and_Fyfe_2008}. 
-The CMIP5 models allow us to explore these relationships further.
+remain constant or even change in the opposite sense. 
 
 \subsection{SAM-jet relationships in the CMIP5 models and 20CR}
 We first consider the relationships between the trends in the SAM index and the kinematic
-properties of the jet for a single season, DJF, when the changes are largest. Trends 
-in the DJF SAM index over 1951 to 2011 are significantly correlated with 
+properties of the jet for a single season, DJF, when the simulated mean changes are largest. Trends 
+in the DJF-mean SAM index over 1951 to 2011 are significantly correlated with 
 trends in all three kinematic properties of the jet across 
-the CMIP5 models (Fig. \ref{fig:sam_vs_jet_scatter}a, c, e). The nature of the relationships 
+the CMIP5 models (Fig. \ref{fig:sam_vs_jet_scatter}a, c, e). The sign of the relationships 
 are as predicted by the simple geostrophic model. 
 
 The SAM index trend is also significantly correlated with the climatological 
 position and inversely correlated with the climatological jet strength across the CMIP5 models 
 (Fig. \ref{fig:sam_vs_jet_scatter}b, d). The correlation between
 SAM index trend and climatological position was also predicted by the simple geostrophic model: 
-the change in SAM index is more sensitive to changes in jet position for jets which are 
-equatorward displaced. In addition, it is known that jets with a more equatorward 
+the change in SAM index is larger per degree poleward shift in jet position for models which start with  
+a more equatorward climatological position than for those with a more poleward climatological 
+position (Fig. \ref{fig:gaussian_jet}e). In addition, it is known that jets with a more equatorward 
 climatological position experience larger historical poleward trends in position 
-\citep{Kidston_and_Gerber_2010, Bracegirdle_et_al_2013}. Why stronger climatological jets 
-lead to larger trends in the SAM index is unclear, and not anticipated from the simple model. 
-It could result simply because climatological jet position and strength are correlated 
-($r=-0.5, p=0.004$), and the SAM index is responding to the initial jet position.
+\citep{Kidston_and_Gerber_2010, Bracegirdle_et_al_2013}. 
 
 Given these correlations showing that models with large SAM trends tend to have large trends 
 in jet strength, position and width, it might appear that the SAM index can be used to infer
@@ -405,7 +528,8 @@ to the CMIP5 models over the satellite era (not shown). The correlations between
 properties within a given model also vary significantly over the CMIP5 ensemble. For example, the correlation 
 between the SAM index and jet strength varies from $r=0.44$ in IPSL-CM5B-LR to $r=0.84$ in ACCESS1-0. 
 Therefore, given the variability of these SAM jet relations across models and by season, trends in the SAM 
-index cannot be used as a direct proxy for trends in the jet.
+index cannot be used as a direct proxy for trends in the jet, as previously shown \citep{Thomas_et_al_2015, 
+Monahan_and_Fyfe_2006, Monahan_and_Fyfe_2008}.
 
 The reasoning above also explains how it is that 20CR-mean and the CMIP5-mean SAM 
 trends can be similar,
@@ -423,7 +547,7 @@ per unit poleward shift in jet position. The apparent discrepancies between tren
 jet strength are thus resolved.  
 
 \section{Spatial structure of historical trends} \label{sec:spatial_patterns}
-The trends in SH sea level pressure and winds also have important spatial structure. The SLP
+The trends in monthly SH sea level pressure and winds also have important spatial structure. The SLP
 trend maps are shown over 1951 to 2004 (Fig. \ref{fig:slp_trend_maps_1951-2004}), 
 because the HadSLP2r data become unreliable after 2005, as we shall see below. The HadSLP2r trend
 pattern is dominated by circumpolar wide negative trends in SLP south of 50$^{\circ}$S, with 
@@ -433,13 +557,13 @@ shows generally very similar patterns. In the CMIP5 mean trend, there are simila
 of positive trends centred
 on 40$^{\circ}$S, and negative trends south of 50$^{\circ}$S. However, the CMIP5 models do not show the
 focused region of large negative trends in the south Pacific, or increasing SLP south of Africa. 
-In both  of these regions, the HadSLP2r trends lies outside the 2.5-97.5$^\textrm{th}$ percentile of
+In both  of these regions, the HadSLP2r trends lie outside the 2.5-97.5$^\textrm{th}$ percentile of
 individual model trends, indicating  that the differences are significant 
 (Fig. \ref{fig:slp_trend_maps_1951-2004}). These differences may occur because the CMIP5 models
 have difficulty correctly simulating variations in the wave number 3 pattern around Antarctica 
 \citep{Marshall_Bracegirdle_2014}, or because of uncertainties in the observations described below.
 
-Winds trends are shown for 20CR and the CMIP5 mean (Fig. \ref{fig:uas_trend_maps_1951-2011}).  
+Wind trends are shown for 20CR and the CMIP5 mean (Fig. \ref{fig:uas_trend_maps_1951-2011}).  
 20CR shows a band of large positive trends centred on the jet core near 50$^{\circ}$S, with
 regions of negative trends on either side. The CMIP5 mean also shows strengthening trends,
 but they are much weaker and poleward displaced relative to the 20CR trends. Thus,
@@ -454,7 +578,7 @@ the southeast Pacific. However, the southeast Pacific is one of the most data sp
 and significant uncertainties exist in the observations, and from the infilling methodologies 
 associated with HadSLP2r \citep{Allan_and_Ansell_2006}. 
 
-To demonstrate, the uncertainty in the 
+To demonstrate this, the uncertainty in the 
 20CR SLP and u10m trends is shown as two times the standard deviation in trends across the 56 member 
 20CR ensemble (Fig. \ref{fig:20CR_uncertainty_map}). The $2 \sigma$ spread is largest in the southeast
 Pacific, and it represents about 20\% of the magnitude of the mean trends. The 20CR ensemble also suffers 
@@ -467,7 +591,8 @@ by conducting an intercomparison of available observational and reanalysis produ
 One of the most reliable records of changes in the SH SLP is from the station based estimates
 updated from \cite{Marshall_2003}. Data from six stations located near 40$^{\circ}$S and 
 an additional six stations near 65$^{\circ}$S were averaged to give the mean SLP at those two
-latitudes respectively. Here, HadSLP2r, six reanalyses, and the CMIP5 models are subsampled
+latitudes respectively (for station positions see Fig. \ref{fig:slp_trend_maps_1951-2004}). 
+Here, HadSLP2r, six reanalyses, and the CMIP5 models are subsampled
 at these same 12 locations in order to compare with the \cite{Marshall_2003} data.
 
 In the timeseries of the mean pressure at 40$^{\circ}$S it can be seen that the reanalyses
@@ -476,8 +601,8 @@ In all products a general long term increase in SLP at 40$^{\circ}$S is also evi
 the observations and all six reanalyses show a long term decline in 
 SLP (Fig. \ref{fig:marshall_timeseries}b). Biases here also occur principally in R1, which starts 
 with a pressure that is about 
-8 hPa too high, and exhibits a large and spurious negative trend not seen in the 
-observations prior to about 1990, as is well known \citep{Marshall_2003}. R2, which 
+8 hPa too high, and exhibits a large and spurious negative trend not seen in the
+observations of \cite{Marshall_2003} prior to about 1990. R2, which 
 is a closely related product, has similar issues, and to a much lesser extent, 20CR. 
 Since the 20CR spread is generally small after 1950 (Fig. \ref{fig:timeseries}), 
 from here on we show only the 20CR ensemble mean.
@@ -495,7 +620,7 @@ season are also computed for two time periods (Fig. \ref{fig:marshall_trends}).
 
 Over 1958 to 2011,
 trends at 40$^{\circ}$S are generally small and positive. Trends at 65$^{\circ}$S are negative and
-larger, and show large biases for R1. In the SAM index, the Marshall-based trend is positive in all
+larger, and show large biases for R1 relative to the Marshall and HadSLP2r observations. In the SAM index, the Marshall-based trend is positive in all
 seasons, except SON, when it is zero. The HadSLP2r trends also generally match the Marshall trends
 well, with the largest difference occurring in SON. The 20CR ensemble mean SAM trend is slightly larger 
 than the trend observed in the Marshall data in all
@@ -511,13 +636,13 @@ satellite era.
 
 These findings suggest that there is little evidence that the CMIP5 models 
 systematically  underestimate the SAM trend. This is opposite to the conclusion in 
-Section \ref{sec:obs_sim_changes}, where the annual mean SAM trend (based on the zonal mean 
-over all longitudes and over 1951 to 2011) in 20CR and HadSLP2r, was found to be significantly 
+Section \ref{sec:obs_sim_changes}, where the JJA (and annual mean) SAM trend (based on the zonal mean 
+over all longitudes and over 1951 to 2011) in HadSLP2r and 20CR, was found to be significantly 
 larger than the CMIP5 trends. Much of the reason for this is that over 1951 to 2011 the largest
 SLP trends in 20CR and HadSLP2r occur in the southeast Pacific, and this region contributes
 significantly to the overall SAM trend, but is also the most uncertain. In contrast, the 
 Marshall based SAM index considered in this section does not have any stations located in the 
-southeast Pacific, but has reliable trends due to using a fixed 
+southeast Pacific (see Fig. \ref{fig:slp_trend_maps_1951-2004}), but has reliable trends due to using a fixed 
 observational network \citep{Marshall_2003}. In the following section we return to examining the spatial structure of 
 trends over the full Southern Ocean.
 
@@ -527,13 +652,13 @@ and by ending in 2004 we avoid the continuity problems in HadSLP2r identified ab
 (Fig. \ref{fig:slp_trend_maps_1979-2004}). The most prominent pattern in the HadSLP2r trends
 over this period is again the large negative and circumpolar trends in pressure 
 south of about 50$^{\circ}$S. Similar patterns are seen in R1, R2 and 20CR, but these products
-tend to overestimate the magnitude of the trends. CFSR and MERRA show the opposite, with large
+tend to overestimate the magnitude of the trends relative to HadSLP2r. CFSR and MERRA show the opposite, with large
 positive trends, and correspondingly, these products have the largest root mean square difference
 from the HadSLP2r observations. ERA-Interim also has SLP trends that are a little too positive, but 
 is the best fit to the HadSLP2r observations after 20CR.  The CMIP5 models show a similar pattern 
 of trends to the observations,
 but generally with a weaker magnitude. Interestingly we note that the CMIP5 mean trend is more similar to
-the HadSLP2r observations than any of the six reanalyses, as seen by it's small root mean square 
+the HadSLP2r observations than any of the six reanalyses, as seen by it's smaller root mean square 
 difference (51.65 Pa decade$^{-1}$).
 
 Maps of u10m trends from the CCMP satellite-based wind product are compared with the 
@@ -558,7 +683,7 @@ computed (Fig. \ref{fig:zonmean_trends}). In the zonal means it is clear that th
 the available SLP observations very well (see red line and ``x's'' in Fig. \ref{fig:zonmean_trends}a). 
 In contrast, the positive SLP trends south of 50$^{\circ}$S in
 CFSR and MERRA clearly stick out as spurious. The CCMP u10m trends interestingly show no positive
-trend near the peak of the jet (50-55$^{\circ}$S; Fig. \ref{fig:zonmean_trends}b).The  MERRA u10m 
+trend near the peak of the jet (50-55$^{\circ}$S; Fig. \ref{fig:zonmean_trends}b). The MERRA u10m 
 trends agree fairly well with the
 observations over this region, while R1, R2 and 20CR all seem to have trends that are too large.
 The CCMP observations and several reanalyses also show large negative u10m trends between about 
@@ -572,7 +697,7 @@ Because u10m winds depend on the formulation used to move winds to the reference
 (Fig. \ref{fig:zonmean_trends}c). Stress fields occur at a natural level (the surface), 
 but themselves depend on the drag-formulation employed. Nonetheless in general the stress fields 
 convey the same picture as u10m, with R1, R2 and 20CR having
-larger than observed positive trends, with MERRA and the CMIP5 mean being close to the CCMP values. 
+larger than observed positive trends, with MERRA, ERA-Int and the CMIP5 mean being close to the CCMP values. 
 Of note are the large negative trends evident in CFSR, consistent with a previous report 
 \citep{Swart_et_al_2014}.
 
@@ -581,7 +706,8 @@ finding is that the CMIP5 models do not seem to underestimate the jet strengthen
 the available observations, but R1, R2 and 20CR seem to overestimate the surface speed trends. In light
 of this it appears that the findings of section \ref{sec:data_and_methods} that the models significantly
 underestimate the jet strength trends relative to 20CR, should likely be interpreted as due to 
-spuriously large trends in 20CR, not as a shortcoming in the models. This indicates that a high degree 
+spuriously large trends in 20CR, not as a shortcoming in the models (although both could be in error). 
+This indicates that a high degree 
 of caution is required in using reanalysis products to validate simulated trends. Indeed, previous studies
 have also found a large spread between reanalysis products in the climatologies and 
 trends of surface winds in the Southern Ocean \citep{Kent_et_al_2013, Li_et_al_2013}. In the final
@@ -611,7 +737,7 @@ while the CMIP5 models show a significant positive trend on average, two reanaly
 negative trends, and the remaining four reanalyses have a 
 factor of three spread in the magnitude of their trends.
 
-Jet position trends show an important seasonality that is often under-appreciated. The CMIP5
+Jet position trends show an important seasonality. The CMIP5
 mean and all six reanalyses agree that the jet shifted poleward during DJF. However, during
 all the other seasons, and in the annual mean, the CMIP5 models do not show a significant trend
 in position. Indeed, all six reanalyses show a near a zero trend in annual mean 
@@ -632,15 +758,17 @@ of ozone and GHG forcing \citep{Son_et_al_2010}.
 \section{Discussion and conclusions} \label{sec:conclusions}
 Over 1951 to 2011 the DJF trends in the 20CR ensemble mean SAM index and CMIP5 multi-model 
 mean are nearly identical, yet over this same period the trend in the strength of the westerly jet in
-20CR is much larger than the trends seen in the CMIP5 models. Using a simple geostrophic
+20CR is much larger than the trends seen in the CMIP5 models (Fig. \ref{fig:seas_trends_1951-2011}a, b). 
+Using a simple geostrophic
 model we explained that trends in the SAM index and jet strength are not directly
 interchangeable, because trends in jet position and width combine with changes in jet strength
-to influence the SAM. For this reason, trends in the SAM should not be used as a direct
+to influence the SAM (Fig. \ref{fig:gaussian_jet}). For this reason, trends in the SAM should not be used as a direct
 proxy for changes in any single kinematic property of the jet.
 
 The CMIP5 models had an annual mean trend in the SAM index and jet strength
-that was significantly smaller than seen in 20CR over 1951 to 2011. However, 
-this is likely to partly reflect spuriously large trends in 20CR, rather than 
+that was significantly smaller than seen in 20CR over 1951 to 2011 
+(Fig. \ref{fig:seas_trends_1951-2011}b) . However, 
+this is partly due to spuriously large trends in 20CR, rather than 
 the CMIP5 models underestimating the true trend. Indeed, the 20CR and 
 HadSLP2r SAM trends since 1951 were largely driven by 
 large negative trends in SLP in the south Pacific, a data sparse region
@@ -650,32 +778,33 @@ Using sea-level pressure data coincident with the 12 station locations used
 by \citet {Marshall_2003}, we showed that the CMIP5 mean SLP trends 
 at 40$^{\circ}$S, 65$^{\circ}$S 
 and the corresponding SAM index are consistent with the direct
-observations. Surprisingly, the spatial pattern of
+observations (Fig. \ref{fig:marshall_trends}). Surprisingly, the spatial pattern of
 CMIP5 model mean SLP trends was a better fit to HadSLP2r observed trends than any of six 
-reanalysis products over the period 1979 to 2004. Similarly, in the zonal mean
+reanalysis products over the period 1979 to 2004 (Fig. \ref{fig:slp_trend_maps_1979-2004}). 
+Similarly, in the zonal mean
 the CMIP5 trends in jet strength since 1988 were generally consistent with the 
 CCMP satellite based wind product near the core of the jet, although the models
-did not reproduce the spatial pattern of changes. 20CR, R1 and R2 overestimated 
-recent strengthening of the jet near its peak, relative to CCMP. 
+did not reproduce the spatial pattern of changes (Fig. \ref{fig:uas_trend_maps_1988-2011}, \ref{fig:zonmean_trends}). 
+20CR, R1 and R2 overestimated recent strengthening of the jet near its peak, relative to CCMP. 
 
 The best performing reanalysis product depends on the variable (SLP or u10m) 
 and time period of choice, but in general 20CR best reproduced observed SLP 
 trends while MERRA best reproduced surface wind trends relative to observations,
-and ERA-Interim performed best when combining both measures. 
+and ERA-Interim performed best for surface winds and SLP combined. 
 However all the six reanalysis products experienced some spurious trends. 
 The temporal continuity of reanalyses is inherently 
 hampered by the evolving observational network which underlies these products. 
-The resulting trends in Southern Hemisphere sea-level pressure and winds are 
+The resulting long term trends in Southern Hemisphere sea-level pressure and winds are 
 unreliable, and as such reanalyses are likely inappropriate tools for 
-validating these aspects of climate model simulations.
+validating these particular aspects of climate model simulations.
 
 Many studies have used reanalysis based forcing, and particularly R1, for forcing ocean 
 only models to investigate the role of Southern Ocean wind changes on ocean circulation 
-\citep[e.g.][]{Screen_et_al_2009} and the carbon cycle 
+\citep[e.g.][]{Biastoch_et_al_2009, Screen_et_al_2009} and the carbon cycle 
 \citep[e.g.][]{Le_Quere_et_al_2007, Lovenduski_et_al_2008}. The widely
 used surface forcing from the Coordinated Ocean-ice Reference Experiment (CORE) phase I and II
-\citep{Large_and_Yeager_2009, Griffies_et_al_2009, Danabasoglu_et_al_2014} 
-is also based on R1. However, as we
+\citep{Danabasoglu_et_al_2014, Large_and_Yeager_2009, Griffies_et_al_2009} 
+is itself primarily based on R1. However, as we
 have shown here, R1 has particularly large and spurious trends over the Southern 
 Ocean, which might in turn bias studies using R1-derived products as surface forcing. 
 Indeed, the impacts of atmospheric circulation changes on the Southern Ocean circulation
@@ -689,6 +818,7 @@ require further attention.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 \acknowledgments
+We thank Michael Sigmond and Slava Kharin for helpful comments on an earlier draft.
 We acknowledge the World Climate Research Programme's Working Group on 
 Coupled Modelling, which is responsible for CMIP, and we thank the climate 
 modeling groups for producing and making available their model output. For 
@@ -796,9 +926,9 @@ NASA MERRA & MERRA & \citet{Rienecker_et_al_2011} & \url{http://disc.sci.gsfc.na
 
 \begin{figure}[t]
   \noindent\includegraphics[]{timeseries.pdf}\\
-  \caption{Timeseries of a) SAM index and westerly jet b) strength, c) position and d) width over 1881 to 2013.
+  \caption{Timeseries of annual mean a) SAM index and westerly jet b) strength, c) position and d) width over 1881 to 2013.
    The shaded envelopes give the 95\% confidence interval about the mean for the 
-   CMIP5 and 20CR ensembles. All data has been smoothed with a 5-year running mean.}\label{fig:timeseries}
+   CMIP5 and 20CR ensembles.}\label{fig:timeseries}
 \end{figure}
 
 \begin{figure}[t]
@@ -820,7 +950,7 @@ NASA MERRA & MERRA & \citet{Rienecker_et_al_2011} & \url{http://disc.sci.gsfc.na
 
 \begin{figure}[t]
   \noindent\includegraphics[width=0.85\textwidth]{sam_vs_jet_scatter.pdf}\\
-  \caption{The relationship between DJF trends over 1951 to 2011 in the SAM index and 
+  \caption{The relationship between DJF-mean trends over 1951 to 2011 in the SAM index and 
    trends in jet a) strength, c) position
    and e) width as well as climatological jet b) strength, d) position and f) width for the 30
     individual CMIP5 simulations and 20CR. Numbers in the lower right of the panels give the correlation 
@@ -836,11 +966,12 @@ NASA MERRA & MERRA & \citet{Rienecker_et_al_2011} & \url{http://disc.sci.gsfc.na
 
 \begin{figure}[t]
   \noindent\includegraphics[]{slp_trend_maps_1951-2004.pdf}\\
-  \caption{Trends in sea-level pressure over 1951 to 2004 for HadSLP2r, 20CR and the CMIP5 mean (left),
+  \caption{Trends in monthly sea-level pressure over 1951 to 2004 for HadSLP2r, 20CR and the CMIP5 mean (left),
    and anomalies relative to the HadSLP2r trends (right). The areas where the HadSLP2r trend lies 
    outside the 2.5-97.5$^\textrm{th}$ percentile of trends in the individual CMIP5 simulations is shown 
    by stippling in the bottom right. Numbers in the right panels give the root mean square difference 
-   with HadSLP2r (Pa~decade$^{-1}$).}\label{fig:slp_trend_maps_1951-2004}
+   with HadSLP2r (Pa~decade$^{-1}$). Black dots in the HadSLP2r panel show the position of the
+    \cite{Marshall_2003} stations.} \label{fig:slp_trend_maps_1951-2004}
 \end{figure}
 
 \begin{figure}[t]
