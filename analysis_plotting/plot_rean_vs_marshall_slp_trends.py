@@ -12,7 +12,6 @@ import h5py
 import numpy as np
 import scipy as sp
 import pandas as pd
-import pandas_tools as pt
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import brewer2mpl

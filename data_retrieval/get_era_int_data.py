@@ -59,7 +59,8 @@ def get_era_int_data(destination='.'):
     # The names and parameter codes, and other details for variables
     variables = {'uflx' : {'param' : '229.128', 'type' : 'fc'},
                  'u10m' : {'param' : '165.128'},
-                 'slp' :  {'param' :'151.128'}
+                 'slp' :  {'param' :'151.128'},
+                 # 'land' : {'param' : '172.128', 'date' : '1989-01-01'}
                 }
     
     variable_dict = {"class": "ei",
@@ -86,12 +87,18 @@ def get_era_int_data(destination='.'):
         fetch_era_data(vdict)   
         
         # Change variable names
-        old_names = {'uflx' : 'iews', 'u10m' : 'u10', 'slp' : 'msl'}
+        old_names = {'uflx' : 'iews', 'u10m' : 'u10', 'slp' : 'msl',
+                      'land' : 'lsm'}
         cdo.chname(old_names[key] + ',' + key, input=outfilename.format(var=key),
                    output='tmp.nc')
         os.remove(outfilename.format(var=key))
         os.rename('tmp.nc', outfilename.format(var=key))
         
+    # Land mask wind stress
+    #instr = ('-selvar,uflx ERA-Int_uflx.mon.mean.nc -setctomiss,2 -addc,1 ERA-Int_land.mon.mean.nc')
+    #cdo.mul(input=instr, output='tmp_uflx.nc')
+    #os.rename('tmp_uflx.nc', 'ERA-Int_uflx.mon.mean.nc')
+    
     # move to destination
     files = glob.glob('ERA-Int*.mon.mean.nc')
     mv_to_dest.mv_to_dest(destination, *files)   

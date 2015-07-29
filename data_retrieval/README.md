@@ -4,7 +4,8 @@ Data retrieval and processing
 Introduction
 -------------
 
-This series of programs retrieves the data required for the analysis.
+This series of programs retrieves the data required for the analysis. The full list
+of required input data is [here](data/input_data_list.csv).
 
 `run_retrieval.py` can be used to try and run all the sub-modules. The 
 individual download scripts described below can also be run to get just a 
@@ -16,12 +17,16 @@ directory by default, but the destination can be specified.
 
 NOTE:
 
-Some of the data servers require authentication credentials, that you will need to 
+1) Some of the data servers require authentication credentials, that you will need to 
 have. Specifically for the CMIP5, CFSR, CCMP and ERA-Interim data - see below.
 
 Also note that these scripts generally worked when I tried them in May 2015, but 
 since webpages are dynamic, I can't help it if data moves or the scripts no longer 
-work. Indeed, there are no guarantees whatsoever, see the license file.
+work. Indeed, there are no guarantees whatsoever, see the [License](../License) file.
+
+2) uflx fields must be land masked to exactly reproduce the result in the paper. 
+   This is done in the scripts here for R1, R2 and 20CR, but will have to be
+   done manually for the other 3 reanalyses.
 
 Authentication requirements
 ---------------------------
@@ -109,16 +114,18 @@ authentication : requires http://rda.ucar.edu/ login credentials that must be
                  manually inserted in the `email` and `passwd` fields in the `.csh` 
                  wget scripts in the cfsr directory.
 
-notes : 
+notes : Remember to manually land mask the uflx data.
 
 ### CCMP
-script : ccmp/`get_ccmp_data.py`
+script : `get_ccmp_data.py`
 
-authentication : requires http://rda.ucar.edu/ login credentials that must be 
-                 manually inserted in the `email` and `passwd` fields in the `.csh` 
-                 wget scripts in the ccmp directory.
+authentication : None
 
-notes : data is quite large and takes some time to download 
+notes : data is quite large and takes some time to download. An alternative download
+        script via rda specified in the `ccmp` directory requires 
+        http://rda.ucar.edu/ login credentials that must be 
+        manually inserted in the `email` and `passwd` fields in the `.csh` 
+        wget scripts in the ccmp directory.
 
 ### MERRA
 script : merra/`get_merra_data.py`
@@ -127,6 +134,7 @@ authentication : None
 
 notes : This works well since no authentication is needed. Files are large and take 
 some time to download and come in individual months. Time joining done afterwards.
+Remember to manually land mask the uflx data.
 
 ### ERA-Int
 script : `get_era_int_data.py`
@@ -134,7 +142,7 @@ script : `get_era_int_data.py`
 authentication : requires an authentication file needs to be placed at ` 
                  $HOME/.ecmwfapirc`.
 
-notes :  This ECMWF api works well.
+notes :  This ECMWF api works well. Remember to manually land mask the uflx data.
 
 ### Marshall
 script : marshall_sam/`get_marshall_data.py`

@@ -46,12 +46,12 @@ that the data download scripts will work given the dynamic nature
 of the online data repositories, and the authentication credentials 
 some of the sites require. Users can also download the data manually 
 (referring to the comprehensive list provided 
-[here](data_retrieval/data/input_data.csv), 
+[here](data_retrieval/data/input_data_list.csv), 
 or may request the input data from the authors. 
 
 The `run.py` script will 
 automatically execute everything in steps 2 and 3, as long as all the 
-[required input data](data_retrieval/data/input_data.csv) is provided and the \
+[required input data](data_retrieval/data/input_data_list.csv) is provided and the 
 environment is setup correctly (see below).
 
 ## Software and dependencies

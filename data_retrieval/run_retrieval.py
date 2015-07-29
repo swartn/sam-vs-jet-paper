@@ -5,7 +5,7 @@
 import os
 import sys
 
-dirs = ['merra/', 'cfsr', 'cmip5', 'ccmp/', 'marshall_sam/']
+dirs = ['merra/', 'cfsr', 'cmip5']
 for d in dirs:
     sys.path.insert(0, d)
 import get_20cr_data
@@ -31,7 +31,7 @@ if not os.path.isdir(dest):
 get_20cr_data.get_20cr_data(destination=dest)
 
 # CCMP
-get_ccmp_data.get_ccmp_data(destination=dest, src_path='./ccmp/')
+get_ccmp_data.get_ccmp_data(destination=dest)
 
 # CFSR
 get_cfsr_data.get_cfsr_data(destination=dest, src_path='./cfsr/')
@@ -46,8 +46,7 @@ get_r1_r2_20cr_esrl_data.get_r1_r2_20cr_esrl_data(destination=dest)
 get_merra_data.get_merra_data(destination=dest, src_path='./merra/')
 
 # Marshall SLP data
-get_marshall_data.get_marshall_data(destination=dest, 
-                                     src_path='./marshall_sam/')
+get_marshall_data.get_marshall_data(destination=dest)
 
 # HadSLP2r_lowvar data
 get_hadslp2r_data.get_hadslp2r_data(destination=dest)

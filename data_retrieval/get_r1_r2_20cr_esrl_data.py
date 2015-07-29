@@ -24,24 +24,34 @@ def get_r1_r2_20cr_esrl_data(destination='.'):
          (r1p + 'surface/slp.mon.mean.nc', 'R1_slp.mon.mean.nc'),
          (r1p + 'surface_gauss/uwnd.10m.mon.mean.nc', 'R1_u10m.mon.mean.nc'),
          (r1p + 'surface_gauss/uflx.sfc.mon.mean.nc', 'R1_uflx.mon.mean.nc'),
+         ('ncep.reanalysis/surface_gauss/land.sfc.gauss.nc', 'R1_landmask.nc'),
          (r2p + 'surface/mslp.mon.mean.nc', 'R2_slp.mon.mean.nc'),
          (r2p + 'gaussian_grid/uwnd.10m.mon.mean.nc', 'R2_u10m.mon.mean.nc'),
          (r2p + 'gaussian_grid/uflx.sfc.mon.mean.nc', 'R2_uflx.mon.mean.nc'),
+         ('ncep.reanalysis2/gaussian_grid/land.sfc.gauss.nc','R2_landmask.nc'),
          (tcp + 'monolevel/prmsl.mon.mean.nc', '20CR_slp.mon.mean.nc'),
          (tcp + 'gaussian/monolevel/uwnd.10m.mon.mean.nc', '20CR_u10m.mon.mean.nc'),
-         (tcp + 'gaussian/monolevel/uflx.mon.mean.nc', '20CR_uflx.mon.mean.nc')
+         (tcp + 'gaussian/monolevel/uflx.mon.mean.nc', '20CR_uflx.mon.mean.nc'),
+         ('20thC_ReanV2/gaussian/time_invariant/lsmask.nc', '20CR_landmask.nc'),
                       ] 
+    
     # Download the data
     for (path, ofile) in data_path_ofile:
         print 'Saving: ' + baseurl + path + '\nas: ' + ofile +'\n\n'
         urllib.urlretrieve(baseurl + path, ofile)
         
-    # Change some variable names
+    # Change some variable names, land mask the uflx fields and change sign (+ve)
     for r in ['R1', 'R2', '20CR']:
         cdo.chname('uwnd,u10m', input=r + '_u10m.mon.mean.nc', 
                    output='tmp.nc')
         os.rename('tmp.nc', r + '_u10m.mon.mean.nc')
-    
+        
+        cdo.mul(input = '-selvar,uflx ' 
+                + r + '_uflx.mon.mean.nc -setctomiss,2 -addc,1 ' 
+                + r + '_landmask.nc', output='tmp_uflx.nc')
+        cdo.mulc(-1, input='tmp_uflx.nc', output= r + '_uflx.mon.mean.nc')
+        
+    os.remove('tmp_uflx.nc')    
     cdo.chname('mslp,slp', input='R2_slp.mon.mean.nc', output='tmp1.nc')
     os.rename('tmp1.nc',  'R2_slp.mon.mean.nc')
     cdo.chname('prmsl,slp', input='20CR_slp.mon.mean.nc', 
@@ -58,7 +68,11 @@ def get_r1_r2_20cr_esrl_data(destination='.'):
 
     # move to destination
     files = glob.glob('*.mon.mean.nc')
-    mv_to_dest.mv_to_dest(destination, *files)        
+    mv_to_dest.mv_to_dest(destination, *files) 
+ 
+    dfiles = glob.glob('*_landmask.nc')
+    for f in dfiles:
+        os.remove(f)
                   
 if __name__=='__main__':
     get_r1_r2_20cr_esrl_data(destination='./data/')
