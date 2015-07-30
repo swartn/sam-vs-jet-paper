@@ -13,4 +13,6 @@
 *.log
 *.lot
 *.ttt
+*.dvi
+*.blg
 data_retrieval/data/marshall_sam.csv

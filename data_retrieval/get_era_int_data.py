@@ -58,9 +58,9 @@ def get_era_int_data(destination='.'):
     
     # The names and parameter codes, and other details for variables
     variables = {'uflx' : {'param' : '229.128', 'type' : 'fc'},
-                 'u10m' : {'param' : '165.128'},
-                 'slp' :  {'param' :'151.128'},
-                 # 'land' : {'param' : '172.128', 'date' : '1989-01-01'}
+                 #'u10m' : {'param' : '165.128'},
+                 #'slp' :  {'param' :'151.128'},
+                 'land' : {'param' : '172.128', 'date' : '1989-01-01'}
                 }
     
     variable_dict = {"class": "ei",

@@ -16,7 +16,7 @@ set opts = "-N"
 # IMPORTANT NOTE:  If your password uses a special character that has special
 #                  meaning to csh, you should escape it with a backslash
 #                  Example:  set passwd = "my\!password"
-set passwd = 'letneilin'
+set passwd = ''
 set num_chars = `echo "$passwd" |awk '{print length($0)}'`
 if ($num_chars == 0) then
   echo "You need to set your password before you can continue"

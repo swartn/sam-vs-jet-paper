@@ -67,8 +67,8 @@ operators [cdo](https://code.zmaw.de/projects/cdo) and their python bindings, my
 
 To create a suitable virtual env in anaconda I did:
 
-    conda create -n sam-jet-env python=2.7.9 pandas=0.15.2 numpy=1.9.2\
-    netcdf4=1.1.6 ipython=3.0.0 h5py=2.4.0 pip scipy=0.15.1 matplotlib=1.4.3\
+    conda create -n sam-jet-env python=2.7.9 pandas=0.15.2 numpy=1.9.2 \
+    netcdf4=1.1.6 ipython=3.0.0 h5py=2.4.0 pip scipy=0.15.1 matplotlib=1.4.3 \
     basemap=1.0.7 statsmodels=0.6.1 pytables=3.1.1 h5py=2.4.0 netCDF4 
    
     pip install cdo==1.2.5 
@@ -85,54 +85,8 @@ To give an overall idea, most of the basic data processing (like regridding to a
 common grid, zonal means, subsamping, computing trend maps etc) are done with cdo. 
 Some analysis, like computing trends from timeseries, and computing the jet 
 properties, are done in python (using numpy, scipy, statsmodels and pandas). All
-plotting is done with matplotlib. The full list of dependencies was:
-
-basemap                   1.0.7                np19py27_0  
-cairo                     1.12.18                       4  
-cdo                       1.2.5                     <pip>
-cmipdata                  0.0.1.dev0                <pip>
-curl                      7.38.0                        0  
-ecmwf-api-client          1.3                       <pip>
-esgf-pyclient             0.1.2                     <pip>
-fontconfig                2.11.1                        4  
-freetype                  2.5.2                         2  
-geos                      3.3.3                         0  
-h5py                      2.4.0                np19py27_0  
-hdf5                      1.8.14                        0  
-ipython                   3.0.0                    py27_0  
-jinja2                    2.7.3                     <pip>
-libnetcdf                 4.3.2                         1  
-libpng                    1.6.17                        0  
-libxml2                   2.9.2                         0  
-markupsafe                0.23                      <pip>
-matplotlib                1.4.3                np19py27_2  
-netcdf4                   1.1.8                np19py27_0  
-numexpr                   2.3.1                np19py27_0  
-numpy                     1.9.2                    py27_0  
-openssl                   1.0.1k                        1  
-pandas                    0.16.2               np19py27_0  
-patsy                     0.3.0                np19py27_0  
-pip                       6.1.1                    py27_0  
-pixman                    0.26.2                        0  
-py2cairo                  1.10.0                   py27_2  
-pyparsing                 2.0.3                    py27_0  
-pyqt                      4.11.3                   py27_1  
-pytables                  3.1.1                np19py27_2  
-python                    2.7.10                        0  
-python-dateutil           2.4.2                    py27_0  
-pytz                      2015.4                   py27_0  
-qt                        4.8.6                         3  
-readline                  6.2                           2  
-scipy                     0.15.1               np19py27_0  
-setuptools                18.0.1                   py27_0  
-sip                       4.16.5                   py27_0  
-six                       1.9.0                    py27_0  
-sqlite                    3.8.4.1                       1  
-statsmodels               0.6.1                np19py27_0  
-system                    5.8                           2  
-tables                    3.1.1                     <pip>
-tk                        8.5.18                        0  
-zlib                      1.2.8                         0 
+plotting is done with matplotlib. Note that [this bugfix](https://github.com/jenshnielsen/matplotlib/commit/d5dafdbb48e984e52218640888ae7fa8feb36032)
+must be applied to matplotlib.
 
 ## License
 This ``sam-vs-jet-paper`` software is Copyright (C) 2015  Neil Swart. It is 

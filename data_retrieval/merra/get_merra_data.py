@@ -31,7 +31,7 @@ def get_merra_data(destination='.', src_path='./'):
     # Change some variable names
     cdo.chname('taux,uflx', input='MERRA_uflx.mon.mean.nc', output='tmp1.nc')
     os.rename('tmp1.nc',  'MERRA_uflx.mon.mean.nc')
-    
+       
     # move to destination
     files = glob.glob('MERRA*.mon.mean.nc')
     mv_to_dest.mv_to_dest(destination, *files)   

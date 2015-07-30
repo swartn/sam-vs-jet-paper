@@ -6,7 +6,6 @@
 import numpy as np
 import scipy as sp
 from scipy import stats
-import noise_models as nm
 
 def trend_ts(t, y, sigma=0.05, autocorr=False):
     """ 
