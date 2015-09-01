@@ -1,5 +1,7 @@
 # Comparing changes in the Southern Annular Mode and surface westerly jet
 
+[![DOI](https://zenodo.org/badge/16109/swartn/sam-vs-jet-paper.svg)](https://zenodo.org/badge/latestdoi/16109/swartn/sam-vs-jet-paper)
+
 This repository contains the python  code used for the paper
 
 Swart, N.C., J.C. Fyfe, N. Gillet and G.J. Marshall (2015), Comparing changes
